@@ -4,7 +4,7 @@ pypdf
 langchain
 langchain-community
 langchain-text-splitters
-google-genai
+
 faiss-cpu
 sentence-transformers
-numpy<2
+
