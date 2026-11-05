@@ -1,5 +1,9 @@
 streamlit
+requests
 pypdf
+langchain
+langchain-community
 google-genai
 faiss-cpu
+sentence-transformers
 numpy<2
