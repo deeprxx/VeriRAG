@@ -34,7 +34,7 @@ except Exception:
 # --- ULTRA-PREMIUM ENTERPRISE GLASSMORPHISM & ANIMATION CSS ---
 custom_css = (
     "<style>"
-    "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');"
+    "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');"
     "html, body, [class*='css'] { font-family: 'Inter', sans-serif; background-color: #06080f; color: #e2e8f0; }"
     ".stApp {"
     "  background: radial-gradient(circle at 12% 12%, rgba(99, 102, 241, 0.16) 0%, transparent 38%),"
@@ -74,7 +74,7 @@ custom_css = (
     "}"
     "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }"
     ".hero-subtitle {"
-    "  color: #94a3b8; font-size: 1.04rem; margin-bottom: 26px; font-weight: 400;"
+    "  color: #94a3b8; font-size: 1.04rem; margin-bottom: 20px; font-weight: 400;"
     "  animation: fadeInSlide 0.8s ease forwards;"
     "}"
     "@keyframes fadeInSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }"
@@ -192,6 +192,73 @@ custom_css = (
     ".premium-footer span {"
     "  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);"
     "  -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;"
+    "}"
+    /* AGENTIC SWARM MULTI-CURSOR & MATRIX SELECTION CSS */
+    ".agent-swarm-layer {"
+    "  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;"
+    "  pointer-events: none; z-index: 9999; overflow: hidden;"
+    "}"
+    ".agent-cursor {"
+    "  position: absolute; display: flex; align-items: center; gap: 6px;"
+    "  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));"
+    "  will-change: transform; opacity: 0.9;"
+    "}"
+    ".agent-tag {"
+    "  font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; font-weight: 700;"
+    "  padding: 3px 8px; border-radius: 6px; color: #06080f; white-space: nowrap;"
+    "  letter-spacing: 0.04em; box-shadow: 0 4px 14px rgba(0,0,0,0.5);"
+    "}"
+    ".cursor-1 { animation: roamAgent1 15s infinite ease-in-out; }"
+    ".cursor-2 { animation: roamAgent2 19s infinite ease-in-out; }"
+    ".cursor-3 { animation: roamAgent3 17s infinite ease-in-out; }"
+    ".cursor-4 { animation: roamAgent4 21s infinite ease-in-out; }"
+    ".cursor-5 { animation: roamAgent5 14s infinite ease-in-out; }"
+    "@keyframes roamAgent1 {"
+    "  0%, 100% { transform: translate(16vw, 20vh); }"
+    "  25% { transform: translate(64vw, 28vh) scale(0.95); }"
+    "  50% { transform: translate(46vw, 66vh); }"
+    "  75% { transform: translate(24vw, 52vh) scale(1.04); }"
+    "}"
+    "@keyframes roamAgent2 {"
+    "  0%, 100% { transform: translate(76vw, 18vh); }"
+    "  30% { transform: translate(32vw, 40vh); }"
+    "  60% { transform: translate(70vw, 62vh) scale(0.95); }"
+    "  85% { transform: translate(52vw, 24vh); }"
+    "}"
+    "@keyframes roamAgent3 {"
+    "  0%, 100% { transform: translate(40vw, 76vh); }"
+    "  35% { transform: translate(80vw, 44vh); }"
+    "  65% { transform: translate(26vw, 26vh) scale(0.92); }"
+    "}"
+    "@keyframes roamAgent4 {"
+    "  0%, 100% { transform: translate(62vw, 72vh); }"
+    "  40% { transform: translate(20vw, 36vh); }"
+    "  75% { transform: translate(56vw, 46vh); }"
+    "}"
+    "@keyframes roamAgent5 {"
+    "  0%, 100% { transform: translate(30vw, 14vh); }"
+    "  45% { transform: translate(74vw, 34vh); }"
+    "  80% { transform: translate(38vw, 58vh); }"
+    "}"
+    ".telemetry-bar {"
+    "  display: inline-flex; flex-wrap: wrap; align-items: center; gap: 12px;"
+    "  background: rgba(11, 15, 28, 0.92); border: 1px solid rgba(99, 102, 241, 0.35);"
+    "  padding: 7px 16px; border-radius: 999px; font-size: 0.78rem; color: #cbd5e1;"
+    "  margin-bottom: 18px; box-shadow: 0 8px 25px rgba(0,0,0,0.45);"
+    "}"
+    ".dot-cluster { display: inline-flex; gap: 5px; align-items: center; }"
+    ".dot-c { width: 7px; height: 7px; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; }"
+    ".matrix-select-wrap {"
+    "  position: relative; display: inline-flex; align-items: center; gap: 6px;"
+    "  padding: 2px 9px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;"
+    "  font-size: 0.75rem; color: #e0f2fe; animation: matrixHighlight 4.5s infinite ease-in-out;"
+    "}"
+    "@keyframes matrixHighlight {"
+    "  0%, 100% { background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.2); }"
+    "  40%, 70% { background: rgba(56, 189, 248, 0.25); border: 1px solid #38bdf8; box-shadow: 0 0 14px rgba(56, 189, 248, 0.3); }"
+    "}"
+    ".crosshair-plus {"
+    "  color: #38bdf8; font-weight: 800; font-size: 0.85rem; animation: blink 1.2s infinite;"
     "}"
     "footer { visibility: hidden; }"
     "</style>"
@@ -337,6 +404,13 @@ with st.sidebar:
     st.markdown("### ⚙️ DeepRAG Control Center")
     st.markdown('<div class="status-pill">🟢 Neural Engine: Connected & Active</div>', unsafe_allow_html=True)
 
+    enable_swarm = st.toggle(
+        "🤖 Agentic Swarm Mode",
+        value=True,
+        help="Enable autonomous multi-agent cursors and live neural matrix telemetry."
+    )
+
+    st.markdown("---")
     st.markdown("#### 📂 Document Portal")
     uploaded_files = st.file_uploader(
         "Upload PDF Documents",
@@ -394,6 +468,35 @@ with st.sidebar:
     )
 
 
+# --- RENDER AGENTIC MULTI-CURSOR SWARM OVERLAY ---
+if enable_swarm:
+    swarm_overlay_html = (
+        "<div class='agent-swarm-layer'>"
+        "  <div class='agent-cursor cursor-1'>"
+        "    <svg width='18' height='18' viewBox='0 0 24 24' fill='#38bdf8'><path d='M3 2l17 9-8 2-3 8z'/></svg>"
+        "    <span class='agent-tag' style='background:#38bdf8;'>Agent_01 • Retriever</span>"
+        "  </div>"
+        "  <div class='agent-cursor cursor-2'>"
+        "    <svg width='18' height='18' viewBox='0 0 24 24' fill='#34d399'><path d='M3 2l17 9-8 2-3 8z'/></svg>"
+        "    <span class='agent-tag' style='background:#34d399;'>Agent_02 • FAISS_Index</span>"
+        "  </div>"
+        "  <div class='agent-cursor cursor-3'>"
+        "    <svg width='18' height='18' viewBox='0 0 24 24' fill='#c084fc'><path d='M3 2l17 9-8 2-3 8z'/></svg>"
+        "    <span class='agent-tag' style='background:#c084fc;'>Agent_03 • Gemini_Synth</span>"
+        "  </div>"
+        "  <div class='agent-cursor cursor-4'>"
+        "    <svg width='18' height='18' viewBox='0 0 24 24' fill='#fb7185'><path d='M3 2l17 9-8 2-3 8z'/></svg>"
+        "    <span class='agent-tag' style='background:#fb7185;'>Agent_04 • Citation_Guard</span>"
+        "  </div>"
+        "  <div class='agent-cursor cursor-5'>"
+        "    <svg width='18' height='18' viewBox='0 0 24 24' fill='#facc15'><path d='M3 2l17 9-8 2-3 8z'/></svg>"
+        "    <span class='agent-tag' style='background:#facc15;'>Agent_05 • Voice_Node</span>"
+        "  </div>"
+        "</div>"
+    )
+    st.markdown(swarm_overlay_html, unsafe_allow_html=True)
+
+
 # --- AUTOMATIC PDF INDEXING WITH PAGE METADATA ---
 if uploaded_files:
     current_key = f"{[f.name for f in uploaded_files]}_{chunk_size}_{chunk_overlap}"
@@ -448,6 +551,23 @@ with tab_workspace:
     st.markdown(render_animated_title("DeepRAG AI Workspace"), unsafe_allow_html=True)
     st.markdown(
         '<div class="hero-subtitle">Next-Gen Intelligent Document Workspace powered by Neural RAG, Voice AI & Auto-Adaptive Gemini Engine.</div>',
+        unsafe_allow_html=True
+    )
+
+    # Agentic Systems Matrix Telemetry Pill
+    st.markdown(
+        "<div class='telemetry-bar'>"
+        "  <span class='dot-cluster'>"
+        "    <span class='dot-c' style='background:#ef4444;'></span>"
+        "    <span class='dot-c' style='background:#f59e0b; animation-delay:0.2s;'></span>"
+        "    <span class='dot-c' style='background:#10b981; animation-delay:0.4s;'></span>"
+        "    <span class='dot-c' style='background:#38bdf8; animation-delay:0.6s;'></span>"
+        "    <span class='dot-c' style='background:#c084fc; animation-delay:0.8s;'></span>"
+        "  </span>"
+        "  <span><strong>5 Autonomous Agents</strong> Active</span>"
+        "  <span style='color:#475569;'>|</span>"
+        "  <span class='matrix-select-wrap'><span class='crosshair-plus'>+</span> The Systems Matrix • 384D Latent Space</span>"
+        "</div>",
         unsafe_allow_html=True
     )
 
