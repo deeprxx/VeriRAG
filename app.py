@@ -1,8 +1,11 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 import base64
 import time
 import hashlib
+import json
+import re
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
@@ -197,6 +200,75 @@ custom_css = (
     "</style>"
 )
 st.markdown(custom_css, unsafe_allow_html=True)
+
+
+# --- HELPER: VOICE AUDIO PLAYER FOR AI ANSWERS ---
+def render_tts_audio_button(answer_text: str, btn_id: str):
+    clean_text = re.sub(r"[\*\#\`\~\_\>]", "", answer_text)
+    clean_text = re.sub(r"\[Page\s*\d+\]", "", clean_text)
+    safe_js_text = json.dumps(clean_text)
+
+    tts_html = (
+        f"<div style='display:flex; align-items:center; gap:10px; margin-top:6px; margin-bottom:4px; font-family:Inter,sans-serif;'>"
+        f"  <button id='play_{btn_id}' onclick='speak_{btn_id}()' "
+        f"    style='background:linear-gradient(135deg, #6366f1, #a855f7); color:#ffffff; border:none; "
+        f"    border-radius:999px; padding:6px 15px; font-size:0.78rem; font-weight:600; cursor:pointer; "
+        f"    box-shadow:0 4px 14px rgba(139,92,246,0.35); display:inline-flex; align-items:center; gap:6px;'>"
+        f"    🔊 Listen to Answer"
+        f"  </button>"
+        f"  <button id='stop_{btn_id}' onclick='stop_{btn_id}()' "
+        f"    style='background:rgba(30,41,59,0.85); color:#cbd5e1; border:1px solid rgba(148,163,184,0.3); "
+        f"    border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:600; cursor:pointer; "
+        f"    display:none; align-items:center; gap:5px;'>"
+        f"    ⏹️ Stop Audio"
+        f"  </button>"
+        f"</div>"
+        f"<script>"
+        f"const txt_{btn_id} = {safe_js_text};"
+        f"function speak_{btn_id}() {{"
+        f"  if (!('speechSynthesis' in window)) {{ alert('Audio playback is not supported in this browser.'); return; }}"
+        f"  window.speechSynthesis.cancel();"
+        f"  const utter = new SpeechSynthesisUtterance(txt_{btn_id});"
+        f"  utter.lang = 'en-US';"
+        f"  utter.rate = 1.0;"
+        f"  const playBtn = document.getElementById('play_{btn_id}');"
+        f"  const stopBtn = document.getElementById('stop_{btn_id}');"
+        f"  utter.onstart = () => {{ playBtn.innerHTML = '🎧 Playing Audio...'; stopBtn.style.display = 'inline-flex'; }};"
+        f"  utter.onend = () => {{ playBtn.innerHTML = '🔊 Listen to Answer'; stopBtn.style.display = 'none'; }};"
+        f"  utter.onerror = () => {{ playBtn.innerHTML = '🔊 Listen to Answer'; stopBtn.style.display = 'none'; }};"
+        f"  window.speechSynthesis.speak(utter);"
+        f"}}"
+        f"function stop_{btn_id}() {{"
+        f"  if ('speechSynthesis' in window) {{ window.speechSynthesis.cancel(); }}"
+        f"  document.getElementById('play_{btn_id}').innerHTML = '🔊 Listen to Answer';"
+        f"  document.getElementById('stop_{btn_id}').style.display = 'none';"
+        f"}}"
+        f"</script>"
+    )
+    components.html(tts_html, height=44)
+
+
+# --- HELPER: RENDER ASSISTANT TURN ---
+def render_assistant_turn(turn: dict, turn_key: str):
+    st.markdown(turn["answer"])
+    render_tts_audio_button(turn["answer"], turn_key)
+    st.markdown(
+        f'<span class="meta-badge">⚡ Engine: {turn["model"]}</span>'
+        f'<span class="meta-badge">⏱️ Latency: {turn["latency"]}s</span>'
+        f'<span class="meta-badge">📝 {turn.get("words", 0)} Words</span>'
+        f'<span class="meta-badge">🎛️ {turn["mode"]}</span>',
+        unsafe_allow_html=True
+    )
+
+    with st.expander("📚 View Verified PDF Page Citations & Retrieved Passages"):
+        for c_idx, cite in enumerate(turn["citations"]):
+            st.markdown(
+                f'<div class="citation-box">'
+                f'<strong>📌 Source {c_idx+1} — {cite["source"]} (Page {cite["page"]})</strong><br>'
+                f'{cite["snippet"]}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
 
 
 # --- HELPER: DYNAMICALLY FETCH ACTIVE GEMINI MODELS ---
@@ -527,93 +599,89 @@ with tab_workspace:
                 except Exception as e:
                     st.error(f"❌ {e}")
 
+    # Snapshot previous turns before adding a new turn so history stays visible without duplication
+    previous_turns = list(reversed(st.session_state.chat_history))
+
+    # --- INSTANT QUESTION DISPLAY & LIVE LOADING BELOW IT ---
     if active_query:
         if not st.session_state.vector_store:
             st.warning("⚠️ Please upload at least one PDF document in the left sidebar to begin querying.")
         else:
-            start_time = time.time()
-            with st.spinner("🧠 Querying FAISS Vector Space & synthesizing verified response..."):
-                try:
-                    retrieved_docs = st.session_state.vector_store.similarity_search(active_query, k=top_k)
-                    context_parts = []
-                    citations_list = []
+            # 1. Immediately display the user's question on screen
+            with st.chat_message("user", avatar="🧑‍💻"):
+                st.markdown(f"**{active_query}**")
 
-                    for idx, doc in enumerate(retrieved_docs):
-                        src = doc.metadata.get("source", "Document.pdf")
-                        pg = doc.metadata.get("page", "?")
-                        context_parts.append(f"[Source {idx+1}: {src}, Page {pg}]\n{doc.page_content}")
-                        citations_list.append({
-                            "source": src,
-                            "page": pg,
-                            "snippet": doc.page_content[:360].replace("\n", " ") + "..."
-                        })
+            # 2. Immediately open the AI response block right below the question with a loading spinner
+            with st.chat_message("assistant", avatar="🧠"):
+                start_time = time.time()
+                with st.spinner("🧠 Querying FAISS Vector Space & synthesizing verified response..."):
+                    try:
+                        retrieved_docs = st.session_state.vector_store.similarity_search(active_query, k=top_k)
+                        context_parts = []
+                        citations_list = []
 
-                    context_block = "\n\n".join(context_parts)
+                        for idx, doc in enumerate(retrieved_docs):
+                            src = doc.metadata.get("source", "Document.pdf")
+                            pg = doc.metadata.get("page", "?")
+                            context_parts.append(f"[Source {idx+1}: {src}, Page {pg}]\n{doc.page_content}")
+                            citations_list.append({
+                                "source": src,
+                                "page": pg,
+                                "snippet": doc.page_content[:360].replace("\n", " ") + "..."
+                            })
 
-                    history_context = ""
-                    if st.session_state.chat_history:
-                        recent_turns = st.session_state.chat_history[-2:]
-                        history_context = "\n".join(
-                            [f"User: {t['question']}\nAssistant: {t['answer']}" for t in recent_turns]
+                        context_block = "\n\n".join(context_parts)
+
+                        history_context = ""
+                        if st.session_state.chat_history:
+                            recent_turns = st.session_state.chat_history[-2:]
+                            history_context = "\n".join(
+                                [f"User: {t['question']}\nAssistant: {t['answer']}" for t in recent_turns]
+                            )
+
+                        style_instructions = {
+                            "⚡ Deep Analysis (Default)": "Provide a thorough, well-structured, and authoritative explanation in English.",
+                            "🎯 Exam & Revision Notes": "Format the response as high-impact study notes with bold key terms, structured bullet points, and clear definitions in English.",
+                            "💡 Simple Explain (ELI5)": "Explain the concept in clear, beginner-friendly English using an intuitive real-world analogy.",
+                            "📌 Executive Bullet Points": "Deliver a crisp executive summary in 4 to 6 high-impact bullet points in English."
+                        }[response_mode]
+
+                        final_prompt = (
+                            "You are DeepRAG AI, an elite enterprise and academic document intelligence assistant.\n"
+                            "Answer the user's question strictly in English using ONLY the provided PDF Context below.\n"
+                            "If the answer cannot be found within the provided context, state clearly that the information is not present in the uploaded documents.\n"
+                            "Always cite the relevant page numbers inline (for example, [Page 4]) when stating facts.\n\n"
+                            f"Output Style Instruction: {style_instructions}\n\n"
+                            f"Recent Conversation Context:\n{history_context}\n\n"
+                            f"Retrieved PDF Context:\n{context_block}\n\n"
+                            f"User Question: {active_query}\n"
                         )
 
-                    style_instructions = {
-                        "⚡ Deep Analysis (Default)": "Provide a thorough, well-structured, and authoritative explanation in English.",
-                        "🎯 Exam & Revision Notes": "Format the response as high-impact study notes with bold key terms, structured bullet points, and clear definitions in English.",
-                        "💡 Simple Explain (ELI5)": "Explain the concept in clear, beginner-friendly English using an intuitive real-world analogy.",
-                        "📌 Executive Bullet Points": "Deliver a crisp executive summary in 4 to 6 high-impact bullet points in English."
-                    }[response_mode]
+                        answer_text, used_model = generate_smart_gemini_response(API_KEY, final_prompt)
+                        elapsed = round(time.time() - start_time, 2)
+                        word_count = len(answer_text.split())
 
-                    final_prompt = (
-                        "You are DeepRAG AI, an elite enterprise and academic document intelligence assistant.\n"
-                        "Answer the user's question strictly in English using ONLY the provided PDF Context below.\n"
-                        "If the answer cannot be found within the provided context, state clearly that the information is not present in the uploaded documents.\n"
-                        "Always cite the relevant page numbers inline (for example, [Page 4]) when stating facts.\n\n"
-                        f"Output Style Instruction: {style_instructions}\n\n"
-                        f"Recent Conversation Context:\n{history_context}\n\n"
-                        f"Retrieved PDF Context:\n{context_block}\n\n"
-                        f"User Question: {active_query}\n"
-                    )
+                        new_turn = {
+                            "question": active_query,
+                            "answer": answer_text,
+                            "model": used_model,
+                            "latency": elapsed,
+                            "words": word_count,
+                            "mode": response_mode,
+                            "citations": citations_list
+                        }
+                        st.session_state.chat_history.append(new_turn)
+                        render_assistant_turn(new_turn, f"live_{len(st.session_state.chat_history)}")
+                    except Exception as e:
+                        st.error(f"❌ Error: {e}")
 
-                    answer_text, used_model = generate_smart_gemini_response(API_KEY, final_prompt)
-                    elapsed = round(time.time() - start_time, 2)
-                    word_count = len(answer_text.split())
-
-                    st.session_state.chat_history.append({
-                        "question": active_query,
-                        "answer": answer_text,
-                        "model": used_model,
-                        "latency": elapsed,
-                        "words": word_count,
-                        "mode": response_mode,
-                        "citations": citations_list
-                    })
-                except Exception as e:
-                    st.error(f"❌ Error: {e}")
-
-    for turn in reversed(st.session_state.chat_history):
+    # --- DISPLAY PREVIOUS CONVERSATION HISTORY ---
+    for idx, turn in enumerate(previous_turns):
         with st.chat_message("user", avatar="🧑‍💻"):
             st.markdown(f"**{turn['question']}**")
 
         with st.chat_message("assistant", avatar="🧠"):
-            st.markdown(turn["answer"])
-            st.markdown(
-                f'<span class="meta-badge">⚡ Engine: {turn["model"]}</span>'
-                f'<span class="meta-badge">⏱️ Latency: {turn["latency"]}s</span>'
-                f'<span class="meta-badge">📝 {turn.get("words", 0)} Words</span>'
-                f'<span class="meta-badge">🎛️ {turn["mode"]}</span>',
-                unsafe_allow_html=True
-            )
-
-            with st.expander("📚 View Verified PDF Page Citations & Retrieved Passages"):
-                for c_idx, cite in enumerate(turn["citations"]):
-                    st.markdown(
-                        f'<div class="citation-box">'
-                        f'<strong>📌 Source {c_idx+1} — {cite["source"]} (Page {cite["page"]})</strong><br>'
-                        f'{cite["snippet"]}'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
+            render_assistant_turn(turn, f"hist_{idx}")
 
 # ==========================================
 # TAB 2: ANIMATED HOW IT WORKS
