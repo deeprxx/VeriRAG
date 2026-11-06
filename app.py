@@ -193,7 +193,6 @@ custom_css = (
     "  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);"
     "  -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;"
     "}"
-    /* AGENTIC SWARM MULTI-CURSOR & MATRIX SELECTION CSS */
     ".agent-swarm-layer {"
     "  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;"
     "  pointer-events: none; z-index: 9999; overflow: hidden;"
@@ -554,7 +553,6 @@ with tab_workspace:
         unsafe_allow_html=True
     )
 
-    # Agentic Systems Matrix Telemetry Pill
     st.markdown(
         "<div class='telemetry-bar'>"
         "  <span class='dot-cluster'>"
