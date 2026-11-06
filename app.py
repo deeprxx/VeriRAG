@@ -174,6 +174,16 @@ custom_css = (
     "  background: linear-gradient(135deg, #6366f1, #a855f7); color: #ffffff;"
     "  transform: translateY(-3px); box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);"
     "}"
+    ".contact-box {"
+    "  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(99, 102, 241, 0.3);"
+    "  border-radius: 12px; padding: 14px; text-align: center; margin-top: 20px;"
+    "}"
+    ".contact-title {"
+    "  font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 700; color: #818cf8; margin-bottom: 4px;"
+    "}"
+    ".contact-handle {"
+    "  font-size: 0.95rem; font-weight: 600; color: #f8fafc;"
+    "}"
     ".premium-footer {"
     "  margin-top: 48px; padding: 18px 0 10px 0; border-top: 1px solid rgba(99, 102, 241, 0.2);"
     "  text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem;"
@@ -372,6 +382,16 @@ with st.sidebar:
         if st.button("🗑️ Clear Conversation History", use_container_width=True):
             st.session_state.chat_history = []
             st.rerun()
+
+    # --- CONTACT US SECTION ---
+    st.markdown("---")
+    st.markdown(
+        '<div class="contact-box">'
+        '<div class="contact-title">📞 Contact Us</div>'
+        '<div class="contact-handle">Telegram @DeepRAGAI</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
 # --- AUTOMATIC PDF INDEXING WITH PAGE METADATA ---
