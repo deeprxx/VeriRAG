@@ -367,6 +367,27 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
 }
 
+/* Custom Signature Footer */
+.premium-footer {
+    margin-top: 48px;
+    padding: 18px 0 10px 0;
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.03em;
+    animation: fadeInSlide 0.8s ease forwards;
+}
+
+.premium-footer span {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
 footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
@@ -841,3 +862,9 @@ with tab_creator:
         '</div>',
         unsafe_allow_html=True
     )
+
+# --- GLOBAL SIGNATURE FOOTER ---
+st.markdown(
+    '<div class="premium-footer">Engineered with ❤️ by <span>Deep</span></div>',
+    unsafe_allow_html=True
+)
