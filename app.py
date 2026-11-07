@@ -196,6 +196,12 @@ custom_css = (
     "  border-radius: 12px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace;"
     "  font-size: 0.78rem; color: #cbd5e1; margin-bottom: 10px;"
     "}"
+    ".terminal-box {"
+    "  background: #030712; border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px;"
+    "  padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem;"
+    "  color: #38bdf8; max-height: 200px; overflow-y: auto; margin-bottom: 18px;"
+    "  box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);"
+    "}"
     ".flashcard-grid {"
     "  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 16px;"
     "}"
@@ -721,12 +727,27 @@ if "quiz_data" not in st.session_state:
     st.session_state.quiz_data = []
 if "flashcards_data" not in st.session_state:
     st.session_state.flashcards_data = []
+if "agent_terminal_logs" not in st.session_state:
+    st.session_state.agent_terminal_logs = [
+        "[SYS_BOOT] DeepRAG Neural Workspace v3.5 Initialized.",
+        "[FAISS] Vector Engine Ready (CPU FlatL2).",
+        "[GEMINI] Auto-Adaptive Model Router connected to v1beta."
+    ]
+
+
+# --- HELPER: ADD TERMINAL LOG ---
+def log_terminal(msg: str):
+    timestamp = time.strftime("%H:%M:%S")
+    st.session_state.agent_terminal_logs.append(f"[{timestamp}] {msg}")
+    if len(st.session_state.agent_terminal_logs) > 25:
+        st.session_state.agent_terminal_logs.pop(0)
 
 
 # --- HELPER: ACTIVATE 1-CLICK DEMO KNOWLEDGE BASE ---
 def load_sample_ai_paper(chunk_size: int, chunk_overlap: int):
     with st.spinner("🚀 Loading Sample AI & RAG Research Paper into FAISS Vector Space..."):
         t0 = time.time()
+        log_terminal("Loading sample AI & RAG Research Paper corpus...")
         demo_docs = get_demo_ai_documents()
         splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         split_docs = splitter.split_documents(demo_docs)
@@ -738,6 +759,7 @@ def load_sample_ai_paper(chunk_size: int, chunk_overlap: int):
         st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
         st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
         st.session_state.processed_files_key = f"DEMO_PAPER_{chunk_size}_{chunk_overlap}"
+        log_terminal(f"Successfully indexed {len(split_docs)} neural chunks in {st.session_state.last_vec_ms}ms.")
 
 
 # --- SIDEBAR CONTROL CENTER ---
@@ -815,6 +837,7 @@ if uploaded_files:
     if current_key != st.session_state.processed_files_key:
         with st.spinner("🧬 Indexing PDF pages into FAISS Neural Vector Space..."):
             t0 = time.time()
+            log_terminal(f"Ingesting {len(uploaded_files)} custom PDF file(s)...")
             docs = []
             total_pages = 0
             for pdf in uploaded_files:
@@ -843,6 +866,7 @@ if uploaded_files:
                 st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
                 st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
                 st.session_state.processed_files_key = current_key
+                log_terminal(f"Indexed {total_pages} pages into {len(split_docs)} chunks successfully.")
             else:
                 st.warning("No extractable text found in the uploaded PDF. Please upload a text-based PDF document.")
 elif not st.session_state.demo_mode_active:
@@ -881,6 +905,11 @@ with tab_workspace:
         unsafe_allow_html=True
     )
 
+    # LIVE AGENTIC TERMINAL DRAWER
+    with st.expander("💻 Live Agentic Terminal & Real-Time System Logs"):
+        terminal_lines = "<br>".join([f"&gt; {line}" for line in st.session_state.agent_terminal_logs])
+        st.markdown(f"<div class='terminal-box'>{terminal_lines}</div>", unsafe_allow_html=True)
+
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown(
@@ -916,7 +945,7 @@ with tab_workspace:
             st.markdown(
                 "<div class='demo-banner'>"
                 "<div><strong>🎓 Quick Start for Reviewers & Admissions Panel:</strong><br>"
-                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, flowcharts, 3D flashcards, and voice search immediately.</span></div>"
+                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, flowcharts, 3D flashcards, and vector search immediately.</span></div>"
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -977,13 +1006,16 @@ with tab_workspace:
         audio_hash = hashlib.md5(audio_bytes).hexdigest()
         if audio_hash != st.session_state.last_audio_hash:
             st.session_state.last_audio_hash = audio_hash
+            log_terminal("Audio recording received. Routing to Gemini Audio Transcription Node...")
             with st.spinner("🎧 Transcribing your voice query with Gemini Audio Engine..."):
                 try:
                     mime_type = getattr(audio_value, "type", "audio/wav") or "audio/wav"
                     transcribed_text = transcribe_voice_with_gemini(API_KEY, audio_bytes, mime_type)
                     active_query = transcribed_text
+                    log_terminal(f"Voice transcribed successfully: '{transcribed_text}'")
                     st.toast(f"🎙️ Voice Query Recognized: {transcribed_text}")
                 except Exception as e:
+                    log_terminal(f"Voice transcription error: {e}")
                     st.error(f"❌ {e}")
 
     previous_turns = list(reversed(st.session_state.chat_history))
@@ -998,12 +1030,14 @@ with tab_workspace:
 
             with st.chat_message("assistant", avatar="🧠"):
                 start_time = time.time()
+                log_terminal(f"Executing similarity search for query: '{active_query}' (Top-K={top_k})...")
                 with st.spinner("🧠 Querying FAISS Vector Space & synthesizing verified response..."):
                     try:
                         v_t0 = time.time()
                         docs_and_scores = st.session_state.vector_store.similarity_search_with_score(active_query, k=top_k)
                         vec_ms = round((time.time() - v_t0) * 1000, 2)
                         st.session_state.last_vec_ms = vec_ms
+                        log_terminal(f"FAISS vector search completed in {vec_ms}ms.")
 
                         context_parts = []
                         citations_list = []
@@ -1056,6 +1090,7 @@ with tab_workspace:
                             f"User Question: {active_query}\n"
                         )
 
+                        log_terminal(f"Routing grounded prompt to Gemini ({llm_temp} temp)...")
                         raw_output, used_model = generate_smart_gemini_response(API_KEY, final_prompt, temperature=llm_temp)
                         if "---FOLLOWUP---" in raw_output:
                             main_ans, fq_block = raw_output.split("---FOLLOWUP---", 1)
@@ -1067,6 +1102,7 @@ with tab_workspace:
 
                         elapsed = round(time.time() - start_time, 2)
                         word_count = len(answer_text.split())
+                        log_terminal(f"Synthesis complete via {used_model} in {elapsed}s ({word_count} words).")
 
                         new_turn = {
                             "question": active_query,
@@ -1085,6 +1121,7 @@ with tab_workspace:
                         st.session_state.chat_history.append(new_turn)
                         render_assistant_turn(new_turn, f"live_{len(st.session_state.chat_history)}", is_latest=True)
                     except Exception as e:
+                        log_terminal(f"Synthesis error: {e}")
                         st.error(f"❌ Error: {e}")
 
     # --- DISPLAY PREVIOUS CONVERSATION HISTORY ---
@@ -1115,17 +1152,23 @@ with tab_quiz:
         scol1, scol2 = st.columns(2)
         with scol1:
             if st.button("🃏 Generate 4 Interactive 3D Flashcards", use_container_width=True):
+                log_terminal("Generating 3D interactive flashcards from vector store...")
                 with st.spinner("✨ Crafting 3D Flip Flashcards from vector chunks..."):
                     try:
                         st.session_state.flashcards_data = generate_3d_flashcards(API_KEY, st.session_state.vector_store)
+                        log_terminal("3D Flashcards generated successfully.")
                     except Exception as e:
+                        log_terminal(f"Flashcard generation error: {e}")
                         st.error(f"Could not generate flashcards: {e}")
         with scol2:
             if st.button("🎯 Generate New 3-Question Viva Quiz", use_container_width=True):
+                log_terminal("Generating Viva exam questions...")
                 with st.spinner("🧠 Synthesizing Viva questions & verified explanations..."):
                     try:
                         st.session_state.quiz_data = generate_interactive_quiz(API_KEY, st.session_state.vector_store)
+                        log_terminal("Viva Quiz generated successfully.")
                     except Exception as e:
+                        log_terminal(f"Quiz generation error: {e}")
                         st.error(f"Could not generate quiz: {e}")
 
         if st.session_state.flashcards_data:
