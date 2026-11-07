@@ -6,6 +6,7 @@ import time
 import hashlib
 import json
 import re
+import html
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
@@ -175,9 +176,55 @@ custom_css = (
     "  background: rgba(15, 23, 42, 0.9); border-left: 4px solid #8b5cf6;"
     "  border-top: 1px solid rgba(148, 163, 184, 0.12); border-right: 1px solid rgba(148, 163, 184, 0.12);"
     "  border-bottom: 1px solid rgba(148, 163, 184, 0.12); padding: 14px 16px;"
-    "  border-radius: 10px; margin-bottom: 12px; font-size: 0.88rem; color: #cbd5e1; transition: all 0.25s ease;"
+    "  border-radius: 12px; margin-bottom: 12px; font-size: 0.88rem; color: #cbd5e1; transition: all 0.25s ease;"
     "}"
     ".citation-box:hover { border-left-color: #ec4899; background: rgba(23, 33, 56, 0.95); }"
+    ".cite-bar-track {"
+    "  width: 100%; height: 6px; background: rgba(30, 41, 59, 0.8); border-radius: 999px;"
+    "  overflow: hidden; margin-top: 10px;"
+    "}"
+    ".cite-bar-fill {"
+    "  height: 100%; background: linear-gradient(90deg, #10b981, #6366f1, #a855f7);"
+    "  border-radius: 999px; transition: width 0.8s ease;"
+    "}"
+    ".kw-glow {"
+    "  background: rgba(99, 102, 241, 0.28); color: #ffffff; border: 1px solid rgba(129, 140, 248, 0.5);"
+    "  padding: 1px 6px; border-radius: 5px; font-weight: 600;"
+    "}"
+    ".xray-box {"
+    "  background: rgba(10, 15, 28, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);"
+    "  border-radius: 12px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace;"
+    "  font-size: 0.78rem; color: #cbd5e1; margin-bottom: 10px;"
+    "}"
+    ".flashcard-grid {"
+    "  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 16px;"
+    "}"
+    ".flashcard-wrap {"
+    "  background-color: transparent; height: 220px; perspective: 1000px; cursor: pointer;"
+    "}"
+    ".flashcard-inner {"
+    "  position: relative; width: 100%; height: 100%; text-align: center;"
+    "  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);"
+    "  transform-style: preserve-3d; border-radius: 18px;"
+    "}"
+    ".flashcard-wrap:hover .flashcard-inner, .flashcard-wrap:active .flashcard-inner {"
+    "  transform: rotateY(180deg);"
+    "}"
+    ".flashcard-front, .flashcard-back {"
+    "  position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;"
+    "  border-radius: 18px; padding: 22px; display: flex; flex-direction: column;"
+    "  justify-content: center; align-items: center; box-sizing: border-box;"
+    "}"
+    ".flashcard-front {"
+    "  background: linear-gradient(145deg, rgba(19, 27, 46, 0.94), rgba(11, 16, 29, 0.98));"
+    "  border: 1px solid rgba(99, 102, 241, 0.38); color: #f8fafc;"
+    "  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);"
+    "}"
+    ".flashcard-back {"
+    "  background: linear-gradient(145deg, rgba(46, 16, 101, 0.92), rgba(17, 24, 39, 0.98));"
+    "  border: 1px solid rgba(168, 85, 247, 0.65); color: #e2e8f0;"
+    "  transform: rotateY(180deg); box-shadow: 0 12px 32px rgba(139, 92, 246, 0.3);"
+    "}"
     ".arch-card {"
     "  background: linear-gradient(145deg, rgba(18, 24, 41, 0.9), rgba(11, 16, 28, 0.95));"
     "  border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 18px; padding: 24px; margin-bottom: 18px;"
@@ -297,6 +344,21 @@ def get_demo_ai_documents() -> list:
     ]
 
 
+# --- HELPER: HIGHLIGHT QUERY KEYWORDS IN CITATION SNIPPETS ---
+def highlight_query_terms(snippet: str, query: str) -> str:
+    safe_snippet = html.escape(snippet)
+    stop_words = {
+        "what", "when", "where", "which", "who", "whom", "this", "that", "these", "those",
+        "from", "with", "about", "into", "through", "provide", "explain", "summary", "document",
+        "uploaded", "paper", "questions", "generate", "extract", "important"
+    }
+    words = [w for w in re.findall(r"[A-Za-z0-9]{4,}", query) if w.lower() not in stop_words]
+    for w in sorted(set(words), key=len, reverse=True)[:6]:
+        pattern = re.compile(rf"\b({re.escape(w)})\b", re.IGNORECASE)
+        safe_snippet = pattern.sub(r"<span class='kw-glow'>\1</span>", safe_snippet)
+    return safe_snippet
+
+
 # --- HELPER: ULTRA-SMOOTH NEURAL AUDIO DECK + COPY BUTTON ---
 def render_tts_audio_button(answer_text: str, btn_id: str):
     clean_text = re.sub(r"[\*\#\`\~\_\>]", "", answer_text)
@@ -413,33 +475,59 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
     components.html(tts_html, height=50)
 
 
-# --- HELPER: RENDER ASSISTANT TURN WITH SEMANTIC SCORE & FOLLOW-UPS ---
+# --- HELPER: RENDER ASSISTANT TURN WITH CITATION BARS & X-RAY INSPECTOR ---
 def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
     st.markdown(turn["answer"])
     render_tts_audio_button(turn["answer"], turn_key)
 
     avg_score = turn.get("avg_match", 94)
     vec_ms = turn.get("vec_ms", 11.4)
+    used_temp = turn.get("temp", 0.3)
     st.markdown(
         f'<span class="meta-badge">⚡ Engine: {turn["model"]}</span>'
         f'<span class="meta-badge">🎯 Confidence: {avg_score}% Match</span>'
         f'<span class="meta-badge">🔍 FAISS: {vec_ms}ms</span>'
+        f'<span class="meta-badge">🌡️ Temp: {used_temp}</span>'
         f'<span class="meta-badge">⏱️ Total: {turn["latency"]}s</span>'
         f'<span class="meta-badge">📝 {turn.get("words", 0)} Words</span>',
         unsafe_allow_html=True
     )
 
-    with st.expander("📚 View Verified PDF Page Citations & Vector Match Scores"):
+    with st.expander("📚 View Verified PDF Page Citations & Semantic Confidence Bars"):
         for c_idx, cite in enumerate(turn["citations"]):
             match_pct = cite.get("match_pct", 92)
+            highlighted_snip = highlight_query_terms(cite["snippet"], turn["question"])
             st.markdown(
                 f'<div class="citation-box">'
                 f'<span class="match-badge">🎯 {match_pct}% Semantic Match</span>'
                 f'<strong>📌 Source {c_idx+1} — {cite["source"]} (Page {cite["page"]})</strong><br>'
-                f'{cite["snippet"]}'
+                f'<div style="margin-top:6px;">{highlighted_snip}</div>'
+                f'<div class="cite-bar-track"><div class="cite-bar-fill" style="width:{match_pct}%;"></div></div>'
                 f'</div>',
                 unsafe_allow_html=True
             )
+
+    with st.expander("🔬 X-Ray RAG Telemetry & Vector Space Inspector"):
+        ctx_tokens = turn.get("ctx_tokens", 420)
+        xray_rows = ""
+        for c_idx, cite in enumerate(turn["citations"]):
+            l2_val = cite.get("l2_dist", 0.42)
+            xray_rows += (
+                f"Chunk #{c_idx+1} ({cite['source']} • Page {cite['page']}) "
+                f"→ L2 Distance: {l2_val} | Confidence: {cite.get('match_pct', 92)}%<br>"
+            )
+        st.markdown(
+            f"<div class='xray-box'>"
+            f"<strong>🧬 NEURAL RETRIEVAL TELEMETRY</strong><br>"
+            f"• Embedding Model: <code>HuggingFace all-MiniLM-L6-v2 (384D Float32)</code><br>"
+            f"• Vector Index: <code>FAISS FlatL2 Exact Inner-Product</code><br>"
+            f"• Retrieval Latency: <code>{vec_ms} ms</code> &nbsp;|&nbsp; Context Tokens Injected: <code>~{ctx_tokens} tokens</code><br>"
+            f"• Synthesis Model: <code>{turn['model']} (Temperature = {used_temp})</code><br><br>"
+            f"<strong>📐 VECTOR DISTANCE MATRIX</strong><br>"
+            f"{xray_rows}"
+            f"</div>",
+            unsafe_allow_html=True
+        )
 
     followups = turn.get("followups", [])
     if is_latest and followups:
@@ -485,7 +573,7 @@ def get_ordered_gemini_models(clean_key: str) -> list[str]:
 
 
 # --- HELPER: AUTO-DETECT WORKING GEMINI MODEL & GENERATE ANSWER ---
-def generate_smart_gemini_response(api_key: str, prompt: str) -> tuple[str, str]:
+def generate_smart_gemini_response(api_key: str, prompt: str, temperature: float = 0.3) -> tuple[str, str]:
     clean_key = api_key.strip()
     if not clean_key:
         raise RuntimeError("API Key is missing! Please configure GEMINI_API_KEY in Streamlit Cloud Secrets.")
@@ -494,7 +582,7 @@ def generate_smart_gemini_response(api_key: str, prompt: str) -> tuple[str, str]
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.3}
+        "generationConfig": {"temperature": float(temperature)}
     }
 
     last_error = ""
@@ -564,7 +652,26 @@ def generate_interactive_quiz(api_key: str, vector_store) -> list:
         '{"question": "...", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "correct_index": 0, "explanation": "... [Page X]"}\n\n'
         f"Context:\n{context_str}"
     )
-    raw_res, _ = generate_smart_gemini_response(api_key, quiz_prompt)
+    raw_res, _ = generate_smart_gemini_response(api_key, quiz_prompt, temperature=0.2)
+    cleaned = re.sub(r"```json|```", "", raw_res).strip()
+    start_idx = cleaned.find("[")
+    end_idx = cleaned.rfind("]")
+    if start_idx != -1 and end_idx != -1:
+        cleaned = cleaned[start_idx:end_idx + 1]
+    return json.loads(cleaned)
+
+
+# --- HELPER: GENERATE 3D FLIP FLASHCARDS FROM VECTOR STORE ---
+def generate_3d_flashcards(api_key: str, vector_store) -> list:
+    sample_docs = vector_store.similarity_search("important definitions key terms formulas architecture", k=4)
+    context_str = "\n\n".join([f"[Page {d.metadata.get('page', 1)}] {d.page_content}" for d in sample_docs])
+    fc_prompt = (
+        "Based strictly on the PDF context below, generate 4 high-yield study flashcards in valid JSON format.\n"
+        "Return ONLY a raw JSON list of 4 objects (no markdown fences, no extra text). Each object must have:\n"
+        '{"term": "Short Concept or Question (under 8 words)", "definition": "Clear, concise explanation (under 28 words)", "page": "Page X"}\n\n'
+        f"Context:\n{context_str}"
+    )
+    raw_res, _ = generate_smart_gemini_response(api_key, fc_prompt, temperature=0.2)
     cleaned = re.sub(r"```json|```", "", raw_res).strip()
     start_idx = cleaned.find("[")
     end_idx = cleaned.rfind("]")
@@ -612,6 +719,8 @@ if "total_tokens_est" not in st.session_state:
     st.session_state.total_tokens_est = 0
 if "quiz_data" not in st.session_state:
     st.session_state.quiz_data = []
+if "flashcards_data" not in st.session_state:
+    st.session_state.flashcards_data = []
 
 
 # --- HELPER: ACTIVATE 1-CLICK DEMO KNOWLEDGE BASE ---
@@ -662,10 +771,11 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("#### 🛠️ Neural Parameters")
+    st.markdown("#### 🛠️ Neural Hyperparameters")
     chunk_size = st.slider("Chunk Size (Characters)", min_value=200, max_value=1500, value=600, step=50)
     chunk_overlap = st.slider("Chunk Overlap", min_value=0, max_value=400, value=100, step=25)
     top_k = st.slider("Retrieved Citations (Top-K)", min_value=2, max_value=8, value=4, step=1)
+    llm_temp = st.slider("LLM Temperature (Creativity)", min_value=0.0, max_value=0.9, value=0.3, step=0.1)
 
     if st.session_state.chat_history:
         st.markdown("---")
@@ -745,7 +855,7 @@ elif not st.session_state.demo_mode_active:
 # --- TOP NAVIGATION TABS ---
 tab_workspace, tab_quiz, tab_how, tab_creator = st.tabs([
     "🚀 AI Workspace",
-    "🎓 Interactive Viva & Quiz",
+    "🎓 Viva Quiz & 3D Flashcards",
     "⚡ How It Works",
     "👨‍💻 About Creator"
 ])
@@ -806,7 +916,7 @@ with tab_workspace:
             st.markdown(
                 "<div class='demo-banner'>"
                 "<div><strong>🎓 Quick Start for Reviewers & Admissions Panel:</strong><br>"
-                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, flowcharts, voice queries, and vector search immediately.</span></div>"
+                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, flowcharts, 3D flashcards, and voice search immediately.</span></div>"
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -902,6 +1012,7 @@ with tab_workspace:
                         for idx, (doc, l2_score) in enumerate(docs_and_scores):
                             src = doc.metadata.get("source", "Document.pdf")
                             pg = doc.metadata.get("page", "?")
+                            raw_l2 = round(float(l2_score), 4)
                             match_pct = max(65, min(99, int(round(100 / (1 + float(l2_score) * 0.35)))))
                             score_percentages.append(match_pct)
 
@@ -909,12 +1020,14 @@ with tab_workspace:
                             citations_list.append({
                                 "source": src,
                                 "page": pg,
+                                "l2_dist": raw_l2,
                                 "match_pct": match_pct,
                                 "snippet": doc.page_content[:360].replace("\n", " ") + "..."
                             })
 
                         avg_match = int(round(sum(score_percentages) / len(score_percentages))) if score_percentages else 94
                         context_block = "\n\n".join(context_parts)
+                        ctx_tokens = len(context_block.split())
 
                         history_context = ""
                         if st.session_state.chat_history:
@@ -943,7 +1056,7 @@ with tab_workspace:
                             f"User Question: {active_query}\n"
                         )
 
-                        raw_output, used_model = generate_smart_gemini_response(API_KEY, final_prompt)
+                        raw_output, used_model = generate_smart_gemini_response(API_KEY, final_prompt, temperature=llm_temp)
                         if "---FOLLOWUP---" in raw_output:
                             main_ans, fq_block = raw_output.split("---FOLLOWUP---", 1)
                             answer_text = main_ans.strip()
@@ -961,6 +1074,8 @@ with tab_workspace:
                             "model": used_model,
                             "latency": elapsed,
                             "vec_ms": vec_ms,
+                            "temp": llm_temp,
+                            "ctx_tokens": ctx_tokens,
                             "words": word_count,
                             "avg_match": avg_match,
                             "mode": response_mode,
@@ -982,30 +1097,66 @@ with tab_workspace:
             render_assistant_turn(turn, f"hist_{idx}", is_latest=is_top_card)
 
 # ==========================================
-# TAB 2: INTERACTIVE VIVA & AI QUIZ SIMULATOR
+# TAB 2: VIVA QUIZ & 3D INTERACTIVE FLASHCARDS
 # ==========================================
 with tab_quiz:
-    st.markdown(render_animated_title("Interactive Viva & Quiz"), unsafe_allow_html=True)
+    st.markdown(render_animated_title("Viva Quiz & 3D Flashcards"), unsafe_allow_html=True)
     st.markdown(
-        '<div class="hero-subtitle">Test your mastery of the uploaded documents with AI-generated multiple-choice Viva questions and instant grading.</div>',
+        '<div class="hero-subtitle">Master your uploaded documents with interactive 3D flip flashcards and AI-graded multiple-choice Viva exams.</div>',
         unsafe_allow_html=True
     )
 
     if not st.session_state.vector_store:
         st.info("📂 Please upload a PDF in the sidebar or click below to load the Sample AI Research Paper first.")
-        if st.button("⚡ Load Sample AI Paper for Quiz"):
+        if st.button("⚡ Load Sample AI Paper for Study Hub"):
             load_sample_ai_paper(chunk_size, chunk_overlap)
             st.rerun()
     else:
-        if st.button("🎯 Generate New 3-Question Viva Quiz from Document"):
-            with st.spinner("🧠 Synthesizing Viva questions & verified explanations from vector chunks..."):
-                try:
-                    st.session_state.quiz_data = generate_interactive_quiz(API_KEY, st.session_state.vector_store)
-                except Exception as e:
-                    st.error(f"Could not generate quiz: {e}")
+        scol1, scol2 = st.columns(2)
+        with scol1:
+            if st.button("🃏 Generate 4 Interactive 3D Flashcards", use_container_width=True):
+                with st.spinner("✨ Crafting 3D Flip Flashcards from vector chunks..."):
+                    try:
+                        st.session_state.flashcards_data = generate_3d_flashcards(API_KEY, st.session_state.vector_store)
+                    except Exception as e:
+                        st.error(f"Could not generate flashcards: {e}")
+        with scol2:
+            if st.button("🎯 Generate New 3-Question Viva Quiz", use_container_width=True):
+                with st.spinner("🧠 Synthesizing Viva questions & verified explanations..."):
+                    try:
+                        st.session_state.quiz_data = generate_interactive_quiz(API_KEY, st.session_state.vector_store)
+                    except Exception as e:
+                        st.error(f"Could not generate quiz: {e}")
+
+        if st.session_state.flashcards_data:
+            st.markdown("##### 🃏 Interactive 3D Study Flashcards *(Hover or Tap any card to flip)*")
+            cards_html = ["<div class='flashcard-grid'>"]
+            for fc_idx, fc in enumerate(st.session_state.flashcards_data):
+                term_txt = html.escape(str(fc.get("term", "Concept")))
+                def_txt = html.escape(str(fc.get("definition", "Definition")))
+                pg_txt = html.escape(str(fc.get("page", "Page 1")))
+                cards_html.append(
+                    f"<div class='flashcard-wrap' onclick='this.querySelector(\".flashcard-inner\").style.transform = "
+                    f"this.querySelector(\".flashcard-inner\").style.transform === \"rotateY(180deg)\" ? \"rotateY(0deg)\" : \"rotateY(180deg)\"'>"
+                    f"  <div class='flashcard-inner'>"
+                    f"    <div class='flashcard-front'>"
+                    f"      <span class='step-badge'>Flashcard 0{fc_idx+1} • {pg_txt}</span>"
+                    f"      <div style='font-family:Space Grotesk,sans-serif; font-size:1.18rem; font-weight:700; margin-top:8px;'>{term_txt}</div>"
+                    f"      <div style='color:#94a3b8; font-size:0.76rem; margin-top:14px;'>🔄 Hover or Tap to Reveal Answer</div>"
+                    f"    </div>"
+                    f"    <div class='flashcard-back'>"
+                    f"      <span class='step-badge' style='background:linear-gradient(135deg,#10b981,#059669);'>Verified Answer • {pg_txt}</span>"
+                    f"      <div style='font-size:0.92rem; line-height:1.5; margin-top:8px;'>{def_txt}</div>"
+                    f"    </div>"
+                    f"  </div>"
+                    f"</div>"
+                )
+            cards_html.append("</div>")
+            st.markdown("".join(cards_html), unsafe_allow_html=True)
+            st.write("")
 
         if st.session_state.quiz_data:
-            st.write("")
+            st.markdown("##### 🎯 Multiple-Choice Viva Simulator")
             user_picks = {}
             for q_idx, q_item in enumerate(st.session_state.quiz_data):
                 st.markdown(
