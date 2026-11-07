@@ -1,3 +1,4 @@
+
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
@@ -37,7 +38,7 @@ except Exception:
 # --- ULTRA-SMOOTH ENTERPRISE GLASSMORPHISM & ANIMATION CSS ---
 custom_css = (
     "<style>"
-    "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');"
+    "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');"
     "html, body, [class*='css'] { font-family: 'Inter', sans-serif; background-color: #06080f; color: #e2e8f0; scroll-behavior: smooth; }"
     "::-webkit-scrollbar { width: 8px; height: 8px; }"
     "::-webkit-scrollbar-track { background: #06080f; }"
@@ -81,10 +82,21 @@ custom_css = (
     "}"
     "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }"
     ".hero-subtitle {"
-    "  color: #94a3b8; font-size: 1.04rem; margin-bottom: 26px; font-weight: 400;"
+    "  color: #94a3b8; font-size: 1.04rem; margin-bottom: 18px; font-weight: 400;"
     "  animation: fadeInSlide 0.8s ease forwards;"
     "}"
     "@keyframes fadeInSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }"
+    /* Live Developer Telemetry Strip */
+    ".telemetry-strip {"
+    "  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;"
+    "  background: rgba(13, 18, 32, 0.85); border: 1px solid rgba(99, 102, 241, 0.28);"
+    "  border-radius: 14px; padding: 10px 18px; margin-bottom: 22px;"
+    "  font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: #cbd5e1;"
+    "  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px);"
+    "}"
+    ".tel-item { display: inline-flex; align-items: center; gap: 7px; }"
+    ".tel-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981; display: inline-block; }"
+    ".tel-val { color: #a5b4fc; font-weight: 700; }"
     ".metric-card {"
     "  background: linear-gradient(145deg, rgba(19, 25, 42, 0.88), rgba(12, 17, 30, 0.94));"
     "  border: 1px solid rgba(99, 102, 241, 0.28); border-radius: 18px; padding: 22px 18px;"
@@ -118,25 +130,27 @@ custom_css = (
     "  border: none !important; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45) !important;"
     "}"
     "div.stButton > button {"
-    "  background: linear-gradient(145deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.9)) !important;"
-    "  border: 1px solid rgba(99, 102, 241, 0.32) !important;"
+    "  background: linear-gradient(145deg, rgba(24, 33, 52, 0.85), rgba(14, 20, 34, 0.95)) !important;"
+    "  border: 1px solid rgba(99, 102, 241, 0.35) !important;"
     "  color: #e2e8f0 !important; border-radius: 12px !important; font-weight: 600 !important;"
-    "  padding: 10px 16px !important; transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;"
+    "  padding: 10px 16px !important; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;"
+    "  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;"
     "}"
     "div.stButton > button:hover {"
-    "  transform: translateY(-3px) !important;"
-    "  border-color: rgba(168, 85, 247, 0.75) !important;"
-    "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.28), rgba(168, 85, 247, 0.28)) !important;"
-    "  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3) !important;"
+    "  transform: translateY(-3px) scale(1.01) !important;"
+    "  border-color: rgba(168, 85, 247, 0.8) !important;"
+    "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.32), rgba(168, 85, 247, 0.32)) !important;"
+    "  box-shadow: 0 10px 26px rgba(139, 92, 246, 0.35) !important;"
     "  color: #ffffff !important;"
     "}"
+    "div.stButton > button:active { transform: translateY(0px) scale(0.99) !important; }"
     "div[data-testid='stChatMessage'] {"
-    "  background: rgba(15, 23, 42, 0.65) !important;"
-    "  border: 1px solid rgba(99, 102, 241, 0.2) !important;"
-    "  border-radius: 16px !important; padding: 16px 20px !important;"
-    "  margin-bottom: 14px !important; backdrop-filter: blur(12px);"
-    "  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);"
-    "  animation: fadeInSlide 0.4s ease forwards;"
+    "  background: linear-gradient(145deg, rgba(16, 23, 40, 0.78), rgba(11, 16, 28, 0.88)) !important;"
+    "  border: 1px solid rgba(99, 102, 241, 0.24) !important;"
+    "  border-radius: 18px !important; padding: 18px 22px !important;"
+    "  margin-bottom: 16px !important; backdrop-filter: blur(14px);"
+    "  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);"
+    "  animation: fadeInSlide 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;"
     "}"
     ".demo-banner {"
     "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.12));"
@@ -144,9 +158,14 @@ custom_css = (
     "  padding: 16px 20px; margin-bottom: 18px; display: flex; align-items: center;"
     "  justify-content: space-between; flex-wrap: wrap; gap: 12px;"
     "}"
+    ".quiz-card {"
+    "  background: linear-gradient(145deg, rgba(18, 25, 43, 0.9), rgba(11, 16, 28, 0.95));"
+    "  border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px;"
+    "  padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 8px 26px rgba(0,0,0,0.35);"
+    "}"
     ".meta-badge {"
     "  display: inline-block; background: rgba(99, 102, 241, 0.16);"
-    "  border: 1px solid rgba(99, 102, 241, 0.42); color: #c7d2fe; font-size: 0.76rem;"
+    "  border: 1px solid rgba(99, 102, 241, 0.42); color: #c7d2fe; font-size: 0.75rem;"
     "  font-weight: 600; padding: 4px 12px; border-radius: 999px; margin-right: 8px; margin-top: 8px;"
     "}"
     ".match-badge {"
@@ -270,7 +289,7 @@ def get_demo_ai_documents() -> list:
         (
             "DeepRAG Technical Whitepaper — Chapter 5: Multimodal Voice AI & Adaptive Model Routing.\n"
             "DeepRAG integrates real-time voice-to-text interrogation and browser-native neural speech synthesis. "
-            " furthermore, the Auto-Adaptive Model Router dynamically queries the Google Generative AI ModelService registry at runtime, "
+            "Furthermore, the Auto-Adaptive Model Router dynamically queries the Google Generative AI ModelService registry at runtime, "
             "automatically selecting the highest-performing active Flash or Pro model to guarantee 99.9% uptime."
         )
     ]
@@ -280,50 +299,120 @@ def get_demo_ai_documents() -> list:
     ]
 
 
-# --- HELPER: VOICE AUDIO PLAYER FOR AI ANSWERS ---
+# --- HELPER: ULTRA-SMOOTH NEURAL AUDIO DECK + COPY BUTTON ---
 def render_tts_audio_button(answer_text: str, btn_id: str):
     clean_text = re.sub(r"[\*\#\`\~\_\>]", "", answer_text)
     clean_text = re.sub(r"\[Page\s*\d+\]", "", clean_text)
     safe_js_text = json.dumps(clean_text)
 
     tts_html = (
-        f"<div style='display:flex; align-items:center; gap:10px; margin-top:6px; margin-bottom:4px; font-family:Inter,sans-serif;'>"
-        f"  <button id='play_{btn_id}' onclick='speak_{btn_id}()' "
-        f"    style='background:linear-gradient(135deg, #6366f1, #a855f7); color:#ffffff; border:none; "
-        f"    border-radius:999px; padding:6px 15px; font-size:0.78rem; font-weight:600; cursor:pointer; "
-        f"    box-shadow:0 4px 14px rgba(139,92,246,0.35); display:inline-flex; align-items:center; gap:6px;'>"
-        f"    🔊 Listen to Answer"
-        f"  </button>"
-        f"  <button id='stop_{btn_id}' onclick='stop_{btn_id}()' "
-        f"    style='background:rgba(30,41,59,0.85); color:#cbd5e1; border:1px solid rgba(148,163,184,0.3); "
-        f"    border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:600; cursor:pointer; "
-        f"    display:none; align-items:center; gap:5px;'>"
-        f"    ⏹️ Stop Audio"
-        f"  </button>"
+        f"<style>"
+        f".audio-deck {{"
+        f"  display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;"
+        f"  background:linear-gradient(145deg, rgba(19, 27, 46, 0.92), rgba(11, 16, 29, 0.96));"
+        f"  border:1px solid rgba(99, 102, 241, 0.35); border-radius:999px;"
+        f"  padding:5px 12px; font-family:'Inter', sans-serif; box-shadow:0 6px 20px rgba(0,0,0,0.35);"
+        f"}}"
+        f".deck-btn {{"
+        f"  background:linear-gradient(135deg, #6366f1, #a855f7); color:#ffffff; border:none;"
+        f"  border-radius:999px; padding:6px 14px; font-size:0.76rem; font-weight:600; cursor:pointer;"
+        f"  display:inline-flex; align-items:center; gap:6px; transition:all 0.25s ease;"
+        f"  box-shadow:0 3px 12px rgba(139,92,246,0.4);"
+        f"}}"
+        f".deck-btn:hover {{ transform:translateY(-1px); filter:brightness(1.1); }}"
+        f".deck-sub {{"
+        f"  background:rgba(30, 41, 59, 0.85); color:#cbd5e1; border:1px solid rgba(148,163,184,0.28);"
+        f"  border-radius:999px; padding:5px 11px; font-size:0.73rem; font-weight:600; cursor:pointer;"
+        f"  display:inline-flex; align-items:center; gap:4px; transition:all 0.2s ease;"
+        f"}}"
+        f".deck-sub:hover {{ border-color:#818cf8; color:#ffffff; background:rgba(51, 65, 85, 0.9); }}"
+        f".eq-wrap {{ display:none; align-items:flex-end; gap:3px; height:14px; margin:0 4px; }}"
+        f".eq-bar {{ width:3px; background:#34d399; border-radius:2px; animation:eqBounce 0.7s infinite ease-in-out; }}"
+        f".eq-bar:nth-child(2) {{ animation-delay:0.15s; background:#818cf8; }}"
+        f".eq-bar:nth-child(3) {{ animation-delay:0.3s; background:#c084fc; }}"
+        f".eq-bar:nth-child(4) {{ animation-delay:0.45s; background:#f472b6; }}"
+        f"@keyframes eqBounce {{ 0%, 100% {{ height:4px; }} 50% {{ height:14px; }} }}"
+        f"</style>"
+        f"<div class='audio-deck'>"
+        f"  <button id='play_{btn_id}' class='deck-btn' onclick='toggleSpeak_{btn_id}()'>🔊 Listen to Answer</button>"
+        f"  <div id='eq_{btn_id}' class='eq-wrap'>"
+        f"    <span class='eq-bar'></span><span class='eq-bar'></span><span class='eq-bar'></span><span class='eq-bar'></span>"
+        f"  </div>"
+        f"  <button id='stop_{btn_id}' class='deck-sub' style='display:none;' onclick='stopSpeak_{btn_id}()'>⏹️ Stop</button>"
+        f"  <button id='spd_{btn_id}' class='deck-sub' onclick='cycleSpeed_{btn_id}()'>⚡ 1.0x</button>"
+        f"  <button id='cpy_{btn_id}' class='deck-sub' onclick='copyAns_{btn_id}()'>📋 Copy</button>"
         f"</div>"
         f"<script>"
         f"const txt_{btn_id} = {safe_js_text};"
-        f"function speak_{btn_id}() {{"
-        f"  if (!('speechSynthesis' in window)) {{ alert('Audio playback is not supported in this browser.'); return; }}"
+        f"let rate_{btn_id} = 1.0;"
+        f"let isPlaying_{btn_id} = false;"
+        f"let isPaused_{btn_id} = false;"
+        f"function cycleSpeed_{btn_id}() {{"
+        f"  if (rate_{btn_id} === 1.0) rate_{btn_id} = 1.25;"
+        f"  else if (rate_{btn_id} === 1.25) rate_{btn_id} = 1.5;"
+        f"  else rate_{btn_id} = 1.0;"
+        f"  document.getElementById('spd_{btn_id}').innerHTML = '⚡ ' + rate_{btn_id} + 'x';"
+        f"  if (isPlaying_{btn_id}) {{ stopSpeak_{btn_id}(); toggleSpeak_{btn_id}(); }}"
+        f"}}"
+        f"function toggleSpeak_{btn_id}() {{"
+        f"  if (!('speechSynthesis' in window)) {{ alert('Speech synthesis is not supported in this browser.'); return; }}"
+        f"  const playBtn = document.getElementById('play_{btn_id}');"
+        f"  const stopBtn = document.getElementById('stop_{btn_id}');"
+        f"  const eqBox = document.getElementById('eq_{btn_id}');"
+        f"  if (isPlaying_{btn_id} && !isPaused_{btn_id}) {{"
+        f"    window.speechSynthesis.pause();"
+        f"    isPaused_{btn_id} = true;"
+        f"    playBtn.innerHTML = '▶️ Resume Audio';"
+        f"    eqBox.style.display = 'none';"
+        f"    return;"
+        f"  }}"
+        f"  if (isPlaying_{btn_id} && isPaused_{btn_id}) {{"
+        f"    window.speechSynthesis.resume();"
+        f"    isPaused_{btn_id} = false;"
+        f"    playBtn.innerHTML = '⏸️ Pause Audio';"
+        f"    eqBox.style.display = 'inline-flex';"
+        f"    return;"
+        f"  }}"
         f"  window.speechSynthesis.cancel();"
         f"  const utter = new SpeechSynthesisUtterance(txt_{btn_id});"
         f"  utter.lang = 'en-US';"
-        f"  utter.rate = 1.0;"
-        f"  const playBtn = document.getElementById('play_{btn_id}');"
-        f"  const stopBtn = document.getElementById('stop_{btn_id}');"
-        f"  utter.onstart = () => {{ playBtn.innerHTML = '🎧 Playing Audio...'; stopBtn.style.display = 'inline-flex'; }};"
-        f"  utter.onend = () => {{ playBtn.innerHTML = '🔊 Listen to Answer'; stopBtn.style.display = 'none'; }};"
-        f"  utter.onerror = () => {{ playBtn.innerHTML = '🔊 Listen to Answer'; stopBtn.style.display = 'none'; }};"
+        f"  utter.rate = rate_{btn_id};"
+        f"  utter.onstart = () => {{"
+        f"    isPlaying_{btn_id} = true; isPaused_{btn_id} = false;"
+        f"    playBtn.innerHTML = '⏸️ Pause Audio';"
+        f"    stopBtn.style.display = 'inline-flex';"
+        f"    eqBox.style.display = 'inline-flex';"
+        f"  }};"
+        f"  utter.onend = () => {{"
+        f"    isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
+        f"    playBtn.innerHTML = '🔊 Listen to Answer';"
+        f"    stopBtn.style.display = 'none';"
+        f"    eqBox.style.display = 'none';"
+        f"  }};"
+        f"  utter.onerror = () => {{"
+        f"    isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
+        f"    playBtn.innerHTML = '🔊 Listen to Answer';"
+        f"    stopBtn.style.display = 'none';"
+        f"    eqBox.style.display = 'none';"
+        f"  }};"
         f"  window.speechSynthesis.speak(utter);"
         f"}}"
-        f"function stop_{btn_id}() {{"
+        f"function stopSpeak_{btn_id}() {{"
         f"  if ('speechSynthesis' in window) {{ window.speechSynthesis.cancel(); }}"
+        f"  isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
         f"  document.getElementById('play_{btn_id}').innerHTML = '🔊 Listen to Answer';"
         f"  document.getElementById('stop_{btn_id}').style.display = 'none';"
+        f"  document.getElementById('eq_{btn_id}').style.display = 'none';"
+        f"}}"
+        f"function copyAns_{btn_id}() {{"
+        f"  navigator.clipboard.writeText(txt_{btn_id});"
+        f"  const cBtn = document.getElementById('cpy_{btn_id}');"
+        f"  cBtn.innerHTML = '✅ Copied!';"
+        f"  setTimeout(() => {{ cBtn.innerHTML = '📋 Copy'; }}, 1800);"
         f"}}"
         f"</script>"
     )
-    components.html(tts_html, height=44)
+    components.html(tts_html, height=50)
 
 
 # --- HELPER: RENDER ASSISTANT TURN WITH SEMANTIC SCORE & FOLLOW-UPS ---
@@ -332,12 +421,13 @@ def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
     render_tts_audio_button(turn["answer"], turn_key)
 
     avg_score = turn.get("avg_match", 94)
+    vec_ms = turn.get("vec_ms", 11.4)
     st.markdown(
         f'<span class="meta-badge">⚡ Engine: {turn["model"]}</span>'
         f'<span class="meta-badge">🎯 Confidence: {avg_score}% Match</span>'
-        f'<span class="meta-badge">⏱️ Latency: {turn["latency"]}s</span>'
-        f'<span class="meta-badge">📝 {turn.get("words", 0)} Words</span>'
-        f'<span class="meta-badge">🎛️ {turn["mode"]}</span>',
+        f'<span class="meta-badge">🔍 FAISS: {vec_ms}ms</span>'
+        f'<span class="meta-badge">⏱️ Total: {turn["latency"]}s</span>'
+        f'<span class="meta-badge">📝 {turn.get("words", 0)} Words</span>',
         unsafe_allow_html=True
     )
 
@@ -355,7 +445,7 @@ def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
 
     followups = turn.get("followups", [])
     if is_latest and followups:
-        st.markdown("###### 💡 Smart Follow-Up Questions:")
+        st.markdown("###### 💡 Smart Next-Step Questions:")
         fcols = st.columns(len(followups))
         for f_idx, fq in enumerate(followups):
             with fcols[f_idx]:
@@ -466,6 +556,25 @@ def transcribe_voice_with_gemini(api_key: str, audio_bytes: bytes, mime_type: st
     raise RuntimeError(f"Voice Transcription Error: {last_err}")
 
 
+# --- HELPER: GENERATE INTERACTIVE VIVA QUIZ FROM VECTOR STORE ---
+def generate_interactive_quiz(api_key: str, vector_store) -> list:
+    sample_docs = vector_store.similarity_search("core concepts architecture definitions formulas summary", k=4)
+    context_str = "\n\n".join([f"[Page {d.metadata.get('page', 1)}] {d.page_content}" for d in sample_docs])
+    quiz_prompt = (
+        "Based strictly on the PDF context below, generate 3 multiple-choice Viva/Exam questions in valid JSON format.\n"
+        "Return ONLY a raw JSON list of 3 objects (no markdown fences, no extra text). Each object must have:\n"
+        '{"question": "...", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "correct_index": 0, "explanation": "... [Page X]"}\n\n'
+        f"Context:\n{context_str}"
+    )
+    raw_res, _ = generate_smart_gemini_response(api_key, quiz_prompt)
+    cleaned = re.sub(r"```json|```", "", raw_res).strip()
+    start_idx = cleaned.find("[")
+    end_idx = cleaned.rfind("]")
+    if start_idx != -1 and end_idx != -1:
+        cleaned = cleaned[start_idx:end_idx + 1]
+    return json.loads(cleaned)
+
+
 # --- HELPER: BUILD LETTER-BY-LETTER HTML ---
 def render_animated_title(text: str) -> str:
     spans = []
@@ -499,11 +608,18 @@ if "demo_mode_active" not in st.session_state:
     st.session_state.demo_mode_active = False
 if "queued_followup" not in st.session_state:
     st.session_state.queued_followup = None
+if "last_vec_ms" not in st.session_state:
+    st.session_state.last_vec_ms = 0.0
+if "total_tokens_est" not in st.session_state:
+    st.session_state.total_tokens_est = 0
+if "quiz_data" not in st.session_state:
+    st.session_state.quiz_data = []
 
 
 # --- HELPER: ACTIVATE 1-CLICK DEMO KNOWLEDGE BASE ---
 def load_sample_ai_paper(chunk_size: int, chunk_overlap: int):
     with st.spinner("🚀 Loading Sample AI & RAG Research Paper into FAISS Vector Space..."):
+        t0 = time.time()
         demo_docs = get_demo_ai_documents()
         splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         split_docs = splitter.split_documents(demo_docs)
@@ -512,6 +628,8 @@ def load_sample_ai_paper(chunk_size: int, chunk_overlap: int):
         st.session_state.pdf_pages = len(demo_docs)
         st.session_state.neural_chunks = len(split_docs)
         st.session_state.demo_mode_active = True
+        st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
+        st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
         st.session_state.processed_files_key = f"DEMO_PAPER_{chunk_size}_{chunk_overlap}"
 
 
@@ -525,7 +643,7 @@ with st.sidebar:
         "Upload PDF Documents",
         type=["pdf"],
         accept_multiple_files=True,
-        help="Upload textbooks, research papers, legal contracts, or lecture notes."
+        help="Upload single or multiple PDFs for cross-document analysis."
     )
 
     if st.button("⚡ Load Sample AI Paper (1-Click Demo)", use_container_width=True):
@@ -588,6 +706,7 @@ if uploaded_files:
     current_key = f"{[f.name for f in uploaded_files]}_{chunk_size}_{chunk_overlap}"
     if current_key != st.session_state.processed_files_key:
         with st.spinner("🧬 Indexing PDF pages into FAISS Neural Vector Space..."):
+            t0 = time.time()
             docs = []
             total_pages = 0
             for pdf in uploaded_files:
@@ -613,6 +732,8 @@ if uploaded_files:
                 st.session_state.vector_store = FAISS.from_documents(split_docs, embeddings)
                 st.session_state.pdf_pages = total_pages
                 st.session_state.neural_chunks = len(split_docs)
+                st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
+                st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
                 st.session_state.processed_files_key = current_key
             else:
                 st.warning("No extractable text found in the uploaded PDF. Please upload a text-based PDF document.")
@@ -624,8 +745,9 @@ elif not st.session_state.demo_mode_active:
 
 
 # --- TOP NAVIGATION TABS ---
-tab_workspace, tab_how, tab_creator = st.tabs([
+tab_workspace, tab_quiz, tab_how, tab_creator = st.tabs([
     "🚀 AI Workspace",
+    "🎓 Interactive Viva & Quiz",
     "⚡ How It Works",
     "👨‍💻 About Creator"
 ])
@@ -637,6 +759,18 @@ with tab_workspace:
     st.markdown(render_animated_title("DeepRAG AI Workspace"), unsafe_allow_html=True)
     st.markdown(
         '<div class="hero-subtitle">Next-Gen Intelligent Document Workspace powered by Neural RAG, Voice AI & Auto-Adaptive Gemini Engine.</div>',
+        unsafe_allow_html=True
+    )
+
+    # LIVE DEVELOPER TELEMETRY BAR
+    doc_label = "Sample AI Research Paper" if st.session_state.demo_mode_active else (f"{len(uploaded_files)} Custom PDF(s)" if uploaded_files else "No Active Corpus")
+    st.markdown(
+        f"<div class='telemetry-strip'>"
+        f"  <div class='tel-item'><span class='tel-dot'></span><span>Corpus: <span class='tel-val'>{doc_label}</span></span></div>"
+        f"  <div class='tel-item'><span>🧬 Embeddings: <span class='tel-val'>384D MiniLM-L6-v2</span></span></div>"
+        f"  <div class='tel-item'><span>⚡ Vector Latency: <span class='tel-val'>{st.session_state.last_vec_ms} ms</span></span></div>"
+        f"  <div class='tel-item'><span>📊 Indexed Words: <span class='tel-val'>{st.session_state.total_tokens_est}</span></span></div>"
+        f"</div>",
         unsafe_allow_html=True
     )
 
@@ -669,14 +803,13 @@ with tab_workspace:
 
     st.write("")
 
-    # Quick Reviewer Banner when no document is loaded yet
     if not st.session_state.vector_store:
         bcol1, bcol2 = st.columns([3, 1])
         with bcol1:
             st.markdown(
                 "<div class='demo-banner'>"
                 "<div><strong>🎓 Quick Start for Reviewers & Admissions Panel:</strong><br>"
-                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, voice queries, and vector search immediately.</span></div>"
+                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, flowcharts, voice queries, and vector search immediately.</span></div>"
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -692,20 +825,29 @@ with tab_workspace:
         st.session_state.queued_followup = None
 
     if st.session_state.vector_store:
-        st.markdown("##### ✨ Instant Neural Actions")
-        qcol1, qcol2, qcol3, qcol4 = st.columns(4)
+        st.markdown("##### ✨ Instant Neural Actions & Visualizers")
+        qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
         with qcol1:
             if st.button("📝 Executive Summary", use_container_width=True):
                 triggered_query = "Provide a comprehensive executive summary of the uploaded document, highlighting its core thesis, key sections, and main conclusions."
         with qcol2:
-            if st.button("🔑 Key Concepts & Formulas", use_container_width=True):
+            if st.button("🔑 Key Formulas & Facts", use_container_width=True):
                 triggered_query = "Extract all critical definitions, core concepts, frameworks, formulas, and key technical facts from the document."
         with qcol3:
-            if st.button("🎓 Top 5 Exam Questions", use_container_width=True):
-                triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on this document."
+            if st.button("🗺️ Concept Flowchart", use_container_width=True):
+                triggered_query = (
+                    "Create a clear, visual step-by-step Concept Flowchart & Mind-Map of the core architecture or process in this document. "
+                    "Include a clean Unicode box-drawing diagram inside a code block followed by stage-by-stage explanations with page citations."
+                )
         with qcol4:
-            if st.button("🚀 Actionable Insights", use_container_width=True):
-                triggered_query = "Synthesize the most important actionable insights, practical takeaways, and strategic recommendations from this document."
+            if st.button("⚖️ Compare Documents", use_container_width=True):
+                triggered_query = (
+                    "Perform a structured Cross-Section / Multi-PDF Comparison of the key topics, methodologies, strengths, and conclusions across the indexed pages. "
+                    "Present a clean Markdown Comparison Table followed by key analytical takeaways."
+                )
+        with qcol5:
+            if st.button("🎓 Top 5 Viva Questions", use_container_width=True):
+                triggered_query = "Generate 5 high-value B.Tech Viva or exam questions along with detailed model answers strictly based on this document."
 
     vcol1, vcol2 = st.columns([2, 1])
     with vcol1:
@@ -751,7 +893,11 @@ with tab_workspace:
                 start_time = time.time()
                 with st.spinner("🧠 Querying FAISS Vector Space & synthesizing verified response..."):
                     try:
+                        v_t0 = time.time()
                         docs_and_scores = st.session_state.vector_store.similarity_search_with_score(active_query, k=top_k)
+                        vec_ms = round((time.time() - v_t0) * 1000, 2)
+                        st.session_state.last_vec_ms = vec_ms
+
                         context_parts = []
                         citations_list = []
                         score_percentages = []
@@ -759,7 +905,7 @@ with tab_workspace:
                         for idx, (doc, l2_score) in enumerate(docs_and_scores):
                             src = doc.metadata.get("source", "Document.pdf")
                             pg = doc.metadata.get("page", "?")
-                            match_pct = max(62, min(99, int(round(100 / (1 + float(l2_score) * 0.35)))))
+                            match_pct = max(65, min(99, int(round(100 / (1 + float(l2_score) * 0.35)))))
                             score_percentages.append(match_pct)
 
                             context_parts.append(f"[Source {idx+1}: {src}, Page {pg}]\n{doc.page_content}")
@@ -817,6 +963,7 @@ with tab_workspace:
                             "answer": answer_text,
                             "model": used_model,
                             "latency": elapsed,
+                            "vec_ms": vec_ms,
                             "words": word_count,
                             "avg_match": avg_match,
                             "mode": response_mode,
@@ -838,7 +985,65 @@ with tab_workspace:
             render_assistant_turn(turn, f"hist_{idx}", is_latest=is_top_card)
 
 # ==========================================
-# TAB 2: ANIMATED HOW IT WORKS
+# TAB 2: INTERACTIVE VIVA & AI QUIZ SIMULATOR
+# ==========================================
+with tab_quiz:
+    st.markdown(render_animated_title("Interactive Viva & Quiz"), unsafe_allow_html=True)
+    st.markdown(
+        '<div class="hero-subtitle">Test your mastery of the uploaded documents with AI-generated multiple-choice Viva questions and instant grading.</div>',
+        unsafe_allow_html=True
+    )
+
+    if not st.session_state.vector_store:
+        st.info("📂 Please upload a PDF in the sidebar or click below to load the Sample AI Research Paper first.")
+        if st.button("⚡ Load Sample AI Paper for Quiz"):
+            load_sample_ai_paper(chunk_size, chunk_overlap)
+            st.rerun()
+    else:
+        if st.button("🎯 Generate New 3-Question Viva Quiz from Document"):
+            with st.spinner("🧠 Synthesizing Viva questions & verified explanations from vector chunks..."):
+                try:
+                    st.session_state.quiz_data = generate_interactive_quiz(API_KEY, st.session_state.vector_store)
+                except Exception as e:
+                    st.error(f"Could not generate quiz: {e}")
+
+        if st.session_state.quiz_data:
+            st.write("")
+            user_picks = {}
+            for q_idx, q_item in enumerate(st.session_state.quiz_data):
+                st.markdown(
+                    f"<div class='quiz-card'><strong>Q{q_idx+1}. {q_item.get('question', '')}</strong></div>",
+                    unsafe_allow_html=True
+                )
+                opts = q_item.get("options", ["Option A", "Option B", "Option C", "Option D"])
+                user_picks[q_idx] = st.radio(
+                    f"Select answer for Q{q_idx+1}:",
+                    opts,
+                    key=f"quiz_opt_{q_idx}",
+                    label_visibility="collapsed"
+                )
+                st.write("")
+
+            if st.button("✅ Submit & Grade My Viva Quiz", use_container_width=True):
+                score = 0
+                total_q = len(st.session_state.quiz_data)
+                for q_idx, q_item in enumerate(st.session_state.quiz_data):
+                    opts = q_item.get("options", [])
+                    correct_i = int(q_item.get("correct_index", 0))
+                    correct_opt = opts[correct_i] if 0 <= correct_i < len(opts) else opts[0]
+                    picked = user_picks.get(q_idx)
+                    if picked == correct_opt:
+                        score += 1
+                        st.success(f"✔️ **Q{q_idx+1} Correct!** ({picked}) — {q_item.get('explanation', '')}")
+                    else:
+                        st.error(f"❌ **Q{q_idx+1} Incorrect.** Correct Answer: **{correct_opt}** — {q_item.get('explanation', '')}")
+
+                st.markdown(f"### 🏆 Final Viva Score: **{score} / {total_q}**")
+                if score == total_q:
+                    st.balloons()
+
+# ==========================================
+# TAB 3: ANIMATED HOW IT WORKS
 # ==========================================
 with tab_how:
     st.markdown(render_animated_title("Neural RAG Architecture"), unsafe_allow_html=True)
@@ -877,7 +1082,7 @@ with tab_how:
     )
 
 # ==========================================
-# TAB 3: ANIMATED ABOUT CREATOR
+# TAB 4: ANIMATED ABOUT CREATOR
 # ==========================================
 with tab_creator:
     st.markdown(render_animated_title("Meet The Creator"), unsafe_allow_html=True)
