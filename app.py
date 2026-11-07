@@ -1,4 +1,3 @@
-
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
@@ -86,7 +85,6 @@ custom_css = (
     "  animation: fadeInSlide 0.8s ease forwards;"
     "}"
     "@keyframes fadeInSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }"
-    /* Live Developer Telemetry Strip */
     ".telemetry-strip {"
     "  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;"
     "  background: rgba(13, 18, 32, 0.85); border: 1px solid rgba(99, 102, 241, 0.28);"
@@ -762,7 +760,6 @@ with tab_workspace:
         unsafe_allow_html=True
     )
 
-    # LIVE DEVELOPER TELEMETRY BAR
     doc_label = "Sample AI Research Paper" if st.session_state.demo_mode_active else (f"{len(uploaded_files)} Custom PDF(s)" if uploaded_files else "No Active Corpus")
     st.markdown(
         f"<div class='telemetry-strip'>"
