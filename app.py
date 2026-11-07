@@ -35,24 +35,74 @@ try:
 except Exception:
     API_KEY = DEFAULT_API_KEY
 
-# --- ULTRA-SMOOTH ENTERPRISE GLASSMORPHISM & ANIMATION CSS ---
+# --- LIVE ANIMATED BACKGROUND & ENTERPRISE GLASSMORPHISM CSS ---
 custom_css = (
     "<style>"
     "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');"
-    "html, body, [class*='css'] { font-family: 'Inter', sans-serif; background-color: #06080f; color: #e2e8f0; scroll-behavior: smooth; }"
+    "html, body, [class*='css'] { font-family: 'Inter', sans-serif; background-color: #05070e; color: #e2e8f0; scroll-behavior: smooth; }"
     "::-webkit-scrollbar { width: 8px; height: 8px; }"
-    "::-webkit-scrollbar-track { background: #06080f; }"
+    "::-webkit-scrollbar-track { background: #05070e; }"
     "::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.35); border-radius: 999px; }"
     "::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.65); }"
     ".stApp {"
-    "  background: radial-gradient(circle at 12% 12%, rgba(99, 102, 241, 0.16) 0%, transparent 38%),"
-    "              radial-gradient(circle at 88% 18%, rgba(168, 85, 247, 0.14) 0%, transparent 42%),"
-    "              radial-gradient(circle at 50% 88%, rgba(16, 185, 129, 0.08) 0%, transparent 45%), #06080f;"
+    "  background: linear-gradient(-45deg, #05070e, #0c1024, #130d26, #071924, #05070e);"
+    "  background-size: 400% 400%;"
+    "  animation: auroraGradient 15s ease infinite;"
     "}"
+    "@keyframes auroraGradient {"
+    "  0% { background-position: 0% 50%; }"
+    "  50% { background-position: 100% 50%; }"
+    "  100% { background-position: 0% 50%; }"
+    "}"
+    ".live-bg-wrap {"
+    "  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;"
+    "  pointer-events: none; z-index: 0; overflow: hidden;"
+    "}"
+    ".live-grid {"
+    "  position: absolute; inset: -50%; width: 200%; height: 200%;"
+    "  background-image: linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px),"
+    "                    linear-gradient(90deg, rgba(168, 85, 247, 0.07) 1px, transparent 1px);"
+    "  background-size: 52px 52px;"
+    "  transform: perspective(600px) rotateX(55deg);"
+    "  animation: moveGrid 18s linear infinite;"
+    "}"
+    "@keyframes moveGrid {"
+    "  0% { transform: perspective(600px) rotateX(55deg) translateY(0px); }"
+    "  100% { transform: perspective(600px) rotateX(55deg) translateY(52px); }"
+    "}"
+    ".orb {"
+    "  position: absolute; border-radius: 50%; filter: blur(75px); opacity: 0.42;"
+    "  will-change: transform;"
+    "}"
+    ".orb-1 {"
+    "  width: 420px; height: 420px; background: radial-gradient(circle, #6366f1, transparent 70%);"
+    "  top: -8%; left: -5%; animation: floatOrb1 16s ease-in-out infinite alternate;"
+    "}"
+    ".orb-2 {"
+    "  width: 460px; height: 460px; background: radial-gradient(circle, #a855f7, transparent 70%);"
+    "  bottom: -10%; right: -8%; animation: floatOrb2 20s ease-in-out infinite alternate;"
+    "}"
+    ".orb-3 {"
+    "  width: 360px; height: 360px; background: radial-gradient(circle, #10b981, transparent 70%);"
+    "  top: 38%; left: 42%; opacity: 0.25; animation: floatOrb3 14s ease-in-out infinite alternate;"
+    "}"
+    "@keyframes floatOrb1 {"
+    "  0% { transform: translate(0px, 0px) scale(1); }"
+    "  100% { transform: translate(140px, 110px) scale(1.22); }"
+    "}"
+    "@keyframes floatOrb2 {"
+    "  0% { transform: translate(0px, 0px) scale(1); }"
+    "  100% { transform: translate(-150px, -120px) scale(1.25); }"
+    "}"
+    "@keyframes floatOrb3 {"
+    "  0% { transform: translate(-80px, -60px) scale(0.9); }"
+    "  100% { transform: translate(90px, 70px) scale(1.18); }"
+    "}"
+    ".main .block-container { position: relative; z-index: 2; }"
     "section[data-testid='stSidebar'] {"
-    "  background: rgba(10, 14, 24, 0.94) !important;"
-    "  border-right: 1px solid rgba(99, 102, 241, 0.25);"
-    "  backdrop-filter: blur(20px);"
+    "  background: rgba(8, 12, 22, 0.88) !important;"
+    "  border-right: 1px solid rgba(99, 102, 241, 0.28);"
+    "  backdrop-filter: blur(22px);"
     "}"
     ".status-pill {"
     "  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(5, 150, 105, 0.08));"
@@ -82,29 +132,29 @@ custom_css = (
     "}"
     "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }"
     ".hero-subtitle {"
-    "  color: #94a3b8; font-size: 1.04rem; margin-bottom: 18px; font-weight: 400;"
+    "  color: #cbd5e1; font-size: 1.04rem; margin-bottom: 18px; font-weight: 400;"
     "  animation: fadeInSlide 0.8s ease forwards;"
     "}"
     "@keyframes fadeInSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }"
     ".telemetry-strip {"
     "  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;"
-    "  background: rgba(13, 18, 32, 0.85); border: 1px solid rgba(99, 102, 241, 0.28);"
+    "  background: rgba(13, 18, 32, 0.78); border: 1px solid rgba(99, 102, 241, 0.32);"
     "  border-radius: 14px; padding: 10px 18px; margin-bottom: 22px;"
     "  font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: #cbd5e1;"
-    "  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px);"
+    "  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35); backdrop-filter: blur(16px);"
     "}"
     ".tel-item { display: inline-flex; align-items: center; gap: 7px; }"
     ".tel-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981; display: inline-block; }"
     ".tel-val { color: #a5b4fc; font-weight: 700; }"
     ".metric-card {"
-    "  background: linear-gradient(145deg, rgba(19, 25, 42, 0.88), rgba(12, 17, 30, 0.94));"
-    "  border: 1px solid rgba(99, 102, 241, 0.28); border-radius: 18px; padding: 22px 18px;"
+    "  background: linear-gradient(145deg, rgba(19, 25, 42, 0.78), rgba(12, 17, 30, 0.86));"
+    "  border: 1px solid rgba(99, 102, 241, 0.32); border-radius: 18px; padding: 22px 18px;"
     "  text-align: center; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);"
-    "  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); animation: fadeInSlide 0.6s ease forwards;"
+    "  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(16px); animation: fadeInSlide 0.6s ease forwards;"
     "}"
     ".metric-card:hover {"
-    "  transform: translateY(-6px); border-color: rgba(168, 85, 247, 0.65);"
-    "  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.25);"
+    "  transform: translateY(-6px); border-color: rgba(168, 85, 247, 0.75);"
+    "  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.28);"
     "}"
     ".metric-title {"
     "  font-size: 0.92rem; font-weight: 600; color: #a5b4fc; margin-bottom: 8px;"
@@ -116,55 +166,56 @@ custom_css = (
     "  -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
     "}"
     "div[data-testid='stTabs'] button {"
-    "  background: rgba(30, 41, 59, 0.55) !important; border-radius: 12px !important;"
+    "  background: rgba(30, 41, 59, 0.6) !important; border-radius: 12px !important;"
     "  padding: 10px 20px !important; margin-right: 10px !important;"
-    "  border: 1px solid rgba(148, 163, 184, 0.18) !important; color: #cbd5e1 !important;"
-    "  font-weight: 600 !important; transition: all 0.3s ease !important;"
+    "  border: 1px solid rgba(148, 163, 184, 0.22) !important; color: #cbd5e1 !important;"
+    "  font-weight: 600 !important; transition: all 0.3s ease !important; backdrop-filter: blur(10px);"
     "}"
     "div[data-testid='stTabs'] button:hover {"
-    "  border-color: rgba(129, 140, 248, 0.5) !important; transform: translateY(-2px);"
+    "  border-color: rgba(129, 140, 248, 0.6) !important; transform: translateY(-2px);"
     "}"
     "div[data-testid='stTabs'] button[aria-selected='true'] {"
     "  background: linear-gradient(135deg, #6366f1, #a855f7) !important; color: #ffffff !important;"
     "  border: none !important; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45) !important;"
     "}"
     "div.stButton > button {"
-    "  background: linear-gradient(145deg, rgba(24, 33, 52, 0.85), rgba(14, 20, 34, 0.95)) !important;"
-    "  border: 1px solid rgba(99, 102, 241, 0.35) !important;"
+    "  background: linear-gradient(145deg, rgba(24, 33, 52, 0.82), rgba(14, 20, 34, 0.92)) !important;"
+    "  border: 1px solid rgba(99, 102, 241, 0.38) !important;"
     "  color: #e2e8f0 !important; border-radius: 12px !important; font-weight: 600 !important;"
     "  padding: 10px 16px !important; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;"
-    "  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;"
+    "  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important; backdrop-filter: blur(12px);"
     "}"
     "div.stButton > button:hover {"
     "  transform: translateY(-3px) scale(1.01) !important;"
-    "  border-color: rgba(168, 85, 247, 0.8) !important;"
-    "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.32), rgba(168, 85, 247, 0.32)) !important;"
+    "  border-color: rgba(168, 85, 247, 0.85) !important;"
+    "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)) !important;"
     "  box-shadow: 0 10px 26px rgba(139, 92, 246, 0.35) !important;"
     "  color: #ffffff !important;"
     "}"
     "div.stButton > button:active { transform: translateY(0px) scale(0.99) !important; }"
     "div[data-testid='stChatMessage'] {"
     "  background: linear-gradient(145deg, rgba(16, 23, 40, 0.78), rgba(11, 16, 28, 0.88)) !important;"
-    "  border: 1px solid rgba(99, 102, 241, 0.24) !important;"
+    "  border: 1px solid rgba(99, 102, 241, 0.28) !important;"
     "  border-radius: 18px !important; padding: 18px 22px !important;"
-    "  margin-bottom: 16px !important; backdrop-filter: blur(14px);"
-    "  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);"
+    "  margin-bottom: 16px !important; backdrop-filter: blur(16px);"
+    "  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);"
     "  animation: fadeInSlide 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;"
     "}"
     ".demo-banner {"
-    "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.12));"
-    "  border: 1px dashed rgba(129, 140, 248, 0.45); border-radius: 16px;"
+    "  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(168, 85, 247, 0.14));"
+    "  border: 1px solid rgba(129, 140, 248, 0.45); border-radius: 16px;"
     "  padding: 16px 20px; margin-bottom: 18px; display: flex; align-items: center;"
-    "  justify-content: space-between; flex-wrap: wrap; gap: 12px;"
+    "  justify-content: space-between; flex-wrap: wrap; gap: 12px; backdrop-filter: blur(14px);"
+    "  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);"
     "}"
     ".quiz-card {"
-    "  background: linear-gradient(145deg, rgba(18, 25, 43, 0.9), rgba(11, 16, 28, 0.95));"
-    "  border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px;"
-    "  padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 8px 26px rgba(0,0,0,0.35);"
+    "  background: linear-gradient(145deg, rgba(18, 25, 43, 0.88), rgba(11, 16, 28, 0.94));"
+    "  border: 1px solid rgba(99, 102, 241, 0.32); border-radius: 16px;"
+    "  padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 8px 26px rgba(0,0,0,0.35); backdrop-filter: blur(14px);"
     "}"
     ".meta-badge {"
-    "  display: inline-block; background: rgba(99, 102, 241, 0.16);"
-    "  border: 1px solid rgba(99, 102, 241, 0.42); color: #c7d2fe; font-size: 0.75rem;"
+    "  display: inline-block; background: rgba(99, 102, 241, 0.18);"
+    "  border: 1px solid rgba(99, 102, 241, 0.45); color: #c7d2fe; font-size: 0.75rem;"
     "  font-weight: 600; padding: 4px 12px; border-radius: 999px; margin-right: 8px; margin-top: 8px;"
     "}"
     ".match-badge {"
@@ -173,9 +224,9 @@ custom_css = (
     "  font-weight: 700; padding: 3px 10px; border-radius: 999px; float: right;"
     "}"
     ".citation-box {"
-    "  background: rgba(15, 23, 42, 0.9); border-left: 4px solid #8b5cf6;"
-    "  border-top: 1px solid rgba(148, 163, 184, 0.12); border-right: 1px solid rgba(148, 163, 184, 0.12);"
-    "  border-bottom: 1px solid rgba(148, 163, 184, 0.12); padding: 14px 16px;"
+    "  background: rgba(15, 23, 42, 0.88); border-left: 4px solid #8b5cf6;"
+    "  border-top: 1px solid rgba(148, 163, 184, 0.14); border-right: 1px solid rgba(148, 163, 184, 0.14);"
+    "  border-bottom: 1px solid rgba(148, 163, 184, 0.14); padding: 14px 16px;"
     "  border-radius: 12px; margin-bottom: 12px; font-size: 0.88rem; color: #cbd5e1; transition: all 0.25s ease;"
     "}"
     ".citation-box:hover { border-left-color: #ec4899; background: rgba(23, 33, 56, 0.95); }"
@@ -197,7 +248,7 @@ custom_css = (
     "  font-size: 0.78rem; color: #cbd5e1; margin-bottom: 10px;"
     "}"
     ".terminal-box {"
-    "  background: #030712; border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px;"
+    "  background: rgba(3, 7, 18, 0.92); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px;"
     "  padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem;"
     "  color: #38bdf8; max-height: 200px; overflow-y: auto; margin-bottom: 18px;"
     "  box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);"
@@ -222,7 +273,7 @@ custom_css = (
     "  justify-content: center; align-items: center; box-sizing: border-box;"
     "}"
     ".flashcard-front {"
-    "  background: linear-gradient(145deg, rgba(19, 27, 46, 0.94), rgba(11, 16, 29, 0.98));"
+    "  background: linear-gradient(145deg, rgba(19, 27, 46, 0.92), rgba(11, 16, 29, 0.96));"
     "  border: 1px solid rgba(99, 102, 241, 0.38); color: #f8fafc;"
     "  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);"
     "}"
@@ -232,10 +283,10 @@ custom_css = (
     "  transform: rotateY(180deg); box-shadow: 0 12px 32px rgba(139, 92, 246, 0.3);"
     "}"
     ".arch-card {"
-    "  background: linear-gradient(145deg, rgba(18, 24, 41, 0.9), rgba(11, 16, 28, 0.95));"
-    "  border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 18px; padding: 24px; margin-bottom: 18px;"
+    "  background: linear-gradient(145deg, rgba(18, 24, 41, 0.85), rgba(11, 16, 28, 0.92));"
+    "  border: 1px solid rgba(99, 102, 241, 0.28); border-radius: 18px; padding: 24px; margin-bottom: 18px;"
     "  position: relative; overflow: hidden; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);"
-    "  opacity: 0; transform: translateY(20px); animation: fadeUpCard 0.6s ease forwards;"
+    "  opacity: 0; transform: translateY(20px); animation: fadeUpCard 0.6s ease forwards; backdrop-filter: blur(14px);"
     "}"
     "@keyframes fadeUpCard { to { opacity: 1; transform: translateY(0); } }"
     ".arch-card:hover {"
@@ -250,10 +301,10 @@ custom_css = (
     ".arch-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 8px; }"
     ".arch-desc { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; }"
     ".creator-hero {"
-    "  background: linear-gradient(135deg, rgba(20, 27, 45, 0.92), rgba(12, 16, 29, 0.96));"
+    "  background: linear-gradient(135deg, rgba(20, 27, 45, 0.88), rgba(12, 16, 29, 0.94));"
     "  border: 1px solid rgba(139, 92, 246, 0.38); border-radius: 24px; padding: 40px 34px; text-align: center;"
     "  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.14);"
-    "  animation: fadeUpCard 0.65s ease forwards; margin-top: 12px;"
+    "  animation: fadeUpCard 0.65s ease forwards; margin-top: 12px; backdrop-filter: blur(16px);"
     "}"
     ".avatar-ring {"
     "  width: 96px; height: 96px; border-radius: 50%; margin: 0 auto 18px auto;"
@@ -304,6 +355,12 @@ custom_css = (
     "}"
     "footer { visibility: hidden; }"
     "</style>"
+    "<div class='live-bg-wrap'>"
+    "  <div class='live-grid'></div>"
+    "  <div class='orb orb-1'></div>"
+    "  <div class='orb orb-2'></div>"
+    "  <div class='orb orb-3'></div>"
+    "</div>"
 )
 st.markdown(custom_css, unsafe_allow_html=True)
 
@@ -648,12 +705,12 @@ def transcribe_voice_with_gemini(api_key: str, audio_bytes: bytes, mime_type: st
     raise RuntimeError(f"Voice Transcription Error: {last_err}")
 
 
-# --- HELPER: GENERATE INTERACTIVE VIVA QUIZ FROM VECTOR STORE ---
+# --- HELPER: GENERATE INTERACTIVE QUIZ FROM VECTOR STORE ---
 def generate_interactive_quiz(api_key: str, vector_store) -> list:
     sample_docs = vector_store.similarity_search("core concepts architecture definitions formulas summary", k=4)
     context_str = "\n\n".join([f"[Page {d.metadata.get('page', 1)}] {d.page_content}" for d in sample_docs])
     quiz_prompt = (
-        "Based strictly on the PDF context below, generate 3 multiple-choice Viva/Exam questions in valid JSON format.\n"
+        "Based strictly on the PDF context below, generate 3 multiple-choice questions in valid JSON format.\n"
         "Return ONLY a raw JSON list of 3 objects (no markdown fences, no extra text). Each object must have:\n"
         '{"question": "...", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "correct_index": 0, "explanation": "... [Page X]"}\n\n'
         f"Context:\n{context_str}"
@@ -747,7 +804,7 @@ def log_terminal(msg: str):
 def load_sample_ai_paper(chunk_size: int, chunk_overlap: int):
     with st.spinner("🚀 Loading Sample AI & RAG Research Paper into FAISS Vector Space..."):
         t0 = time.time()
-        log_terminal("Loading sample AI & RAG Research Paper corpus...")
+        log_terminal("Loading built-in Sample AI & RAG Research Paper...")
         demo_docs = get_demo_ai_documents()
         splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         split_docs = splitter.split_documents(demo_docs)
@@ -772,7 +829,7 @@ with st.sidebar:
         "Upload PDF Documents",
         type=["pdf"],
         accept_multiple_files=True,
-        help="Upload single or multiple PDFs for cross-document analysis."
+        help="Upload single or multiple PDFs for instant AI analysis."
     )
 
     if st.button("⚡ Load Sample AI Paper (1-Click Demo)", use_container_width=True):
@@ -879,7 +936,7 @@ elif not st.session_state.demo_mode_active:
 # --- TOP NAVIGATION TABS ---
 tab_workspace, tab_quiz, tab_how, tab_creator = st.tabs([
     "🚀 AI Workspace",
-    "🎓 Viva Quiz & 3D Flashcards",
+    "🎓 AI Quiz & 3D Flashcards",
     "⚡ How It Works",
     "👨‍💻 About Creator"
 ])
@@ -905,8 +962,7 @@ with tab_workspace:
         unsafe_allow_html=True
     )
 
-    # LIVE AGENTIC TERMINAL DRAWER
-    with st.expander("💻 Live Agentic Terminal & Real-Time System Logs"):
+    with st.expander("💻 Live Neural Engine Logs & System Telemetry"):
         terminal_lines = "<br>".join([f"&gt; {line}" for line in st.session_state.agent_terminal_logs])
         st.markdown(f"<div class='terminal-box'>{terminal_lines}</div>", unsafe_allow_html=True)
 
@@ -944,8 +1000,8 @@ with tab_workspace:
         with bcol1:
             st.markdown(
                 "<div class='demo-banner'>"
-                "<div><strong>🎓 Quick Start for Reviewers & Admissions Panel:</strong><br>"
-                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test citations, flowcharts, 3D flashcards, and vector search immediately.</span></div>"
+                "<div><strong>✨ Quick Start — Instant AI Demo Mode:</strong><br>"
+                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test smart citations, flowcharts, 3D flashcards, and voice search immediately.</span></div>"
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -982,8 +1038,8 @@ with tab_workspace:
                     "Present a clean Markdown Comparison Table followed by key analytical takeaways."
                 )
         with qcol5:
-            if st.button("🎓 Top 5 Viva Questions", use_container_width=True):
-                triggered_query = "Generate 5 high-value B.Tech Viva or exam questions along with detailed model answers strictly based on this document."
+            if st.button("🎓 Top 5 Exam Questions", use_container_width=True):
+                triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on this document."
 
     vcol1, vcol2 = st.columns([2, 1])
     with vcol1:
@@ -1134,12 +1190,12 @@ with tab_workspace:
             render_assistant_turn(turn, f"hist_{idx}", is_latest=is_top_card)
 
 # ==========================================
-# TAB 2: VIVA QUIZ & 3D INTERACTIVE FLASHCARDS
+# TAB 2: AI QUIZ & 3D INTERACTIVE FLASHCARDS
 # ==========================================
 with tab_quiz:
-    st.markdown(render_animated_title("Viva Quiz & 3D Flashcards"), unsafe_allow_html=True)
+    st.markdown(render_animated_title("AI Quiz & 3D Flashcards"), unsafe_allow_html=True)
     st.markdown(
-        '<div class="hero-subtitle">Master your uploaded documents with interactive 3D flip flashcards and AI-graded multiple-choice Viva exams.</div>',
+        '<div class="hero-subtitle">Master your uploaded documents with interactive 3D flip flashcards and AI-graded multiple-choice practice quizzes.</div>',
         unsafe_allow_html=True
     )
 
@@ -1161,12 +1217,12 @@ with tab_quiz:
                         log_terminal(f"Flashcard generation error: {e}")
                         st.error(f"Could not generate flashcards: {e}")
         with scol2:
-            if st.button("🎯 Generate New 3-Question Viva Quiz", use_container_width=True):
-                log_terminal("Generating Viva exam questions...")
-                with st.spinner("🧠 Synthesizing Viva questions & verified explanations..."):
+            if st.button("🎯 Generate New 3-Question AI Quiz", use_container_width=True):
+                log_terminal("Generating interactive multiple-choice quiz...")
+                with st.spinner("🧠 Synthesizing quiz questions & verified explanations..."):
                     try:
                         st.session_state.quiz_data = generate_interactive_quiz(API_KEY, st.session_state.vector_store)
-                        log_terminal("Viva Quiz generated successfully.")
+                        log_terminal("AI Quiz generated successfully.")
                     except Exception as e:
                         log_terminal(f"Quiz generation error: {e}")
                         st.error(f"Could not generate quiz: {e}")
@@ -1199,7 +1255,7 @@ with tab_quiz:
             st.write("")
 
         if st.session_state.quiz_data:
-            st.markdown("##### 🎯 Multiple-Choice Viva Simulator")
+            st.markdown("##### 🎯 Interactive Knowledge Check")
             user_picks = {}
             for q_idx, q_item in enumerate(st.session_state.quiz_data):
                 st.markdown(
@@ -1215,7 +1271,7 @@ with tab_quiz:
                 )
                 st.write("")
 
-            if st.button("✅ Submit & Grade My Viva Quiz", use_container_width=True):
+            if st.button("✅ Submit & Grade My Quiz", use_container_width=True):
                 score = 0
                 total_q = len(st.session_state.quiz_data)
                 for q_idx, q_item in enumerate(st.session_state.quiz_data):
@@ -1229,7 +1285,7 @@ with tab_quiz:
                     else:
                         st.error(f"❌ **Q{q_idx+1} Incorrect.** Correct Answer: **{correct_opt}** — {q_item.get('explanation', '')}")
 
-                st.markdown(f"### 🏆 Final Viva Score: **{score} / {total_q}**")
+                st.markdown(f"### 🏆 Final Score: **{score} / {total_q}**")
                 if score == total_q:
                     st.balloons()
 
