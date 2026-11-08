@@ -26,15 +26,37 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- SECURE API KEY RETRIEVAL ---
-DEFAULT_API_KEY = ""
-try:
-    if "GEMINI_API_KEY" in st.secrets:
-        API_KEY = st.secrets["GEMINI_API_KEY"]
-    else:
-        API_KEY = DEFAULT_API_KEY
-except Exception:
-    API_KEY = DEFAULT_API_KEY
+# --- MULTI-API KEY POOL (ADD KEYS HERE OR IN STREAMLIT SECRETS TO AUTO-ROTATE) ---
+DEFAULT_API_KEYS = [
+    "",  # Primary API Key (Fallback if not in Streamlit Secrets)
+    "",  # Backup API Key 2 (Auto-activates when Key 1 hits quota limit)
+    ""   # Backup API Key 3 (Optional)
+]
+
+
+def get_api_key_pool() -> list[str]:
+    keys = []
+    try:
+        secret_names = ["GEMINI_API_KEY", "GEMINI_API_KEY_2", "GEMINI_API_KEY_3", "GEMINI_API_KEY_4"]
+        for s_name in secret_names:
+            if s_name in st.secrets and st.secrets[s_name]:
+                raw_val = str(st.secrets[s_name]).strip()
+                for part in raw_val.split(","):
+                    clean_p = part.strip()
+                    if clean_p and clean_p not in keys:
+                        keys.append(clean_p)
+    except Exception:
+        pass
+
+    for k in DEFAULT_API_KEYS:
+        clean_k = str(k).strip()
+        if clean_k and clean_k not in keys:
+            keys.append(clean_k)
+
+    return keys
+
+
+API_KEYS_POOL = get_api_key_pool()
 
 # --- ADAPTIVE DARK & LIGHT THEME CSS + ULTRA-ANIMATED CREATOR & REPORT UI ---
 custom_css = (
@@ -339,6 +361,247 @@ def highlight_query_terms(snippet: str, query: str) -> str:
     return safe_snippet
 
 
+# --- HELPER: ULTRA-PREMIUM GRAPHIC PDF GENERATOR BUTTON (HTML2PDF + NATIVE VECTOR PRINT) ---
+def render_premium_pdf_download_button(report_html_body: str, filename_pdf: str, btn_label: str, btn_id: str):
+    b64_html = base64.b64encode(report_html_body.encode("utf-8")).decode("utf-8")
+    widget_html = (
+        f"<script src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'></script>"
+        f"<style>"
+        f".pdf-action-bar {{"
+        f"  display:flex; gap:10px; flex-wrap:wrap; align-items:center; width:100%; margin:6px 0;"
+        f"  font-family:'Inter', sans-serif;"
+        f"}}"
+        f".pdf-btn-primary {{"
+        f"  flex:1; min-width:210px; background:linear-gradient(135deg, #0284c7, #4f46e5, #7c3aed);"
+        f"  color:#ffffff; border:none; border-radius:12px; padding:11px 18px; font-size:0.86rem;"
+        f"  font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;"
+        f"  gap:8px; box-shadow:0 6px 20px rgba(79, 70, 229, 0.4); transition:all 0.25s ease;"
+        f"}}"
+        f".pdf-btn-primary:hover {{ transform:translateY(-2px); filter:brightness(1.08); }}"
+        f".pdf-btn-print {{"
+        f"  background:rgba(15, 23, 42, 0.9); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.45);"
+        f"  border-radius:12px; padding:11px 16px; font-size:0.82rem; font-weight:700; cursor:pointer;"
+        f"  display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;"
+        f"}}"
+        f".pdf-btn-print:hover {{ background:#0284c7; color:#ffffff; }}"
+        f"</style>"
+        f"<div class='pdf-action-bar'>"
+        f"  <button id='dl_{btn_id}' class='pdf-btn-primary' onclick='downloadPdf_{btn_id}()'>{btn_label}</button>"
+        f"  <button class='pdf-btn-print' onclick='printPdf_{btn_id}()'>🖨️ Save Vector PDF</button>"
+        f"</div>"
+        f"<script>"
+        f"function decodeUtf8_{btn_id}(b64) {{"
+        f"  const binStr = atob(b64);"
+        f"  const bytes = new Uint8Array(binStr.length);"
+        f"  for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);"
+        f"  return new TextDecoder('utf-8').decode(bytes);"
+        f"}}"
+        f"function downloadPdf_{btn_id}() {{"
+        f"  const btn = document.getElementById('dl_{btn_id}');"
+        f"  const origText = btn.innerHTML;"
+        f"  btn.innerHTML = '⏳ Rendering High-Res Graphic PDF...';"
+        f"  const htmlStr = decodeUtf8_{btn_id}('{b64_html}');"
+        f"  const holder = document.createElement('div');"
+        f"  holder.style.width = '790px';"
+        f"  holder.style.background = '#ffffff';"
+        f"  holder.innerHTML = htmlStr;"
+        f"  document.body.appendChild(holder);"
+        f"  if (window.html2pdf) {{"
+        f"    const opt = {{"
+        f"      margin: [8, 8, 8, 8],"
+        f"      filename: '{filename_pdf}',"
+        f"      image: {{ type: 'jpeg', quality: 0.98 }},"
+        f"      html2canvas: {{ scale: 2, useCORS: true, backgroundColor: '#ffffff' }},"
+        f"      jsPDF: {{ unit: 'mm', format: 'a4', orientation: 'portrait' }},"
+        f"      pagebreak: {{ mode: ['avoid-all', 'css', 'legacy'] }}"
+        f"    }};"
+        f"    html2pdf().set(opt).from(holder).save().then(() => {{"
+        f"      document.body.removeChild(holder);"
+        f"      btn.innerHTML = '✅ PDF Downloaded!';"
+        f"      setTimeout(() => {{ btn.innerHTML = origText; }}, 2200);"
+        f"    }}).catch(() => {{"
+        f"      document.body.removeChild(holder);"
+        f"      btn.innerHTML = origText;"
+        f"      printPdf_{btn_id}();"
+        f"    }});"
+        f"  }} else {{"
+        f"    document.body.removeChild(holder);"
+        f"    btn.innerHTML = origText;"
+        f"    printPdf_{btn_id}();"
+        f"  }}"
+        f"}}"
+        f"function printPdf_{btn_id}() {{"
+        f"  const htmlStr = decodeUtf8_{btn_id}('{b64_html}');"
+        f"  const w = window.open('', '_blank');"
+        f"  if (w) {{"
+        f"    w.document.open();"
+        f"    w.document.write('<!DOCTYPE html><html><head><title>{filename_pdf}</title><style>@page {{ size: A4; margin: 10mm; }} body {{ margin: 0; background: #ffffff; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }}</style></head><body>' + htmlStr + '<script>setTimeout(() => {{ window.print(); }}, 450);<\\/script></body></html>');"
+        f"    w.document.close();"
+        f"  }}"
+        f"}}"
+        f"</script>"
+    )
+    components.html(widget_html, height=58)
+
+
+# --- HELPER: BUILD ULTRA-PREMIUM QUIZ ANALYSIS PDF HTML ---
+def build_premium_quiz_pdf_html(
+    score: int,
+    total_q: int,
+    accuracy_pct: int,
+    grade_rank: str,
+    rec_note: str,
+    mastered_topics: list[str],
+    weak_areas: list[str],
+    quiz_records: list[dict],
+    corpus_label: str
+) -> str:
+    date_str = time.strftime("%d %b %Y • %I:%M %p")
+    mastered_html = "".join(
+        [f"<li style='margin-bottom:6px; color:#065f46; font-weight:600;'>✅ {html.escape(m)}</li>" for m in mastered_topics]
+    ) or "<li style='color:#64748b;'>Complete more questions correctly to unlock mastered topics.</li>"
+
+    weak_html = "".join(
+        [f"<li style='margin-bottom:6px; color:#991b1b; font-weight:600;'>📌 {html.escape(w)}</li>" for w in weak_areas]
+    ) or "<li style='color:#065f46; font-weight:700;'>🎉 Zero weak areas detected! 100% Concept Mastery!</li>"
+
+    cards_html = []
+    for r in quiz_records:
+        is_ok = r["is_correct"]
+        border_col = "#10b981" if is_ok else "#ef4444"
+        bg_col = "#f0fdf4" if is_ok else "#fef2f2"
+        badge_bg = "#059669" if is_ok else "#dc2626"
+        badge_txt = "CORRECT" if is_ok else "NEEDS REVISION"
+        cards_html.append(
+            f"<div style='page-break-inside:avoid; border:1px solid {border_col}; border-left:6px solid {border_col}; "
+            f"background:{bg_col}; border-radius:12px; padding:14px 16px; margin-bottom:12px;'>"
+            f"  <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;'>"
+            f"    <span style='font-size:11px; font-weight:800; color:#4f46e5; text-transform:uppercase; letter-spacing:0.05em;'>"
+            f"      Question #{r['num']:02d} • {html.escape(r['topic'])} ({html.escape(r['page'])})"
+            f"    </span>"
+            f"    <span style='background:{badge_bg}; color:#ffffff; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px;'>"
+            f"      {badge_txt}"
+            f"    </span>"
+            f"  </div>"
+            f"  <div style='font-size:14px; font-weight:700; color:#0f172a; margin-bottom:8px;'>{html.escape(r['question'])}</div>"
+            f"  <div style='font-size:12.5px; color:#1e293b; margin-bottom:4px;'>"
+            f"    <strong>Your Answer:</strong> <span style='color:{badge_bg}; font-weight:700;'>{html.escape(r['picked'])}</span>"
+            f"  </div>"
+            f"  <div style='font-size:12.5px; color:#0f172a; margin-bottom:8px;'>"
+            f"    <strong>Verified Correct Option:</strong> <span style='color:#059669; font-weight:700;'>{html.escape(r['correct'])}</span>"
+            f"  </div>"
+            f"  <div style='background:#ffffff; border:1px solid rgba(15,23,42,0.08); border-radius:8px; padding:9px 12px; font-size:12px; color:#334155; line-height:1.5;'>"
+            f"    <strong>🧠 AI Revision Note:</strong> {html.escape(r['explanation'])}"
+            f"  </div>"
+            f"</div>"
+        )
+
+    return (
+        "<div style='font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; color:#0f172a; background:#ffffff; padding:24px; box-sizing:border-box;'>"
+        "  <div style='background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #0284c7 100%); color:#ffffff; border-radius:16px; padding:24px 28px; margin-bottom:20px;'>"
+        "    <div style='display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;'>"
+        "      <div>"
+        "        <div style='font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:#38bdf8; font-weight:800;'>DEEPRAG AI WORKSPACE • OFFICIAL DIAGNOSTIC REPORT</div>"
+        "        <div style='font-size:24px; font-weight:800; margin-top:4px;'>Executive Quiz Performance & Mastery Analysis</div>"
+        f"       <div style='font-size:12px; color:#cbd5e1; margin-top:4px;'>📄 Indexed Corpus: {html.escape(corpus_label)} &nbsp;|&nbsp; 🕒 Generated: {date_str}</div>"
+        "      </div>"
+        "      <div style='background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:12px; padding:10px 16px; text-align:right;'>"
+        f"       <div style='font-size:22px; font-weight:800; color:#38bdf8;'>{accuracy_pct}%</div>"
+        "        <div style='font-size:10px; text-transform:uppercase; color:#e2e8f0;'>Overall Accuracy</div>"
+        "      </div>"
+        "    </div>"
+        "  </div>"
+        "  <div style='display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:18px;'>"
+        "    <div style='background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; text-align:center;'>"
+        "      <div style='font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;'>🎯 Final Score</div>"
+        f"     <div style='font-size:22px; font-weight:800; color:#0f172a; margin-top:4px;'>{score} / {total_q}</div>"
+        "    </div>"
+        "    <div style='background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; text-align:center;'>"
+        "      <div style='font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;'>📈 Precision Gauge</div>"
+        f"     <div style='font-size:22px; font-weight:800; color:#0284c7; margin-top:4px;'>{accuracy_pct}%</div>"
+        "    </div>"
+        "    <div style='background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; text-align:center;'>"
+        "      <div style='font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;'>🏅 Performance Tier</div>"
+        f"     <div style='font-size:15px; font-weight:800; color:#4f46e5; margin-top:7px;'>{html.escape(grade_rank)}</div>"
+        "    </div>"
+        "  </div>"
+        "  <div style='background:#eef2ff; border-left:5px solid #4f46e5; border-radius:10px; padding:12px 16px; margin-bottom:18px; font-size:13px; color:#1e1b4b;'>"
+        f"   <strong>💡 AI Tutor Executive Prescription:</strong> {html.escape(rec_note)}"
+        "  </div>"
+        "  <div style='display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:22px;'>"
+        "    <div style='background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:14px;'>"
+        "      <div style='font-size:13px; font-weight:800; color:#065f46; margin-bottom:8px; text-transform:uppercase;'>✅ Strengths (Topics Mastered)</div>"
+        f"     <ul style='margin:0; padding-left:18px; font-size:12.5px;'>{mastered_html}</ul>"
+        "    </div>"
+        "    <div style='background:#fef2f2; border:1px solid #fca5a5; border-radius:12px; padding:14px;'>"
+        "      <div style='font-size:13px; font-weight:800; color:#991b1b; margin-bottom:8px; text-transform:uppercase;'>📌 Action Plan (Pages to Revise)</div>"
+        f"     <ul style='margin:0; padding-left:18px; font-size:12.5px;'>{weak_html}</ul>"
+        "    </div>"
+        "  </div>"
+        "  <div style='font-size:15px; font-weight:800; color:#0f172a; margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:6px;'>"
+        "    📝 Question-by-Question Verification & Revision Key"
+        "  </div>"
+        + "".join(cards_html) +
+        "  <div style='margin-top:20px; padding-top:10px; border-top:1px solid #cbd5e1; text-align:center; font-size:11px; color:#64748b; font-weight:600;'>"
+        "    Engineered with ❤️ by Deep Patel • DeepRAG AI Workspace Neural Assessment Engine"
+        "  </div>"
+        "</div>"
+    )
+
+
+# --- HELPER: BUILD ULTRA-PREMIUM CHAT SESSION PDF HTML ---
+def build_premium_chat_pdf_html(chat_history: list[dict], corpus_label: str, total_pages: int, total_chunks: int) -> str:
+    date_str = time.strftime("%d %b %Y • %I:%M %p")
+    turns_html = []
+
+    for idx, turn in enumerate(chat_history):
+        ans_escaped = html.escape(turn.get("answer", "")).replace("\n", "<br>")
+        ans_escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", ans_escaped)
+        cites_rows = []
+        for c_i, c in enumerate(turn.get("citations", [])):
+            cites_rows.append(
+                f"<div style='background:#f8fafc; border-left:3px solid #6366f1; padding:6px 10px; border-radius:6px; margin-top:5px; font-size:11px; color:#334155;'>"
+                f"  <strong>📌 Source {c_i+1}: {html.escape(str(c.get('source', 'PDF')))} (Page {html.escape(str(c.get('page', '?')))}) "
+                f"  — {c.get('match_pct', 92)}% Semantic Match</strong><br>"
+                f"  {html.escape(str(c.get('snippet', ''))[:240])}"
+                f"</div>"
+            )
+
+        turns_html.append(
+            f"<div style='page-break-inside:avoid; border:1px solid #cbd5e1; border-radius:14px; padding:16px 18px; margin-bottom:16px; background:#ffffff;'>"
+            f"  <div style='background:#0f172a; color:#ffffff; border-radius:10px; padding:10px 14px; margin-bottom:12px;'>"
+            f"    <div style='font-size:10px; color:#38bdf8; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;'>QUERY #{idx+1:02d} • USER INTERROGATION</div>"
+            f"    <div style='font-size:14px; font-weight:700; margin-top:3px;'>{html.escape(turn.get('question', ''))}</div>"
+            f"  </div>"
+            f"  <div style='font-size:13px; line-height:1.65; color:#1e293b; margin-bottom:12px;'>{ans_escaped}</div>"
+            f"  <div style='display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;'>"
+            f"    <span style='background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>⚡ Engine: {html.escape(str(turn.get('model', 'Gemini')))}</span>"
+            f"    <span style='background:#dcfce7; color:#15803d; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>🎯 Confidence: {turn.get('avg_match', 94)}%</span>"
+            f"    <span style='background:#ede9fe; color:#6d28d9; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>⏱️ Latency: {turn.get('latency', 1.2)}s</span>"
+            f"    <span style='background:#f1f5f9; color:#334155; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>📝 {turn.get('words', 0)} Words</span>"
+            f"  </div>"
+            f"  <div style='border-top:1px dashed #cbd5e1; padding-top:8px;'>"
+            f"    <div style='font-size:11px; font-weight:800; color:#4f46e5; text-transform:uppercase;'>📚 Verified PDF Page Citations</div>"
+            + "".join(cites_rows) +
+            f"  </div>"
+            f"</div>"
+        )
+
+    return (
+        "<div style='font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; color:#0f172a; background:#ffffff; padding:24px; box-sizing:border-box;'>"
+        "  <div style='background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #4f46e5 100%); color:#ffffff; border-radius:16px; padding:24px 28px; margin-bottom:20px;'>"
+        "    <div style='font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:#38bdf8; font-weight:800;'>DEEPRAG AI WORKSPACE • RESEARCH & STUDY DOSSIER</div>"
+        "    <div style='font-size:24px; font-weight:800; margin-top:4px;'>Verified Neural RAG Session & Citation Report</div>"
+        f"   <div style='font-size:12px; color:#cbd5e1; margin-top:6px;'>📂 Active Corpus: {html.escape(corpus_label)} &nbsp;|&nbsp; 📄 Pages: {total_pages} &nbsp;|&nbsp; 🧩 Vector Chunks: {total_chunks} &nbsp;|&nbsp; 🕒 {date_str}</div>"
+        "  </div>"
+        + "".join(turns_html) +
+        "  <div style='margin-top:20px; padding-top:10px; border-top:1px solid #cbd5e1; text-align:center; font-size:11px; color:#64748b; font-weight:600;'>"
+        "    Engineered with ❤️ by Deep Patel • DeepRAG AI Workspace Neural Knowledge Report"
+        "  </div>"
+        "</div>"
+    )
+
+
 # --- HELPER: ULTRA-SMOOTH NEURAL AUDIO DECK + COPY BUTTON ---
 def render_tts_audio_button(answer_text: str, btn_id: str):
     clean_text = re.sub(r"[\*\#\`\~\_\>]", "", answer_text)
@@ -517,104 +780,135 @@ def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
                     st.rerun()
 
 
-# --- HELPER: CACHED FAST GEMINI MODEL ROUTER ---
+# --- HELPER: SMART TIERED MODEL CASCADE (PRIMARY -> 1500 RPD WORKHORSES) ---
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_ordered_gemini_models(clean_key: str) -> list[str]:
-    fallback_fast_models = [
+    # Explicit cascade: Primary model first, followed immediately by 1,500 req/day high-speed models
+    priority_cascade = [
+        "models/gemini-3.0-flash",
         "models/gemini-2.5-flash",
         "models/gemini-2.0-flash",
+        "models/gemini-2.0-flash-001",
+        "models/gemini-2.0-flash-lite",
+        "models/gemini-2.0-flash-lite-001",
+        "models/gemini-2.5-flash-lite",
         "models/gemini-1.5-flash",
-        "models/gemini-2.5-pro",
-        "models/gemini-1.5-pro"
+        "models/gemini-1.5-flash-latest",
+        "models/gemini-1.5-flash-8b",
+        "models/gemini-1.5-pro",
+        "models/gemini-2.5-pro"
     ]
     try:
         list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={clean_key}"
-        resp = requests.get(list_url, timeout=10)
+        resp = requests.get(list_url, timeout=8)
         if resp.status_code != 200:
-            return fallback_fast_models
+            return priority_cascade
 
         models_data = resp.json().get("models", [])
-        valid_models = [
+        available_set = {
             m["name"] for m in models_data
             if "generateContent" in m.get("supportedGenerationMethods", [])
             and "gemini" in m["name"].lower()
             and "embedding" not in m["name"].lower()
             and "imagen" not in m["name"].lower()
             and "vision" not in m["name"].lower()
-        ]
-        if not valid_models:
-            return fallback_fast_models
+            and "thinking" not in m["name"].lower()
+            and "exp" not in m["name"].lower()
+            and "gemini-flash-latest" not in m["name"].lower()
+        }
+        if not available_set:
+            return priority_cascade
 
-        fast_non_exp = [
-            m for m in valid_models
-            if "flash" in m.lower() and "exp" not in m.lower() and "thinking" not in m.lower()
-        ]
-        preferred_order = ["2.5-flash", "2.0-flash", "1.5-flash", "3.0-flash", "3-flash", "flash", "pro"]
-        ordered_models = []
+        ordered = [m for m in priority_cascade if m in available_set]
+        for m in sorted(available_set):
+            if m not in ordered and ("flash" in m.lower() or "pro" in m.lower()):
+                ordered.append(m)
 
-        for kw in preferred_order:
-            for m in fast_non_exp:
-                if kw in m.lower() and m not in ordered_models:
-                    ordered_models.append(m)
-
-        for kw in preferred_order:
-            for m in valid_models:
-                if kw in m.lower() and m not in ordered_models:
-                    ordered_models.append(m)
-
-        for m in valid_models:
-            if m not in ordered_models:
-                ordered_models.append(m)
-
-        return ordered_models
+        return ordered if ordered else priority_cascade
     except Exception:
-        return fallback_fast_models
+        return priority_cascade
 
 
-# --- HELPER: TIMEOUT-PROOF GEMINI RESPONSE GENERATOR WITH AUTOMATIC FALLBACK ---
-def generate_smart_gemini_response(api_key: str, prompt: str, temperature: float = 0.3) -> tuple[str, str]:
-    clean_key = api_key.strip()
-    if not clean_key:
+# --- HELPER: MULTI-KEY + AUTO-SHIFTING 1500 RPD FAILOVER ENGINE ---
+def generate_smart_gemini_response(
+    api_keys_list: list[str],
+    prompt: str,
+    temperature: float = 0.3,
+    expect_json: bool = False
+) -> tuple[str, str]:
+    valid_keys = [k.strip() for k in api_keys_list if k and k.strip()]
+    if not valid_keys:
         raise RuntimeError("API Key is missing! Please configure GEMINI_API_KEY in Streamlit Cloud Secrets.")
 
-    ordered_models = get_ordered_gemini_models(clean_key)
+    if "exhausted_routes" not in st.session_state:
+        st.session_state.exhausted_routes = {}
 
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": float(temperature)}
-    }
-
+    now_ts = time.time()
     last_error = ""
-    for chosen_model in ordered_models[:6]:
-        gen_url = f"https://generativelanguage.googleapis.com/v1beta/{chosen_model}:generateContent?key={clean_key}"
-        try:
-            gen_resp = requests.post(gen_url, json=payload, timeout=(8, 35))
-            if gen_resp.status_code == 200:
-                data = gen_resp.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    if parts and "text" in parts[0]:
-                        return parts[0]["text"], chosen_model.replace("models/", "")
-            else:
-                last_error = gen_resp.json().get("error", {}).get("message", f"HTTP {gen_resp.status_code}")
-        except requests.exceptions.Timeout:
-            last_error = f"Model {chosen_model} timed out, switching to next fast engine..."
-            continue
-        except requests.exceptions.RequestException as req_err:
-            last_error = str(req_err)
-            continue
 
-    raise RuntimeError(f"All Gemini models busy or timed out. Last status: {last_error}")
+    # Two passes: Pass 1 skips recently quota-limited/timed-out models; Pass 2 retries all if needed
+    for pass_idx in range(2):
+        for key_idx, clean_key in enumerate(valid_keys):
+            ordered_models = get_ordered_gemini_models(clean_key)
+            for chosen_model in ordered_models:
+                route_id = f"k{key_idx}_{chosen_model}"
+                cooldown_until = st.session_state.exhausted_routes.get(route_id, 0)
+                if pass_idx == 0 and now_ts < cooldown_until:
+                    continue
+
+                gen_url = f"https://generativelanguage.googleapis.com/v1beta/{chosen_model}:generateContent?key={clean_key}"
+                gen_cfg = {"temperature": float(temperature)}
+                if expect_json:
+                    gen_cfg["responseMimeType"] = "application/json"
+
+                payload = {
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": gen_cfg
+                }
+
+                try:
+                    gen_resp = requests.post(gen_url, json=payload, timeout=(6, 22))
+                    # Fallback if a specific model doesn't support responseMimeType
+                    if gen_resp.status_code == 400 and expect_json:
+                        payload["generationConfig"] = {"temperature": float(temperature)}
+                        gen_resp = requests.post(gen_url, json=payload, timeout=(6, 22))
+
+                    if gen_resp.status_code == 200:
+                        data = gen_resp.json()
+                        candidates = data.get("candidates", [])
+                        if candidates:
+                            parts = candidates[0].get("content", {}).get("parts", [])
+                            if parts and "text" in parts[0]:
+                                key_badge = f" (Key #{key_idx+1})" if len(valid_keys) > 1 else ""
+                                return parts[0]["text"], chosen_model.replace("models/", "") + key_badge
+
+                    err_body = gen_resp.json().get("error", {})
+                    err_msg = err_body.get("message", f"HTTP {gen_resp.status_code}")
+                    last_error = err_msg
+
+                    # If Quota Exceeded (429) or Model Overloaded (503) or Not Found (404), put this model on cooldown
+                    if gen_resp.status_code in (429, 503, 404) or "quota" in err_msg.lower() or "rate" in err_msg.lower():
+                        cooldown_secs = 900 if gen_resp.status_code == 429 else 120
+                        st.session_state.exhausted_routes[route_id] = time.time() + cooldown_secs
+                        continue
+                except requests.exceptions.Timeout:
+                    # Put slow/hanging model on 3-minute cooldown and immediately shift to next 1500 RPD model
+                    st.session_state.exhausted_routes[route_id] = time.time() + 180
+                    last_error = f"{chosen_model} timed out, auto-shifting to next 1500 RPD model..."
+                    continue
+                except requests.exceptions.RequestException as req_err:
+                    last_error = str(req_err)
+                    continue
+
+    raise RuntimeError(f"All active API keys & fallback models reached quota limit. Details: {last_error}")
 
 
-# --- HELPER: TIMEOUT-PROOF VOICE TRANSCRIPTION ---
-def transcribe_voice_with_gemini(api_key: str, audio_bytes: bytes, mime_type: str = "audio/wav") -> str:
-    clean_key = api_key.strip()
-    if not clean_key:
+# --- HELPER: MULTI-KEY VOICE TRANSCRIPTION ---
+def transcribe_voice_with_gemini(api_keys_list: list[str], audio_bytes: bytes, mime_type: str = "audio/wav") -> str:
+    valid_keys = [k.strip() for k in api_keys_list if k and k.strip()]
+    if not valid_keys:
         raise RuntimeError("API Key is missing! GEMINI_API_KEY is required for voice transcription.")
 
-    ordered_models = get_ordered_gemini_models(clean_key)
     b64_audio = base64.b64encode(audio_bytes).decode("utf-8")
     safe_mime = mime_type if mime_type else "audio/wav"
 
@@ -635,22 +929,24 @@ def transcribe_voice_with_gemini(api_key: str, audio_bytes: bytes, mime_type: st
     }
 
     last_err = ""
-    for model_name in ordered_models[:5]:
-        url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={clean_key}"
-        try:
-            resp = requests.post(url, json=payload, timeout=(8, 25))
-            if resp.status_code == 200:
-                data = resp.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    if parts and "text" in parts[0]:
-                        return parts[0]["text"].strip()
-            else:
-                last_err = resp.json().get("error", {}).get("message", "Audio transcription failed.")
-        except requests.exceptions.RequestException as req_err:
-            last_err = str(req_err)
-            continue
+    for clean_key in valid_keys:
+        ordered_models = get_ordered_gemini_models(clean_key)
+        for model_name in ordered_models[:8]:
+            url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={clean_key}"
+            try:
+                resp = requests.post(url, json=payload, timeout=(6, 20))
+                if resp.status_code == 200:
+                    data = resp.json()
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        if parts and "text" in parts[0]:
+                            return parts[0]["text"].strip()
+                else:
+                    last_err = resp.json().get("error", {}).get("message", "Audio transcription failed.")
+            except requests.exceptions.RequestException as req_err:
+                last_err = str(req_err)
+                continue
 
     raise RuntimeError(f"Voice Transcription Error: {last_err}")
 
@@ -707,19 +1003,19 @@ def retrieve_smart_context(query: str, vector_store, all_chunks: list, top_k: in
     return stratified_docs[:max(top_k + 2, 8)]
 
 
-# --- HELPER: GENERATE CUSTOM-LENGTH INTERACTIVE QUIZ ACROSS FULL PDF ---
-def generate_interactive_quiz(api_key: str, vector_store, all_chunks: list, num_questions: int = 5) -> list:
-    sample_docs = sample_full_document_chunks(all_chunks, vector_store, target_samples=max(8, num_questions + 3))
+# --- HELPER: FAST JSON QUIZ GENERATOR WITH MULTI-KEY FAILOVER ---
+def generate_interactive_quiz(api_keys_list: list[str], vector_store, all_chunks: list, num_questions: int = 5) -> list:
+    sample_docs = sample_full_document_chunks(all_chunks, vector_store, target_samples=min(12, max(6, num_questions + 1)))
     context_str = "\n\n".join(
-        [f"[{d.metadata.get('source', 'PDF')} | Page {d.metadata.get('page', 1)}] {d.page_content[:500]}" for d in sample_docs]
+        [f"[{d.metadata.get('source', 'PDF')} | Page {d.metadata.get('page', 1)}] {d.page_content[:360]}" for d in sample_docs]
     )
     quiz_prompt = (
-        f"Based strictly on the PDF context below covering the entire document, generate {num_questions} multiple-choice questions in valid JSON format.\n"
-        f"Return ONLY a raw JSON list of {num_questions} objects (no markdown fences, no extra text). Each object must have:\n"
-        '{"question": "...", "topic": "Short Topic Name (2-4 words)", "page": "Page X", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "correct_index": 0, "explanation": "Detailed reason why this option is correct and what to revise [Page X]"}\n\n'
+        f"Based strictly on the PDF context below covering the document, generate {num_questions} multiple-choice questions in valid JSON format.\n"
+        f"Return ONLY a raw JSON array of {num_questions} objects (no markdown fences, no extra text). Each object must have:\n"
+        '{"question": "...", "topic": "Short Topic (2-4 words)", "page": "Page X", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "correct_index": 0, "explanation": "Clear explanation why this is correct [Page X]"}\n\n'
         f"Context:\n{context_str}"
     )
-    raw_res, _ = generate_smart_gemini_response(api_key, quiz_prompt, temperature=0.2)
+    raw_res, _ = generate_smart_gemini_response(api_keys_list, quiz_prompt, temperature=0.2, expect_json=True)
     cleaned = re.sub(r"```json|```", "", raw_res).strip()
     start_idx = cleaned.find("[")
     end_idx = cleaned.rfind("]")
@@ -728,20 +1024,20 @@ def generate_interactive_quiz(api_key: str, vector_store, all_chunks: list, num_
     return json.loads(cleaned)
 
 
-# --- HELPER: GENERATE FULL-PDF REVISION 3D FLASHCARDS ---
-def generate_3d_flashcards(api_key: str, vector_store, all_chunks: list, num_cards: int = 12) -> list:
-    sample_docs = sample_full_document_chunks(all_chunks, vector_store, target_samples=max(10, num_cards + 2))
+# --- HELPER: FAST JSON 3D FLASHCARD GENERATOR WITH MULTI-KEY FAILOVER ---
+def generate_3d_flashcards(api_keys_list: list[str], vector_store, all_chunks: list, num_cards: int = 12) -> list:
+    sample_docs = sample_full_document_chunks(all_chunks, vector_store, target_samples=min(14, max(8, num_cards)))
     context_str = "\n\n".join(
-        [f"[{d.metadata.get('source', 'PDF')} | Page {d.metadata.get('page', 1)}] {d.page_content[:450]}" for d in sample_docs]
+        [f"[{d.metadata.get('source', 'PDF')} | Page {d.metadata.get('page', 1)}] {d.page_content[:340]}" for d in sample_docs]
     )
     fc_prompt = (
-        f"You are creating a complete revision flashcard deck covering the ENTIRE uploaded PDF document from start to finish.\n"
-        f"Based strictly on the multi-page PDF context below, generate {num_cards} high-yield study flashcards in valid JSON format so the user can revise every major concept, formula, and section.\n"
-        f"Return ONLY a raw JSON list of {num_cards} objects (no markdown fences, no extra text). Each object must have:\n"
-        '{"term": "Key Concept / Question (under 9 words)", "definition": "Clear, complete revision answer (under 30 words)", "page": "Page X"}\n\n'
+        f"Create a complete revision flashcard deck covering the uploaded PDF document from start to finish.\n"
+        f"Based strictly on the PDF context below, generate {num_cards} high-yield study flashcards in valid JSON format.\n"
+        f"Return ONLY a raw JSON array of {num_cards} objects (no markdown fences, no extra text). Each object must have:\n"
+        '{"term": "Key Concept / Question (under 9 words)", "definition": "Clear, complete revision answer (under 28 words)", "page": "Page X"}\n\n'
         f"Context:\n{context_str}"
     )
-    raw_res, _ = generate_smart_gemini_response(api_key, fc_prompt, temperature=0.2)
+    raw_res, _ = generate_smart_gemini_response(api_keys_list, fc_prompt, temperature=0.2, expect_json=True)
     cleaned = re.sub(r"```json|```", "", raw_res).strip()
     start_idx = cleaned.find("[")
     end_idx = cleaned.rfind("]")
@@ -816,11 +1112,13 @@ if "quiz_submitted" not in st.session_state:
     st.session_state.quiz_submitted = False
 if "flashcards_data" not in st.session_state:
     st.session_state.flashcards_data = []
+if "exhausted_routes" not in st.session_state:
+    st.session_state.exhausted_routes = {}
 if "agent_terminal_logs" not in st.session_state:
     st.session_state.agent_terminal_logs = [
         "[SYS_BOOT] DeepRAG Neural Workspace Initialized.",
-        "[FAISS] Vector Engine Ready (CPU FlatL2).",
-        "[GEMINI] Fast-Flash Priority Router Active."
+        f"[KEY_POOL] {max(1, len(API_KEYS_POOL))} API Key(s) Active with 1500 RPD Auto-Cascade.",
+        "[FAISS] Vector Engine Ready (CPU FlatL2)."
     ]
 
 
@@ -835,7 +1133,10 @@ def log_terminal(msg: str):
 # --- SIDEBAR CONTROL CENTER ---
 with st.sidebar:
     st.markdown("### ⚙️ DeepRAG Control Center")
-    st.markdown('<div class="status-pill">🟢 Neural Engine: Connected & Active</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="status-pill">🟢 Neural Engine Active ({max(1, len(API_KEYS_POOL))} API Key Pool)</div>',
+        unsafe_allow_html=True
+    )
 
     st.markdown("#### 🛠️ Neural Hyperparameters")
     chunk_size = st.slider("Chunk Size (Characters)", min_value=300, max_value=2000, value=1000, step=100)
@@ -847,26 +1148,7 @@ with st.sidebar:
     st.markdown("#### 📡 System Telemetry & Logs")
     sidebar_telemetry_slot = st.empty()
     sidebar_logs_slot = st.empty()
-
-    if st.session_state.chat_history:
-        st.markdown("---")
-        st.markdown("#### 📥 Workspace Actions")
-        export_lines = ["# 🧠 DeepRAG AI Workspace — Research & Study Report\n\n"]
-        for turn in st.session_state.chat_history:
-            export_lines.append(f"### 🙋 Query:\n{turn['question']}\n\n")
-            export_lines.append(f"### 🤖 DeepRAG Synthesis ({turn.get('model', 'Gemini')}):\n{turn['answer']}\n\n---\n\n")
-
-        st.download_button(
-            label="📄 Export Session Report (.md)",
-            data="".join(export_lines),
-            file_name="DeepRAG_Analysis_Report.md",
-            mime="text/markdown",
-            use_container_width=True
-        )
-
-        if st.button("🗑️ Clear Conversation History", use_container_width=True):
-            st.session_state.chat_history = []
-            st.rerun()
+    sidebar_export_slot = st.empty()
 
     st.markdown("---")
     st.markdown(
@@ -1077,7 +1359,7 @@ with tab_workspace:
             with st.spinner("🎧 Transcribing your voice query with Gemini Audio Engine..."):
                 try:
                     mime_type = getattr(audio_value, "type", "audio/wav") or "audio/wav"
-                    transcribed_text = transcribe_voice_with_gemini(API_KEY, audio_bytes, mime_type)
+                    transcribed_text = transcribe_voice_with_gemini(API_KEYS_POOL, audio_bytes, mime_type)
                     active_query = transcribed_text
                     log_terminal(f"Voice transcribed successfully: '{transcribed_text}'")
                     st.toast(f"🎙️ Voice Query Recognized: {transcribed_text}")
@@ -1174,8 +1456,8 @@ with tab_workspace:
                             f"User Question: {active_query}\n"
                         )
 
-                        log_terminal(f"Routing grounded prompt to fast Gemini engine ({llm_temp} temp, {answer_length})...")
-                        raw_output, used_model = generate_smart_gemini_response(API_KEY, final_prompt, temperature=llm_temp)
+                        log_terminal(f"Routing grounded prompt across Multi-Key 1500 RPD Cascade ({llm_temp} temp)...")
+                        raw_output, used_model = generate_smart_gemini_response(API_KEYS_POOL, final_prompt, temperature=llm_temp)
                         if "---FOLLOWUP---" in raw_output:
                             main_ans, fq_block = raw_output.split("---FOLLOWUP---", 1)
                             answer_text = main_ans.strip()
@@ -1209,7 +1491,22 @@ with tab_workspace:
                         log_terminal(f"Synthesis error: {e}")
                         st.error(f"❌ Error: {e}")
 
-    # --- DISPLAY PREVIOUS CONVERSATION HISTORY ---
+    # --- DISPLAY PREVIOUS CONVERSATION HISTORY + PREMIUM CHAT PDF EXPORT ---
+    if st.session_state.chat_history:
+        corpus_names = ", ".join([f.name for f in uploaded_files]) if uploaded_files else "Uploaded PDF Corpus"
+        chat_pdf_html = build_premium_chat_pdf_html(
+            st.session_state.chat_history,
+            corpus_names,
+            st.session_state.pdf_pages,
+            st.session_state.neural_chunks
+        )
+        render_premium_pdf_download_button(
+            chat_pdf_html,
+            "DeepRAG_Research_Session_Report.pdf",
+            "📥 Download Ultra-Premium Chat Session PDF (.pdf)",
+            "chat_main_pdf"
+        )
+
     for idx, turn in enumerate(previous_turns):
         with st.chat_message("user", avatar="🧑‍💻"):
             st.markdown(f"**{turn['question']}**")
@@ -1218,7 +1515,7 @@ with tab_workspace:
             is_top_card = (idx == 0 and not active_query)
             render_assistant_turn(turn, f"hist_{idx}", is_latest=is_top_card)
 
-# --- POPULATE SIDEBAR TELEMETRY & LOGS IN REAL TIME ---
+# --- POPULATE SIDEBAR TELEMETRY, LOGS & PREMIUM CHAT PDF IN REAL TIME ---
 doc_label = f"{len(uploaded_files)} Active PDF(s)" if uploaded_files else "No PDF Uploaded"
 sidebar_telemetry_slot.markdown(
     f"<div class='telemetry-strip'>"
@@ -1234,13 +1531,20 @@ with sidebar_logs_slot.expander("💻 Live Neural Engine Logs"):
     terminal_lines = "<br>".join([f"&gt; {line}" for line in st.session_state.agent_terminal_logs])
     st.markdown(f"<div class='terminal-box'>{terminal_lines}</div>", unsafe_allow_html=True)
 
+if st.session_state.chat_history:
+    with sidebar_export_slot.container():
+        st.markdown("#### 📥 Session Actions")
+        if st.button("🗑️ Clear Conversation History", use_container_width=True):
+            st.session_state.chat_history = []
+            st.rerun()
+
 # ==========================================
 # TAB 2: AI QUIZ & FULL-PDF 3D FLASHCARDS
 # ==========================================
 with tab_quiz:
     st.markdown(render_animated_title("AI Quiz & 3D Flashcards"), unsafe_allow_html=True)
     st.markdown(
-        '<div class="hero-subtitle">Revise your entire PDF with comprehensive 3D flip flashcards, custom-length AI quizzes, and downloadable performance analysis reports.</div>',
+        '<div class="hero-subtitle">Revise your entire PDF with comprehensive 3D flip flashcards, custom-length AI quizzes, and ultra-premium downloadable PDF diagnostic reports.</div>',
         unsafe_allow_html=True
     )
 
@@ -1256,14 +1560,15 @@ with tab_quiz:
                 max_value=24,
                 value=12,
                 step=2,
+                key="slider_fc_count",
                 help="Samples evenly from the first page to the last page so the entire PDF is revised."
             )
-            if st.button(f"🃏 Generate {fc_count} Full-PDF 3D Flashcards", use_container_width=True):
+            if st.button("🃏 Generate Full-PDF 3D Flashcards", key="btn_gen_flashcards", use_container_width=True):
                 log_terminal(f"Generating {fc_count} full-document 3D flashcards...")
                 with st.spinner(f"✨ Crafting {fc_count} 3D Flip Flashcards across all PDF sections..."):
                     try:
                         st.session_state.flashcards_data = generate_3d_flashcards(
-                            API_KEY,
+                            API_KEYS_POOL,
                             st.session_state.vector_store,
                             st.session_state.all_chunks,
                             num_cards=fc_count
@@ -1281,14 +1586,15 @@ with tab_quiz:
                 max_value=15,
                 value=5,
                 step=1,
+                key="slider_quiz_count",
                 help="Choose how many questions you want in your practice test."
             )
-            if st.button(f"🎯 Generate {quiz_count}-Question AI Quiz", use_container_width=True):
+            if st.button("🎯 Generate Custom AI Practice Quiz", key="btn_gen_quiz", use_container_width=True):
                 log_terminal(f"Generating {quiz_count}-question interactive quiz...")
                 with st.spinner(f"🧠 Synthesizing {quiz_count} exam questions across the document..."):
                     try:
                         st.session_state.quiz_data = generate_interactive_quiz(
-                            API_KEY,
+                            API_KEYS_POOL,
                             st.session_state.vector_store,
                             st.session_state.all_chunks,
                             num_questions=quiz_count
@@ -1350,7 +1656,7 @@ with tab_quiz:
                 )
                 st.write("")
 
-            if st.button("✅ Submit Quiz & Generate Detailed Analysis Report", use_container_width=True):
+            if st.button("✅ Submit Quiz & Generate Ultra-Premium Analysis Report", key="btn_submit_quiz", use_container_width=True):
                 st.session_state.quiz_submitted = True
 
             if st.session_state.quiz_submitted:
@@ -1358,38 +1664,39 @@ with tab_quiz:
                 total_q = len(st.session_state.quiz_data)
                 mastered_topics = []
                 weak_areas = []
-                detailed_rows_md = []
+                quiz_records = []
 
                 st.markdown("<div class='report-shell'>", unsafe_allow_html=True)
-                st.markdown("### 📊 Detailed Quiz Performance & Diagnostic Report")
+                st.markdown("### 📊 Executive Quiz Performance & Diagnostic Report")
 
                 for q_idx, q_item in enumerate(st.session_state.quiz_data):
                     opts = q_item.get("options", ["Option A", "Option B", "Option C", "Option D"])
                     correct_i = int(q_item.get("correct_index", 0))
                     correct_opt = opts[correct_i] if 0 <= correct_i < len(opts) else opts[0]
-                    picked = user_picks.get(q_idx)
-                    topic_lbl = q_item.get("topic", f"Concept #{q_idx+1}")
-                    page_lbl = q_item.get("page", "Page ?")
-                    expl_lbl = q_item.get("explanation", "")
+                    picked = user_picks.get(q_idx, opts[0])
+                    topic_lbl = str(q_item.get("topic", f"Concept #{q_idx+1}"))
+                    page_lbl = str(q_item.get("page", "Page ?"))
+                    expl_lbl = str(q_item.get("explanation", ""))
+                    is_ok = (picked == correct_opt)
 
-                    if picked == correct_opt:
+                    if is_ok:
                         score += 1
                         mastered_topics.append(f"{topic_lbl} ({page_lbl})")
-                        status_str = "✔️ CORRECT"
                         st.success(f"**Q{q_idx+1} [{topic_lbl} • {page_lbl}]: Correct!**\n\n**Your Answer:** {picked}\n\n**Explanation:** {expl_lbl}")
                     else:
                         weak_areas.append(f"{topic_lbl} — Revise {page_lbl}")
-                        status_str = "❌ INCORRECT"
                         st.error(f"**Q{q_idx+1} [{topic_lbl} • {page_lbl}]: Incorrect**\n\n**Your Answer:** {picked}  |  **Correct Answer:** {correct_opt}\n\n**Explanation & Revision Note:** {expl_lbl}")
 
-                    detailed_rows_md.append(
-                        f"#### Q{q_idx+1}: {q_item.get('question', '')}\n"
-                        f"- **Topic & Source:** {topic_lbl} ({page_lbl})\n"
-                        f"- **Result:** {status_str}\n"
-                        f"- **Your Answer:** {picked}\n"
-                        f"- **Correct Answer:** {correct_opt}\n"
-                        f"- **Explanation:** {expl_lbl}\n\n"
-                    )
+                    quiz_records.append({
+                        "num": q_idx + 1,
+                        "question": str(q_item.get("question", "")),
+                        "topic": topic_lbl,
+                        "page": page_lbl,
+                        "picked": str(picked),
+                        "correct": str(correct_opt),
+                        "explanation": expl_lbl,
+                        "is_correct": is_ok
+                    })
 
                 accuracy_pct = int(round((score / max(1, total_q)) * 100))
                 if accuracy_pct >= 85:
@@ -1441,28 +1748,23 @@ with tab_quiz:
 
                 st.info(f"💡 **AI Tutor Recommendation:** {rec_note}")
 
-                # Build downloadable Markdown report
-                report_md_text = (
-                    "# 🧠 DeepRAG AI Workspace — Detailed Quiz Diagnostic Report\n\n"
-                    f"- **Final Score:** {score} / {total_q}\n"
-                    f"- **Accuracy Percentage:** {accuracy_pct}%\n"
-                    f"- **Performance Tier:** {grade_rank}\n"
-                    f"- **AI Tutor Recommendation:** {rec_note}\n\n"
-                    "---\n\n"
-                    "## ✅ Strengths (Topics Mastered)\n"
-                    + ("\n".join([f"- {m}" for m in mastered_topics]) if mastered_topics else "- None recorded yet.")
-                    + "\n\n## 📌 Weak Areas & Pages to Revise\n"
-                    + ("\n".join([f"- {w}" for w in weak_areas]) if weak_areas else "- Zero weak areas! 100% Mastery.")
-                    + "\n\n---\n\n## 📝 Question-by-Question Breakdown\n\n"
-                    + "".join(detailed_rows_md)
+                corpus_names = ", ".join([f.name for f in uploaded_files]) if uploaded_files else "Uploaded PDF Document"
+                quiz_pdf_html = build_premium_quiz_pdf_html(
+                    score,
+                    total_q,
+                    accuracy_pct,
+                    grade_rank,
+                    rec_note,
+                    mastered_topics,
+                    weak_areas,
+                    quiz_records,
+                    corpus_names
                 )
-
-                st.download_button(
-                    label="📥 Download Detailed Quiz Analysis Report (.md)",
-                    data=report_md_text,
-                    file_name="DeepRAG_Quiz_Diagnostic_Report.md",
-                    mime="text/markdown",
-                    use_container_width=True
+                render_premium_pdf_download_button(
+                    quiz_pdf_html,
+                    "DeepRAG_Quiz_Diagnostic_Report.pdf",
+                    "📥 Download Ultra-Premium Quiz Analysis Report (.pdf)",
+                    "quiz_diag_pdf"
                 )
                 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1501,9 +1803,9 @@ with tab_how:
         '<div class="arch-desc">Facebook AI Similarity Search (<code>FAISS</code>) indexes all neural vectors in memory. For summaries, flashcards, quizzes, and cross-document comparisons, our stratified sampler guarantees balanced coverage across every page of your PDF.</div>'
         '</div>'
         '<div class="arch-card">'
-        '<span class="step-badge">Stage 05 • Fault-Tolerant Synthesis</span>'
-        '<div class="arch-title">🤖 Timeout-Proof Gemini Flash Router</div>'
-        '<div class="arch-desc">Retrieved passages and page numbers are routed through our fault-tolerant Gemini Flash router with automatic timeout failover—producing fast, accurate, citation-backed responses with zero hallucination.</div>'
+        '<span class="step-badge">Stage 05 • Multi-Key 1500 RPD Cascade</span>'
+        '<div class="arch-title">🤖 Auto-Shifting Multi-API Key & Model Failover</div>'
+        '<div class="arch-desc">When a primary model hits its daily rate limit, our session-aware router automatically shifts to high-quota 1,500 requests/day Flash models and rotates across backup API keys with zero downtime.</div>'
         '</div>',
         unsafe_allow_html=True
     )
@@ -1546,7 +1848,7 @@ with tab_creator:
         '    </div>'
         '    <div class="c-stat-box">'
         '      <div class="c-stat-num">24/7</div>'
-        '      <div class="c-stat-lbl">Adaptive Gemini Router</div>'
+        '      <div class="c-stat-lbl">Multi-Key Failover</div>'
         '    </div>'
         '  </div>'
         '  <div>'
