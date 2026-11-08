@@ -22,7 +22,7 @@ st.set_page_config(
     page_title="DeepRAG AI Workspace | Enterprise Neural RAG",
     page_icon="🧠",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # --- SECURE API KEY RETRIEVAL ---
@@ -35,50 +35,95 @@ try:
 except Exception:
     API_KEY = DEFAULT_API_KEY
 
-# --- ZERO-LAG DARK ANIME AESTHETIC CSS ---
+# --- ADAPTIVE DARK & LIGHT THEME CSS (ZERO-LAG ANIME DARK + FROSTED LIGHT) ---
 custom_css = (
     "<style>"
     "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');"
-    "html, body, [class*='css'] { font-family: 'Inter', sans-serif; color: #e2e8f0; scroll-behavior: smooth; }"
+    "html, body, [class*='css'] { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }"
     "::-webkit-scrollbar { width: 6px; height: 6px; }"
-    "::-webkit-scrollbar-track { background: #04060b; }"
     "::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 999px; }"
-    ".stApp { background: radial-gradient(ellipse at 50% 0%, #0b1124 0%, #05070f 55%, #020306 100%) !important; overflow-x: hidden; }"
     "header[data-testid='stHeader'] { background: transparent !important; }"
     "div[data-testid='stAppViewContainer'] > .main { background: transparent !important; position: relative; z-index: 2; }"
-    ".block-container { position: relative; z-index: 2; }"
-    ".anime-vignette { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; background: radial-gradient(circle at 50% 100%, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.05) 35%, transparent 70%); }"
-    "section[data-testid='stSidebar'] { background: #060913 !important; border-right: 1px solid rgba(56, 189, 248, 0.18); z-index: 10; }"
-    ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
+    ".block-container { position: relative; z-index: 2; padding-top: 2rem !important; }"
+
+    "html:not([data-deeprag-theme='light']) .stApp {"
+    "  background: radial-gradient(ellipse at 50% 0%, #0b1124 0%, #05070f 55%, #020306 100%) !important;"
+    "  overflow-x: hidden;"
+    "}"
+    "html:not([data-deeprag-theme='light']) section[data-testid='stSidebar'] {"
+    "  background: #060913 !important; border-right: 1px solid rgba(56, 189, 248, 0.18); z-index: 10;"
+    "}"
+    "html:not([data-deeprag-theme='light']) .anime-vignette {"
+    "  position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;"
+    "  background: radial-gradient(circle at 50% 100%, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.05) 35%, transparent 70%);"
+    "}"
+
+    "html[data-deeprag-theme='light'] .stApp {"
+    "  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0f9ff 100%) !important;"
+    "  overflow-x: hidden;"
+    "}"
+    "html[data-deeprag-theme='light'] section[data-testid='stSidebar'] {"
+    "  background: #ffffff !important; border-right: 1px solid rgba(99, 102, 241, 0.2); z-index: 10;"
+    "}"
+    "html[data-deeprag-theme='light'] .anime-vignette {"
+    "  position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;"
+    "  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 65%);"
+    "}"
+
+    ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
     ".hero-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.9rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; display: flex; flex-wrap: wrap; align-items: center; }"
-    ".char { display: inline-block; background: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 45%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0; transform: translateY(10px); animation: fadeUpChar 0.35s ease-out forwards; }"
+    ".char { display: inline-block; background: linear-gradient(135deg, #38bdf8 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0; transform: translateY(10px); animation: fadeUpChar 0.35s ease-out forwards; }"
     "@keyframes fadeUpChar { to { opacity: 1; transform: translateY(0); } }"
     ".cursor-blink { display: inline-block; width: 4px; height: 38px; background: #38bdf8; margin-left: 8px; border-radius: 2px; animation: blink 1s infinite; }"
     "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }"
-    ".hero-subtitle { color: #94a3b8; font-size: 1.02rem; margin-bottom: 18px; font-weight: 400; }"
+    ".hero-subtitle { color: #64748b; font-size: 1.02rem; margin-bottom: 18px; font-weight: 500; }"
+    "html:not([data-deeprag-theme='light']) .hero-subtitle { color: #94a3b8; }"
+
     ".telemetry-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: rgba(10, 15, 28, 0.88); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 14px; padding: 10px 18px; margin-bottom: 22px; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: #cbd5e1; }"
+    "html[data-deeprag-theme='light'] .telemetry-strip { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(99, 102, 241, 0.25); color: #334155; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05); }"
     ".tel-item { display: inline-flex; align-items: center; gap: 7px; }"
     ".tel-dot { width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; display: inline-block; }"
-    ".tel-val { color: #7dd3fc; font-weight: 700; }"
+    ".tel-val { color: #0284c7; font-weight: 700; }"
+    "html:not([data-deeprag-theme='light']) .tel-val { color: #7dd3fc; }"
+
     ".metric-card { background: rgba(10, 15, 28, 0.88); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 16px; padding: 20px 18px; text-align: center; transition: transform 0.2s ease, border-color 0.2s ease; }"
+    "html[data-deeprag-theme='light'] .metric-card { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(99, 102, 241, 0.25); box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05); }"
     ".metric-card:hover { transform: translateY(-4px); border-color: #38bdf8; }"
-    ".metric-title { font-size: 0.88rem; font-weight: 600; color: #7dd3fc; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }"
+    ".metric-title { font-size: 0.88rem; font-weight: 700; color: #0284c7; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }"
+    "html:not([data-deeprag-theme='light']) .metric-title { color: #7dd3fc; }"
     ".metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; color: #f8fafc; }"
+    "html[data-deeprag-theme='light'] .metric-value { color: #0f172a; }"
+
+    ".upload-portal-card { background: rgba(10, 15, 28, 0.88); border: 1px dashed rgba(56, 189, 248, 0.45); border-radius: 18px; padding: 18px 22px; margin-bottom: 18px; }"
+    "html[data-deeprag-theme='light'] .upload-portal-card { background: rgba(255, 255, 255, 0.95); border: 1px dashed rgba(79, 70, 229, 0.45); box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05); }"
+    ".upload-portal-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px; }"
+    "html[data-deeprag-theme='light'] .upload-portal-title { color: #4f46e5; }"
+    ".upload-portal-sub { font-size: 0.88rem; color: #94a3b8; margin-bottom: 8px; }"
+    "html[data-deeprag-theme='light'] .upload-portal-sub { color: #475569; }"
+
     "div[data-testid='stTabs'] button { background: rgba(15, 23, 42, 0.75) !important; border-radius: 10px !important; padding: 10px 18px !important; margin-right: 8px !important; border: 1px solid rgba(56, 189, 248, 0.18) !important; color: #cbd5e1 !important; font-weight: 600 !important; transition: all 0.2s ease !important; }"
-    "div[data-testid='stTabs'] button:hover { border-color: #38bdf8 !important; color: #ffffff !important; }"
+    "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.25) !important; color: #334155 !important; }"
     "div[data-testid='stTabs'] button[aria-selected='true'] { background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35) !important; }"
+
     "div.stButton > button { background: rgba(13, 19, 36, 0.9) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; color: #e2e8f0 !important; border-radius: 12px !important; font-weight: 600 !important; padding: 10px 16px !important; transition: transform 0.2s ease, border-color 0.2s ease !important; }"
-    "div.stButton > button:hover { transform: translateY(-2px) !important; border-color: #38bdf8 !important; background: rgba(14, 116, 144, 0.25) !important; color: #ffffff !important; }"
+    "html[data-deeprag-theme='light'] div.stButton > button { background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.3) !important; color: #1e293b !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important; }"
+    "div.stButton > button:hover { transform: translateY(-2px) !important; border-color: #38bdf8 !important; background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; }"
+
     "div[data-testid='stChatMessage'] { background: rgba(10, 15, 28, 0.88) !important; border: 1px solid rgba(56, 189, 248, 0.2) !important; border-radius: 16px !important; padding: 16px 20px !important; margin-bottom: 14px !important; }"
-    ".demo-banner { background: rgba(12, 19, 36, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 16px; padding: 16px 20px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }"
+    "html[data-deeprag-theme='light'] div[data-testid='stChatMessage'] { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.22) !important; box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05) !important; }"
+
     ".quiz-card { background: rgba(10, 15, 28, 0.9); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 18px 22px; margin-bottom: 14px; }"
-    ".meta-badge { display: inline-block; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #bae6fd; font-size: 0.74rem; font-weight: 600; padding: 4px 11px; border-radius: 999px; margin-right: 8px; margin-top: 8px; }"
-    ".match-badge { display: inline-block; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); color: #34d399; font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; float: right; }"
+    "html[data-deeprag-theme='light'] .quiz-card { background: #ffffff; border: 1px solid rgba(99, 102, 241, 0.25); color: #0f172a; }"
+    ".meta-badge { display: inline-block; background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.38); color: #0284c7; font-size: 0.74rem; font-weight: 600; padding: 4px 11px; border-radius: 999px; margin-right: 8px; margin-top: 8px; }"
+    "html:not([data-deeprag-theme='light']) .meta-badge { color: #bae6fd; }"
+    ".match-badge { display: inline-block; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); color: #10b981; font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; float: right; }"
     ".citation-box { background: rgba(8, 12, 24, 0.92); border-left: 3px solid #38bdf8; border-top: 1px solid rgba(148, 163, 184, 0.12); border-right: 1px solid rgba(148, 163, 184, 0.12); border-bottom: 1px solid rgba(148, 163, 184, 0.12); padding: 14px 16px; border-radius: 10px; margin-bottom: 10px; font-size: 0.88rem; color: #cbd5e1; }"
-    ".cite-bar-track { width: 100%; height: 5px; background: rgba(30, 41, 59, 0.85); border-radius: 999px; overflow: hidden; margin-top: 10px; }"
+    "html[data-deeprag-theme='light'] .citation-box { background: #f8fafc; color: #334155; border-left: 3px solid #4f46e5; border-color: rgba(99, 102, 241, 0.2); }"
+    ".cite-bar-track { width: 100%; height: 5px; background: rgba(148, 163, 184, 0.25); border-radius: 999px; overflow: hidden; margin-top: 10px; }"
     ".cite-bar-fill { height: 100%; background: linear-gradient(90deg, #10b981, #38bdf8, #6366f1); border-radius: 999px; }"
-    ".kw-glow { background: rgba(56, 189, 248, 0.22); color: #ffffff; border: 1px solid rgba(56, 189, 248, 0.5); padding: 1px 6px; border-radius: 4px; font-weight: 600; }"
+    ".kw-glow { background: rgba(56, 189, 248, 0.22); color: inherit; border: 1px solid rgba(56, 189, 248, 0.5); padding: 1px 6px; border-radius: 4px; font-weight: 700; }"
     ".xray-box { background: rgba(6, 10, 20, 0.95); border: 1px solid rgba(56, 189, 248, 0.28); border-radius: 12px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.77rem; color: #cbd5e1; margin-bottom: 10px; }"
+    "html[data-deeprag-theme='light'] .xray-box { background: #f1f5f9; color: #1e293b; border-color: rgba(79, 70, 229, 0.3); }"
     ".terminal-box { background: #03060c; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #38bdf8; max-height: 190px; overflow-y: auto; margin-bottom: 18px; }"
     ".flashcard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }"
     ".flashcard-wrap { background-color: transparent; height: 210px; perspective: 1000px; cursor: pointer; }"
@@ -86,23 +131,36 @@ custom_css = (
     ".flashcard-wrap:hover .flashcard-inner, .flashcard-wrap:active .flashcard-inner { transform: rotateY(180deg); }"
     ".flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box; }"
     ".flashcard-front { background: #0a1020; border: 1px solid rgba(56, 189, 248, 0.35); color: #f8fafc; }"
+    "html[data-deeprag-theme='light'] .flashcard-front { background: #ffffff; border: 1px solid rgba(79, 70, 229, 0.35); color: #0f172a; box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06); }"
     ".flashcard-back { background: #0f172a; border: 1px solid #6366f1; color: #e2e8f0; transform: rotateY(180deg); }"
     ".arch-card { background: rgba(10, 15, 28, 0.9); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 16px; padding: 22px; margin-bottom: 16px; transition: transform 0.2s ease, border-color 0.2s ease; }"
+    "html[data-deeprag-theme='light'] .arch-card { background: #ffffff; border: 1px solid rgba(99, 102, 241, 0.22); box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05); }"
     ".arch-card:hover { transform: translateY(-3px); border-color: #38bdf8; }"
     ".step-badge { display: inline-block; background: linear-gradient(135deg, #0284c7, #4f46e5); color: #ffffff; font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; margin-bottom: 10px; letter-spacing: 0.06em; text-transform: uppercase; }"
     ".arch-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px; }"
+    "html[data-deeprag-theme='light'] .arch-title { color: #0f172a; }"
     ".arch-desc { color: #94a3b8; font-size: 0.94rem; line-height: 1.6; }"
+    "html[data-deeprag-theme='light'] .arch-desc { color: #475569; }"
     ".creator-hero { background: rgba(10, 15, 28, 0.92); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 22px; padding: 38px 30px; text-align: center; margin-top: 12px; }"
+    "html[data-deeprag-theme='light'] .creator-hero { background: #ffffff; border: 1px solid rgba(99, 102, 241, 0.28); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); }"
     ".avatar-ring { width: 92px; height: 92px; border-radius: 50%; margin: 0 auto 16px auto; background: linear-gradient(135deg, #0284c7, #4f46e5); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-size: 2.1rem; font-weight: 800; color: #ffffff; box-shadow: 0 0 24px rgba(56, 189, 248, 0.4); }"
     ".creator-name { font-family: 'Space Grotesk', sans-serif; font-size: 2.3rem; font-weight: 800; color: #f8fafc; margin-bottom: 6px; }"
-    ".creator-role { color: #7dd3fc; font-size: 1.02rem; font-weight: 600; margin-bottom: 20px; }"
+    "html[data-deeprag-theme='light'] .creator-name { color: #0f172a; }"
+    ".creator-role { color: #0284c7; font-size: 1.02rem; font-weight: 600; margin-bottom: 20px; }"
+    "html:not([data-deeprag-theme='light']) .creator-role { color: #7dd3fc; }"
     ".creator-quote { background: rgba(6, 10, 20, 0.85); border-left: 3px solid #38bdf8; border-radius: 10px; padding: 16px 22px; max-width: 700px; margin: 0 auto 24px auto; color: #e2e8f0; font-style: italic; font-size: 1rem; line-height: 1.6; }"
-    ".skill-pill { display: inline-block; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #bae6fd; padding: 6px 15px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; margin: 4px; }"
+    "html[data-deeprag-theme='light'] .creator-quote { background: #f8fafc; color: #334155; border-left: 3px solid #4f46e5; }"
+    ".skill-pill { display: inline-block; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #0284c7; padding: 6px 15px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; margin: 4px; }"
+    "html:not([data-deeprag-theme='light']) .skill-pill { color: #bae6fd; }"
     ".contact-box { background: rgba(10, 15, 28, 0.9); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 14px; text-align: center; margin-top: 20px; }"
-    ".contact-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px; }"
+    "html[data-deeprag-theme='light'] .contact-box { background: #f8fafc; border: 1px solid rgba(99, 102, 241, 0.25); }"
+    ".contact-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 700; color: #0284c7; margin-bottom: 4px; }"
+    "html:not([data-deeprag-theme='light']) .contact-title { color: #38bdf8; }"
     ".contact-handle { font-size: 0.94rem; font-weight: 600; color: #f8fafc; }"
-    ".premium-footer { margin-top: 48px; padding: 18px 0 10px 0; border-top: 1px solid rgba(56, 189, 248, 0.18); text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 0.94rem; font-weight: 600; color: #94a3b8; position: relative; z-index: 2; }"
-    ".premium-footer span { color: #38bdf8; font-weight: 800; }"
+    "html[data-deeprag-theme='light'] .contact-handle { color: #0f172a; }"
+    ".premium-footer { margin-top: 48px; padding: 18px 0 10px 0; border-top: 1px solid rgba(56, 189, 248, 0.18); text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 0.94rem; font-weight: 600; color: #64748b; position: relative; z-index: 2; }"
+    ".premium-footer span { color: #0284c7; font-weight: 800; }"
+    "html:not([data-deeprag-theme='light']) .premium-footer span { color: #38bdf8; }"
     "footer { visibility: hidden; }"
     "</style>"
     "<div class='anime-vignette'></div>"
@@ -110,15 +168,26 @@ custom_css = (
 st.markdown(custom_css, unsafe_allow_html=True)
 
 
-# --- HELPER: ZERO-LAG DARK ANIME NIGHT SKY & RISING SHADOW EMBERS CANVAS ---
+# --- HELPER: ZERO-LAG DARK ANIME CANVAS + AUTO THEME DETECTOR (LIGHT/DARK SYNC) ---
 def inject_anime_night_canvas():
     canvas_js = (
         "<script>"
         "(function() {"
         "  try {"
         "    const parentDoc = window.parent.document;"
-        "    const oldCanvas = parentDoc.getElementById('deeprag-neural-canvas');"
-        "    if (oldCanvas) oldCanvas.remove();"
+        "    function syncThemeMode() {"
+        "      const appEl = parentDoc.querySelector('.stApp');"
+        "      if (!appEl) return 'dark';"
+        "      const rgb = window.parent.getComputedStyle(appEl).color.match(/\\d+/g);"
+        "      const isLight = rgb && parseInt(rgb[0], 10) < 128;"
+        "      const mode = isLight ? 'light' : 'dark';"
+        "      if (parentDoc.documentElement.getAttribute('data-deeprag-theme') !== mode) {"
+        "        parentDoc.documentElement.setAttribute('data-deeprag-theme', mode);"
+        "      }"
+        "      return mode;"
+        "    }"
+        "    syncThemeMode();"
+        "    setInterval(syncThemeMode, 250);"
         "    if (parentDoc.getElementById('deeprag-anime-canvas')) return;"
         "    const canvas = parentDoc.createElement('canvas');"
         "    canvas.id = 'deeprag-anime-canvas';"
@@ -148,7 +217,7 @@ def inject_anime_night_canvas():
         "      });"
         "    }"
         "    const embers = [];"
-        "    const emberColors = ['#38bdf8', '#6366f1', '#818cf8', '#7dd3fc'];"
+        "    const emberColors = ['#38bdf8', '#6366f1', '#818cf8', '#0284c7'];"
         "    for (let i = 0; i < 32; i++) {"
         "      embers.push({"
         "        x: Math.random() * w,"
@@ -170,12 +239,13 @@ def inject_anime_night_canvas():
         "    }"
         "    function render() {"
         "      ctx.clearRect(0, 0, w, h);"
+        "      const isLightMode = parentDoc.documentElement.getAttribute('data-deeprag-theme') === 'light';"
         "      for (let i = 0; i < stars.length; i++) {"
         "        const s = stars[i];"
         "        s.alpha += s.speed;"
         "        if (s.alpha > 0.75 || s.alpha < 0.12) s.speed = -s.speed;"
-        "        ctx.globalAlpha = s.alpha;"
-        "        ctx.fillStyle = '#e0f2fe';"
+        "        ctx.globalAlpha = isLightMode ? s.alpha * 0.35 : s.alpha;"
+        "        ctx.fillStyle = isLightMode ? '#6366f1' : '#e0f2fe';"
         "        ctx.beginPath();"
         "        ctx.arc(s.x, s.y, s.r, 0, 6.28);"
         "        ctx.fill();"
@@ -185,32 +255,34 @@ def inject_anime_night_canvas():
         "        e.y += e.vy;"
         "        e.x += e.vx;"
         "        if (e.y < -10) { e.y = h + 10; e.x = Math.random() * w; }"
-        "        ctx.globalAlpha = e.alpha;"
+        "        ctx.globalAlpha = isLightMode ? e.alpha * 0.45 : e.alpha;"
         "        ctx.fillStyle = e.color;"
         "        ctx.beginPath();"
         "        ctx.arc(e.x, e.y, e.r, 0, 6.28);"
         "        ctx.fill();"
         "      }"
-        "      comet.timer--;"
-        "      if (comet.timer <= 0 && !comet.active) {"
-        "        spawnComet();"
-        "        comet.timer = Math.floor(Math.random() * 240) + 220;"
-        "      }"
-        "      if (comet.active) {"
-        "        comet.x += comet.vx;"
-        "        comet.y += comet.vy;"
-        "        ctx.globalAlpha = 0.75;"
-        "        const grad = ctx.createLinearGradient(comet.x, comet.y, comet.x + 85, comet.y - 42);"
-        "        grad.addColorStop(0, '#ffffff');"
-        "        grad.addColorStop(0.3, '#38bdf8');"
-        "        grad.addColorStop(1, 'transparent');"
-        "        ctx.strokeStyle = grad;"
-        "        ctx.lineWidth = 1.6;"
-        "        ctx.beginPath();"
-        "        ctx.moveTo(comet.x, comet.y);"
-        "        ctx.lineTo(comet.x + 85, comet.y - 42);"
-        "        ctx.stroke();"
-        "        if (comet.x < -120 || comet.y > h + 120) comet.active = false;"
+        "      if (!isLightMode) {"
+        "        comet.timer--;"
+        "        if (comet.timer <= 0 && !comet.active) {"
+        "          spawnComet();"
+        "          comet.timer = Math.floor(Math.random() * 240) + 220;"
+        "        }"
+        "        if (comet.active) {"
+        "          comet.x += comet.vx;"
+        "          comet.y += comet.vy;"
+        "          ctx.globalAlpha = 0.75;"
+        "          const grad = ctx.createLinearGradient(comet.x, comet.y, comet.x + 85, comet.y - 42);"
+        "          grad.addColorStop(0, '#ffffff');"
+        "          grad.addColorStop(0.3, '#38bdf8');"
+        "          grad.addColorStop(1, 'transparent');"
+        "          ctx.strokeStyle = grad;"
+        "          ctx.lineWidth = 1.6;"
+        "          ctx.beginPath();"
+        "          ctx.moveTo(comet.x, comet.y);"
+        "          ctx.lineTo(comet.x + 85, comet.y - 42);"
+        "          ctx.stroke();"
+        "          if (comet.x < -120 || comet.y > h + 120) comet.active = false;"
+        "        }"
         "      }"
         "      ctx.globalAlpha = 1.0;"
         "      requestAnimationFrame(render);"
@@ -224,48 +296,6 @@ def inject_anime_night_canvas():
 
 
 inject_anime_night_canvas()
-
-
-# --- HELPER: BUILT-IN DEMO AI RESEARCH PAPER FOR 1-CLICK TESTING ---
-def get_demo_ai_documents() -> list:
-    pages = [
-        (
-            "DeepRAG Technical Whitepaper (2026) — Chapter 1: Retrieval-Augmented Generation (RAG) Fundamentals.\n"
-            "Large Language Models (LLMs) store vast parametric knowledge but suffer from hallucinations and static training cutoffs. "
-            "Retrieval-Augmented Generation (RAG) solves this by combining non-parametric dense vector memory (FAISS) with generative transformers. "
-            "Mathematically, given a query q and document corpus D, the retriever encodes both into a 384-dimensional Euclidean space using "
-            "Sentence-Transformers (all-MiniLM-L6-v2), selecting the top-k passages that minimize L2 distance or maximize cosine similarity: "
-            "sim(q, d) = (E(q) · E(d)) / (||E(q)|| ||E(d)||)."
-        ),
-        (
-            "DeepRAG Technical Whitepaper — Chapter 2: Context-Aware Semantic Chunking & Overlap.\n"
-            "Naive fixed-length text splitting breaks semantic continuity across sentences and equations. DeepRAG implements "
-            "RecursiveCharacterTextSplitter with configurable chunk size (default 600 characters) and sliding window overlap (100 characters). "
-            "This sliding overlap guarantees that boundary concepts, mathematical proofs, and multi-sentence definitions remain intact across adjacent vector chunks."
-        ),
-        (
-            "DeepRAG Technical Whitepaper — Chapter 3: High-Speed FAISS Vector Indexing Architecture.\n"
-            "Facebook AI Similarity Search (FAISS) enables millisecond nearest-neighbor search across thousands of dense embeddings in RAM. "
-            "By indexing 384-dimensional float32 vectors produced by all-MiniLM-L6-v2, DeepRAG achieves sub-15ms retrieval latency on CPU hardware "
-            "without requiring expensive GPU clusters, making enterprise document intelligence accessible and scalable."
-        ),
-        (
-            "DeepRAG Technical Whitepaper — Chapter 4: Zero-Hallucination Grounding & Page-Level Traceability.\n"
-            "Every extracted PDF page is tagged with strict source metadata (filename and exact page number) prior to chunking. "
-            "During synthesis, the Gemini 3.0 Flash engine is constrained by a deterministic system prompt to use ONLY retrieved passages "
-            "and attach inline citations [Page X]. If a query falls outside the vector context, the system abstains rather than fabricating an answer."
-        ),
-        (
-            "DeepRAG Technical Whitepaper — Chapter 5: Multimodal Voice AI & Adaptive Model Routing.\n"
-            "DeepRAG integrates real-time voice-to-text interrogation and browser-native neural speech synthesis. "
-            "Furthermore, the Auto-Adaptive Model Router dynamically queries the Google Generative AI ModelService registry at runtime, "
-            "automatically selecting the highest-performing active Flash or Pro model to guarantee 99.9% uptime."
-        )
-    ]
-    return [
-        Document(page_content=text, metadata={"source": "DeepRAG_AI_Architecture_Paper.pdf", "page": i + 1})
-        for i, text in enumerate(pages)
-    ]
 
 
 # --- HELPER: HIGHLIGHT QUERY KEYWORDS IN CITATION SNIPPETS ---
@@ -403,11 +433,12 @@ def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
     avg_score = turn.get("avg_match", 94)
     vec_ms = turn.get("vec_ms", 11.4)
     used_temp = turn.get("temp", 0.3)
+    ans_len_label = turn.get("length_mode", "Balanced")
     st.markdown(
         f'<span class="meta-badge">⚡ Engine: {turn["model"]}</span>'
         f'<span class="meta-badge">🎯 Confidence: {avg_score}% Match</span>'
+        f'<span class="meta-badge">📏 Length: {ans_len_label}</span>'
         f'<span class="meta-badge">🔍 FAISS: {vec_ms}ms</span>'
-        f'<span class="meta-badge">🌡️ Temp: {used_temp}</span>'
         f'<span class="meta-badge">⏱️ Total: {turn["latency"]}s</span>'
         f'<span class="meta-badge">📝 {turn.get("words", 0)} Words</span>',
         unsafe_allow_html=True
@@ -629,8 +660,6 @@ if "processed_files_key" not in st.session_state:
     st.session_state.processed_files_key = ""
 if "last_audio_hash" not in st.session_state:
     st.session_state.last_audio_hash = ""
-if "demo_mode_active" not in st.session_state:
-    st.session_state.demo_mode_active = False
 if "queued_followup" not in st.session_state:
     st.session_state.queued_followup = None
 if "last_vec_ms" not in st.session_state:
@@ -657,56 +686,11 @@ def log_terminal(msg: str):
         st.session_state.agent_terminal_logs.pop(0)
 
 
-# --- HELPER: ACTIVATE 1-CLICK DEMO KNOWLEDGE BASE ---
-def load_sample_ai_paper(chunk_size: int, chunk_overlap: int):
-    with st.spinner("🚀 Loading Sample AI & RAG Research Paper into FAISS Vector Space..."):
-        t0 = time.time()
-        log_terminal("Loading built-in Sample AI & RAG Research Paper...")
-        demo_docs = get_demo_ai_documents()
-        splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        split_docs = splitter.split_documents(demo_docs)
-        embeddings = get_embedding_model()
-        st.session_state.vector_store = FAISS.from_documents(split_docs, embeddings)
-        st.session_state.pdf_pages = len(demo_docs)
-        st.session_state.neural_chunks = len(split_docs)
-        st.session_state.demo_mode_active = True
-        st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
-        st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
-        st.session_state.processed_files_key = f"DEMO_PAPER_{chunk_size}_{chunk_overlap}"
-        log_terminal(f"Successfully indexed {len(split_docs)} neural chunks in {st.session_state.last_vec_ms}ms.")
-
-
 # --- SIDEBAR CONTROL CENTER ---
 with st.sidebar:
     st.markdown("### ⚙️ DeepRAG Control Center")
     st.markdown('<div class="status-pill">🟢 Neural Engine: Connected & Active</div>', unsafe_allow_html=True)
 
-    st.markdown("#### 📂 Document Portal")
-    uploaded_files = st.file_uploader(
-        "Upload PDF Documents",
-        type=["pdf"],
-        accept_multiple_files=True,
-        help="Upload single or multiple PDFs for instant AI analysis."
-    )
-
-    if st.button("⚡ Load Sample AI Paper (1-Click Demo)", use_container_width=True):
-        load_sample_ai_paper(600, 100)
-        st.toast("✅ Sample AI Research Paper Indexed!")
-        st.rerun()
-
-    st.markdown("---")
-    st.markdown("#### 🎛️ AI Synthesis Mode")
-    response_mode = st.selectbox(
-        "Select Output Style",
-        [
-            "⚡ Deep Analysis (Default)",
-            "🎯 Exam & Revision Notes",
-            "💡 Simple Explain (ELI5)",
-            "📌 Executive Bullet Points"
-        ]
-    )
-
-    st.markdown("---")
     st.markdown("#### 🛠️ Neural Hyperparameters")
     chunk_size = st.slider("Chunk Size (Characters)", min_value=200, max_value=1500, value=600, step=50)
     chunk_overlap = st.slider("Chunk Overlap", min_value=0, max_value=400, value=100, step=25)
@@ -733,7 +717,6 @@ with st.sidebar:
             st.session_state.chat_history = []
             st.rerun()
 
-    # --- CONTACT US SECTION ---
     st.markdown("---")
     st.markdown(
         '<div class="contact-box">'
@@ -742,52 +725,6 @@ with st.sidebar:
         '</div>',
         unsafe_allow_html=True
     )
-
-
-# --- AUTOMATIC PDF INDEXING WITH PAGE METADATA ---
-if uploaded_files:
-    st.session_state.demo_mode_active = False
-    current_key = f"{[f.name for f in uploaded_files]}_{chunk_size}_{chunk_overlap}"
-    if current_key != st.session_state.processed_files_key:
-        with st.spinner("🧬 Indexing PDF pages into FAISS Neural Vector Space..."):
-            t0 = time.time()
-            log_terminal(f"Ingesting {len(uploaded_files)} custom PDF file(s)...")
-            docs = []
-            total_pages = 0
-            for pdf in uploaded_files:
-                reader = PdfReader(pdf)
-                total_pages += len(reader.pages)
-                for page_idx, page in enumerate(reader.pages):
-                    page_text = page.extract_text() or ""
-                    if page_text.strip():
-                        docs.append(
-                            Document(
-                                page_content=page_text,
-                                metadata={"source": pdf.name, "page": page_idx + 1}
-                            )
-                        )
-
-            if docs:
-                splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=chunk_size,
-                    chunk_overlap=chunk_overlap
-                )
-                split_docs = splitter.split_documents(docs)
-                embeddings = get_embedding_model()
-                st.session_state.vector_store = FAISS.from_documents(split_docs, embeddings)
-                st.session_state.pdf_pages = total_pages
-                st.session_state.neural_chunks = len(split_docs)
-                st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
-                st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
-                st.session_state.processed_files_key = current_key
-                log_terminal(f"Indexed {total_pages} pages into {len(split_docs)} chunks successfully.")
-            else:
-                st.warning("No extractable text found in the uploaded PDF. Please upload a text-based PDF document.")
-elif not st.session_state.demo_mode_active:
-    st.session_state.vector_store = None
-    st.session_state.pdf_pages = 0
-    st.session_state.neural_chunks = 0
-    st.session_state.processed_files_key = ""
 
 
 # --- TOP NAVIGATION TABS ---
@@ -808,7 +745,91 @@ with tab_workspace:
         unsafe_allow_html=True
     )
 
-    doc_label = "Sample AI Research Paper" if st.session_state.demo_mode_active else (f"{len(uploaded_files)} Custom PDF(s)" if uploaded_files else "No Active Corpus")
+    # --- MAIN PAGE PDF UPLOAD PORTAL & ANSWER PREFERENCES ---
+    st.markdown(
+        "<div class='upload-portal-card'>"
+        "  <div class='upload-portal-title'>📂 Document Upload & Answer Preferences</div>"
+        "  <div class='upload-portal-sub'>Upload one or more PDF documents below and customize how you want your AI answers formatted.</div>"
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+    ucol1, ucol2 = st.columns([1.4, 1])
+    with ucol1:
+        uploaded_files = st.file_uploader(
+            "📄 Upload Your PDF Document(s)",
+            type=["pdf"],
+            accept_multiple_files=True,
+            help="Upload textbooks, notes, research papers, or manuals in PDF format."
+        )
+    with ucol2:
+        response_mode = st.selectbox(
+            "🎛️ Select Output Style",
+            [
+                "⚡ Deep Analysis (Default)",
+                "🎯 Exam & Revision Notes",
+                "💡 Simple Explain (ELI5)",
+                "📌 Executive Bullet Points"
+            ]
+        )
+        answer_length = st.radio(
+            "📏 Select Answer Length",
+            [
+                "⚡ Short & Crisp",
+                "⚖️ Balanced",
+                "📚 Detailed & In-Depth"
+            ],
+            index=1,
+            horizontal=True
+        )
+
+    # --- AUTOMATIC PDF INDEXING WITH PAGE METADATA ---
+    if uploaded_files:
+        current_key = f"{[f.name for f in uploaded_files]}_{chunk_size}_{chunk_overlap}"
+        if current_key != st.session_state.processed_files_key:
+            with st.spinner("🧬 Indexing PDF pages into FAISS Neural Vector Space..."):
+                t0 = time.time()
+                log_terminal(f"Ingesting {len(uploaded_files)} PDF file(s)...")
+                docs = []
+                total_pages = 0
+                for pdf in uploaded_files:
+                    reader = PdfReader(pdf)
+                    total_pages += len(reader.pages)
+                    for page_idx, page in enumerate(reader.pages):
+                        page_text = page.extract_text() or ""
+                        if page_text.strip():
+                            docs.append(
+                                Document(
+                                    page_content=page_text,
+                                    metadata={"source": pdf.name, "page": page_idx + 1}
+                                )
+                            )
+
+                if docs:
+                    splitter = RecursiveCharacterTextSplitter(
+                        chunk_size=chunk_size,
+                        chunk_overlap=chunk_overlap
+                    )
+                    split_docs = splitter.split_documents(docs)
+                    embeddings = get_embedding_model()
+                    st.session_state.vector_store = FAISS.from_documents(split_docs, embeddings)
+                    st.session_state.pdf_pages = total_pages
+                    st.session_state.neural_chunks = len(split_docs)
+                    st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
+                    st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
+                    st.session_state.processed_files_key = current_key
+                    log_terminal(f"Indexed {total_pages} pages into {len(split_docs)} chunks successfully.")
+                else:
+                    st.warning("No extractable text found in the uploaded PDF. Please upload a text-based PDF document.")
+    else:
+        st.session_state.vector_store = None
+        st.session_state.pdf_pages = 0
+        st.session_state.neural_chunks = 0
+        st.session_state.last_vec_ms = 0.0
+        st.session_state.total_tokens_est = 0
+        st.session_state.processed_files_key = ""
+
+    doc_label = f"{len(uploaded_files)} Active PDF(s)" if uploaded_files else "No PDF Uploaded"
     st.markdown(
         f"<div class='telemetry-strip'>"
         f"  <div class='tel-item'><span class='tel-dot'></span><span>Corpus: <span class='tel-val'>{doc_label}</span></span></div>"
@@ -852,22 +873,6 @@ with tab_workspace:
 
     st.write("")
 
-    if not st.session_state.vector_store:
-        bcol1, bcol2 = st.columns([3, 1])
-        with bcol1:
-            st.markdown(
-                "<div class='demo-banner'>"
-                "<div><strong>✨ Quick Start — Instant AI Demo Mode:</strong><br>"
-                "<span style='color:#cbd5e1; font-size:0.9rem;'>Don't have a PDF handy? Load our built-in 5-page AI & Neural RAG Research Paper in 1 click to test smart citations, flowcharts, 3D flashcards, and voice search immediately.</span></div>"
-                "</div>",
-                unsafe_allow_html=True
-            )
-        with bcol2:
-            st.write("")
-            if st.button("🚀 Load Sample AI Paper", use_container_width=True):
-                load_sample_ai_paper(chunk_size, chunk_overlap)
-                st.rerun()
-
     triggered_query = None
     if st.session_state.queued_followup:
         triggered_query = st.session_state.queued_followup
@@ -901,7 +906,7 @@ with tab_workspace:
     vcol1, vcol2 = st.columns([2, 1])
     with vcol1:
         st.markdown("##### 💬 Ask Your Documents (Text or Voice)")
-        st.caption("Type your question below or record a voice query using the microphone on the right.")
+        st.caption("Upload your PDF above, then type a question below or record a voice query using the microphone.")
     with vcol2:
         audio_value = None
         if hasattr(st, "audio_input"):
@@ -936,7 +941,7 @@ with tab_workspace:
     # --- INSTANT QUESTION DISPLAY & LIVE LOADING BELOW IT ---
     if active_query:
         if not st.session_state.vector_store:
-            st.warning("⚠️ Please upload a PDF in the sidebar or click 'Load Sample AI Paper' to begin querying.")
+            st.warning("⚠️ Please upload a PDF document above first to begin querying.")
         else:
             with st.chat_message("user", avatar="🧑‍💻"):
                 st.markdown(f"**{active_query}**")
@@ -984,11 +989,17 @@ with tab_workspace:
                             )
 
                         style_instructions = {
-                            "⚡ Deep Analysis (Default)": "Provide a thorough, well-structured, and authoritative explanation in English.",
+                            "⚡ Deep Analysis (Default)": "Provide a well-structured and authoritative explanation in English.",
                             "🎯 Exam & Revision Notes": "Format the response as high-impact study notes with bold key terms, structured bullet points, and clear definitions in English.",
                             "💡 Simple Explain (ELI5)": "Explain the concept in clear, beginner-friendly English using an intuitive real-world analogy.",
-                            "📌 Executive Bullet Points": "Deliver a crisp executive summary in 4 to 6 high-impact bullet points in English."
+                            "📌 Executive Bullet Points": "Deliver a crisp executive summary in high-impact bullet points in English."
                         }[response_mode]
+
+                        length_instructions = {
+                            "⚡ Short & Crisp": "Keep the answer concise, direct, and brief (around 60 to 100 words, 3 to 5 crisp sentences or bullet points).",
+                            "⚖️ Balanced": "Provide a balanced, medium-length explanation (around 150 to 250 words) covering the core points clearly.",
+                            "📚 Detailed & In-Depth": "Provide a comprehensive, exhaustive, and deeply detailed explanation (350+ words) with thorough breakdowns, sub-headings, and complete technical depth."
+                        }[answer_length]
 
                         final_prompt = (
                             "You are DeepRAG AI, an elite enterprise and academic document intelligence assistant.\n"
@@ -997,13 +1008,14 @@ with tab_workspace:
                             "Always cite the relevant page numbers inline (for example, [Page 4]) when stating facts.\n\n"
                             "IMPORTANT: At the very end of your response, after your main answer, write the exact delimiter ---FOLLOWUP--- "
                             "followed by 3 short, insightful follow-up questions separated by the pipe character | (each question under 9 words, no numbering).\n\n"
-                            f"Output Style Instruction: {style_instructions}\n\n"
+                            f"Output Style Instruction: {style_instructions}\n"
+                            f"Answer Length Instruction: {length_instructions}\n\n"
                             f"Recent Conversation Context:\n{history_context}\n\n"
                             f"Retrieved PDF Context:\n{context_block}\n\n"
                             f"User Question: {active_query}\n"
                         )
 
-                        log_terminal(f"Routing grounded prompt to Gemini ({llm_temp} temp)...")
+                        log_terminal(f"Routing grounded prompt to Gemini ({llm_temp} temp, {answer_length})...")
                         raw_output, used_model = generate_smart_gemini_response(API_KEY, final_prompt, temperature=llm_temp)
                         if "---FOLLOWUP---" in raw_output:
                             main_ans, fq_block = raw_output.split("---FOLLOWUP---", 1)
@@ -1024,6 +1036,7 @@ with tab_workspace:
                             "latency": elapsed,
                             "vec_ms": vec_ms,
                             "temp": llm_temp,
+                            "length_mode": answer_length.split(" ", 1)[-1],
                             "ctx_tokens": ctx_tokens,
                             "words": word_count,
                             "avg_match": avg_match,
@@ -1057,10 +1070,7 @@ with tab_quiz:
     )
 
     if not st.session_state.vector_store:
-        st.info("📂 Please upload a PDF in the sidebar or click below to load the Sample AI Research Paper first.")
-        if st.button("⚡ Load Sample AI Paper for Study Hub"):
-            load_sample_ai_paper(chunk_size, chunk_overlap)
-            st.rerun()
+        st.info("📂 Please upload your PDF document in the '🚀 AI Workspace' tab first to generate flashcards and quizzes.")
     else:
         scol1, scol2 = st.columns(2)
         with scol1:
