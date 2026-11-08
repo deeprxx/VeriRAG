@@ -79,8 +79,8 @@ custom_css = (
     ".hero-subtitle { color: #64748b; font-size: 1.02rem; margin-bottom: 18px; font-weight: 500; }"
     "html:not([data-deeprag-theme='light']) .hero-subtitle { color: #94a3b8; }"
 
-    ".telemetry-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: rgba(10, 15, 28, 0.88); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 14px; padding: 10px 18px; margin-bottom: 22px; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: #cbd5e1; }"
-    "html[data-deeprag-theme='light'] .telemetry-strip { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(99, 102, 241, 0.25); color: #334155; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05); }"
+    ".telemetry-strip { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; background: rgba(10, 15, 28, 0.88); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: #cbd5e1; }"
+    "html[data-deeprag-theme='light'] .telemetry-strip { background: #f8fafc; border: 1px solid rgba(99, 102, 241, 0.25); color: #334155; }"
     ".tel-item { display: inline-flex; align-items: center; gap: 7px; }"
     ".tel-dot { width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; display: inline-block; }"
     ".tel-val { color: #0284c7; font-weight: 700; }"
@@ -124,7 +124,7 @@ custom_css = (
     ".kw-glow { background: rgba(56, 189, 248, 0.22); color: inherit; border: 1px solid rgba(56, 189, 248, 0.5); padding: 1px 6px; border-radius: 4px; font-weight: 700; }"
     ".xray-box { background: rgba(6, 10, 20, 0.95); border: 1px solid rgba(56, 189, 248, 0.28); border-radius: 12px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.77rem; color: #cbd5e1; margin-bottom: 10px; }"
     "html[data-deeprag-theme='light'] .xray-box { background: #f1f5f9; color: #1e293b; border-color: rgba(79, 70, 229, 0.3); }"
-    ".terminal-box { background: #03060c; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #38bdf8; max-height: 190px; overflow-y: auto; margin-bottom: 18px; }"
+    ".terminal-box { background: #03060c; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #38bdf8; max-height: 180px; overflow-y: auto; margin-bottom: 10px; }"
     ".flashcard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }"
     ".flashcard-wrap { background-color: transparent; height: 210px; perspective: 1000px; cursor: pointer; }"
     ".flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.55s ease; transform-style: preserve-3d; border-radius: 16px; }"
@@ -697,6 +697,11 @@ with st.sidebar:
     top_k = st.slider("Retrieved Citations (Top-K)", min_value=2, max_value=8, value=4, step=1)
     llm_temp = st.slider("LLM Temperature (Creativity)", min_value=0.0, max_value=0.9, value=0.3, step=0.1)
 
+    st.markdown("---")
+    st.markdown("#### 📡 System Telemetry & Logs")
+    sidebar_telemetry_slot = st.empty()
+    sidebar_logs_slot = st.empty()
+
     if st.session_state.chat_history:
         st.markdown("---")
         st.markdown("#### 📥 Workspace Actions")
@@ -829,20 +834,7 @@ with tab_workspace:
         st.session_state.total_tokens_est = 0
         st.session_state.processed_files_key = ""
 
-    doc_label = f"{len(uploaded_files)} Active PDF(s)" if uploaded_files else "No PDF Uploaded"
-    st.markdown(
-        f"<div class='telemetry-strip'>"
-        f"  <div class='tel-item'><span class='tel-dot'></span><span>Corpus: <span class='tel-val'>{doc_label}</span></span></div>"
-        f"  <div class='tel-item'><span>🧬 Embeddings: <span class='tel-val'>384D MiniLM-L6-v2</span></span></div>"
-        f"  <div class='tel-item'><span>⚡ Vector Latency: <span class='tel-val'>{st.session_state.last_vec_ms} ms</span></span></div>"
-        f"  <div class='tel-item'><span>📊 Indexed Words: <span class='tel-val'>{st.session_state.total_tokens_est}</span></span></div>"
-        f"</div>",
-        unsafe_allow_html=True
-    )
-
-    with st.expander("💻 Live Neural Engine Logs & System Telemetry"):
-        terminal_lines = "<br>".join([f"&gt; {line}" for line in st.session_state.agent_terminal_logs])
-        st.markdown(f"<div class='terminal-box'>{terminal_lines}</div>", unsafe_allow_html=True)
+    st.write("")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -1058,6 +1050,22 @@ with tab_workspace:
         with st.chat_message("assistant", avatar="🧠"):
             is_top_card = (idx == 0 and not active_query)
             render_assistant_turn(turn, f"hist_{idx}", is_latest=is_top_card)
+
+# --- POPULATE SIDEBAR TELEMETRY & LOGS IN REAL TIME ---
+doc_label = f"{len(uploaded_files)} Active PDF(s)" if uploaded_files else "No PDF Uploaded"
+sidebar_telemetry_slot.markdown(
+    f"<div class='telemetry-strip'>"
+    f"  <div class='tel-item'><span class='tel-dot'></span><span>Corpus: <span class='tel-val'>{doc_label}</span></span></div>"
+    f"  <div class='tel-item'><span>🧬 Embeddings: <span class='tel-val'>384D MiniLM-L6-v2</span></span></div>"
+    f"  <div class='tel-item'><span>⚡ Vector Latency: <span class='tel-val'>{st.session_state.last_vec_ms} ms</span></span></div>"
+    f"  <div class='tel-item'><span>📊 Indexed Words: <span class='tel-val'>{st.session_state.total_tokens_est}</span></span></div>"
+    f"</div>",
+    unsafe_allow_html=True
+)
+
+with sidebar_logs_slot.expander("💻 Live Neural Engine Logs"):
+    terminal_lines = "<br>".join([f"&gt; {line}" for line in st.session_state.agent_terminal_logs])
+    st.markdown(f"<div class='terminal-box'>{terminal_lines}</div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 2: AI QUIZ & 3D INTERACTIVE FLASHCARDS
