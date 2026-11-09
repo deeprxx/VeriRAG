@@ -55,7 +55,7 @@ General-purpose conversational chatbots (`ChatGPT`, `DeepSeek`, `Standard Gemini
 
 ## ⚔️ III. The Executive Comparison Matrix (`🏆 Why Us?`)
 
-| System Dimension | 🧠 **DeepRAG AI Workspace** | 🤖 **ChatGPT Web** | 🐋 **DeepSeek Web** | ✨ **Standard Gemini** |
+| System Dimension | 🧠 **DeepRAG AI Workspace** | 🤖 **ChatGPT** | 🐋 **DeepSeek** | ✨ **Standard Gemini** |
 | :--- | :--- | :--- | :--- | :--- |
 | **Knowledge Grounding** | ![100% Locked](https://img.shields.io/badge/100%25_Non--Parametric_PDF_Lock-10b981?style=flat-square) | Mixes pre-training | Prone to fabrication | Blends web search |
 | **Long-PDF Middle Recall** | ![FAISS + Stratified](https://img.shields.io/badge/FAISS_L2_%2B_Stratified_Sampler-38bdf8?style=flat-square) | *Lost-in-the-Middle* drop | Context truncation | Attention dilution |
