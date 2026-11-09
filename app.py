@@ -8,6 +8,7 @@ import json
 import re
 import html
 import io
+from datetime import datetime, timezone, timedelta
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
@@ -17,6 +18,14 @@ try:
     from langchain_core.documents import Document
 except ImportError:
     from langchain.docstore.document import Document
+
+# --- INDIAN STANDARD TIME (IST) HELPER FOR ACCURATE TIMESTAMPS ---
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def get_ist_time_str(fmt: str = "%d %b %Y • %I:%M %p") -> str:
+    return datetime.now(IST).strftime(fmt)
+
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -58,7 +67,7 @@ def get_api_key_pool() -> list[str]:
 
 API_KEYS_POOL = get_api_key_pool()
 
-# --- ADAPTIVE DARK & LIGHT THEME CSS + ULTRA-ANIMATED CREATOR & REPORT UI ---
+# --- ADAPTIVE DARK & LIGHT THEME CSS + MOBILE AUDIO/VOICE FIXES ---
 custom_css = (
     "<style>"
     "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');"
@@ -91,6 +100,23 @@ custom_css = (
     "html[data-deeprag-theme='light'] .anime-vignette {"
     "  position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;"
     "  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 65%);"
+    "}"
+
+    /* Responsive Voice Input Widget Fix for Mobile & Desktop */
+    "div[data-testid='stAudioInput'] {"
+    "  background: rgba(10, 15, 28, 0.92) !important;"
+    "  border: 1px solid rgba(56, 189, 248, 0.35) !important;"
+    "  border-radius: 16px !important;"
+    "  padding: 10px 14px !important;"
+    "  width: 100% !important;"
+    "  box-sizing: border-box !important;"
+    "  overflow: visible !important;"
+    "  margin-bottom: 10px !important;"
+    "}"
+    "html[data-deeprag-theme='light'] div[data-testid='stAudioInput'] {"
+    "  background: #ffffff !important;"
+    "  border: 1px solid rgba(79, 70, 229, 0.35) !important;"
+    "  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;"
     "}"
 
     ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
@@ -132,7 +158,7 @@ custom_css = (
     "html[data-deeprag-theme='light'] div.stButton > button { background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.3) !important; color: #1e293b !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important; }"
     "div.stButton > button:hover { transform: translateY(-2px) !important; border-color: #38bdf8 !important; background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; }"
 
-    "div[data-testid='stChatMessage'] { background: rgba(10, 15, 28, 0.88) !important; border: 1px solid rgba(56, 189, 248, 0.2) !important; border-radius: 16px !important; padding: 16px 20px !important; margin-bottom: 14px !important; }"
+    "div[data-testid='stChatMessage'] { background: rgba(10, 15, 28, 0.88) !important; border: 1px solid rgba(56, 189, 248, 0.2) !important; border-radius: 16px !important; padding: 16px 20px !important; margin-bottom: 14px !important; overflow-x: auto !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stChatMessage'] { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.22) !important; box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05) !important; }"
 
     ".quiz-card { background: rgba(10, 15, 28, 0.9); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 18px 22px; margin-bottom: 14px; }"
@@ -361,71 +387,95 @@ def highlight_query_terms(snippet: str, query: str) -> str:
     return safe_snippet
 
 
-# --- HELPER: ULTRA-PREMIUM GRAPHIC PDF GENERATOR BUTTON (HTML2PDF + NATIVE VECTOR PRINT) ---
+# --- HELPER: ZERO-CUTOFF UNIVERSAL A4 GRAPHIC PDF GENERATOR (MOBILE + LAPTOP + PC) ---
 def render_premium_pdf_download_button(report_html_body: str, filename_pdf: str, btn_label: str, btn_id: str):
     b64_html = base64.b64encode(report_html_body.encode("utf-8")).decode("utf-8")
     widget_html = (
         f"<script src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'></script>"
         f"<style>"
+        f"html, body {{ margin:0; padding:0; overflow:hidden; font-family:'Inter', sans-serif; }}"
         f".pdf-action-bar {{"
-        f"  display:flex; gap:10px; flex-wrap:wrap; align-items:center; width:100%; margin:6px 0;"
-        f"  font-family:'Inter', sans-serif;"
+        f"  display:flex; gap:10px; flex-wrap:wrap; align-items:center; width:100%; padding:4px 2px;"
+        f"  box-sizing:border-box;"
         f"}}"
         f".pdf-btn-primary {{"
-        f"  flex:1; min-width:210px; background:linear-gradient(135deg, #0284c7, #4f46e5, #7c3aed);"
-        f"  color:#ffffff; border:none; border-radius:12px; padding:11px 18px; font-size:0.86rem;"
+        f"  flex:1 1 220px; background:linear-gradient(135deg, #0284c7, #4f46e5, #7c3aed);"
+        f"  color:#ffffff; border:none; border-radius:12px; padding:12px 16px; font-size:0.84rem;"
         f"  font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;"
-        f"  gap:8px; box-shadow:0 6px 20px rgba(79, 70, 229, 0.4); transition:all 0.25s ease;"
+        f"  gap:8px; box-shadow:0 6px 18px rgba(79, 70, 229, 0.35); transition:all 0.25s ease; text-align:center;"
         f"}}"
-        f".pdf-btn-primary:hover {{ transform:translateY(-2px); filter:brightness(1.08); }}"
+        f".pdf-btn-primary:hover {{ transform:translateY(-1px); filter:brightness(1.08); }}"
         f".pdf-btn-print {{"
-        f"  background:rgba(15, 23, 42, 0.9); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.45);"
-        f"  border-radius:12px; padding:11px 16px; font-size:0.82rem; font-weight:700; cursor:pointer;"
+        f"  flex:0 1 auto; background:#0f172a; color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.5);"
+        f"  border-radius:12px; padding:12px 16px; font-size:0.82rem; font-weight:700; cursor:pointer;"
         f"  display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;"
         f"}}"
         f".pdf-btn-print:hover {{ background:#0284c7; color:#ffffff; }}"
+        f"@media (max-width: 520px) {{"
+        f"  .pdf-btn-primary, .pdf-btn-print {{ flex: 1 1 100%; width: 100%; font-size: 0.8rem; padding: 11px 12px; }}"
+        f"}}"
         f"</style>"
-        f"<div class='pdf-action-bar'>"
+        f"<div id='bar_{btn_id}' class='pdf-action-bar'>"
         f"  <button id='dl_{btn_id}' class='pdf-btn-primary' onclick='downloadPdf_{btn_id}()'>{btn_label}</button>"
         f"  <button class='pdf-btn-print' onclick='printPdf_{btn_id}()'>🖨️ Save Vector PDF</button>"
         f"</div>"
         f"<script>"
+        f"function syncHeight_{btn_id}() {{"
+        f"  if (window.frameElement) {{"
+        f"    const h = document.getElementById('bar_{btn_id}').offsetHeight;"
+        f"    window.frameElement.style.height = (h + 14) + 'px';"
+        f"  }}"
+        f"}}"
+        f"window.addEventListener('load', syncHeight_{btn_id});"
+        f"window.addEventListener('resize', syncHeight_{btn_id});"
+        f"setTimeout(syncHeight_{btn_id}, 120);"
+        f"function getLocalTimestamp_{btn_id}() {{"
+        f"  const now = new Date();"
+        f"  const d = now.toLocaleDateString('en-GB', {{ day: '2-digit', month: 'short', year: 'numeric' }});"
+        f"  const t = now.toLocaleTimeString('en-US', {{ hour: '2-digit', minute: '2-digit', hour12: true }});"
+        f"  return d + ' • ' + t;"
+        f"}}"
         f"function decodeUtf8_{btn_id}(b64) {{"
         f"  const binStr = atob(b64);"
         f"  const bytes = new Uint8Array(binStr.length);"
         f"  for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);"
-        f"  return new TextDecoder('utf-8').decode(bytes);"
+        f"  let decoded = new TextDecoder('utf-8').decode(bytes);"
+        f"  return decoded.replace(/__LOCAL_TIME_PLACEHOLDER__/g, getLocalTimestamp_{btn_id}());"
         f"}}"
         f"function downloadPdf_{btn_id}() {{"
         f"  const btn = document.getElementById('dl_{btn_id}');"
         f"  const origText = btn.innerHTML;"
-        f"  btn.innerHTML = '⏳ Rendering High-Res Graphic PDF...';"
+        f"  btn.innerHTML = '⏳ Rendering High-Res A4 Graphic PDF...';"
+        f"  syncHeight_{btn_id}();"
         f"  const htmlStr = decodeUtf8_{btn_id}('{b64_html}');"
-        f"  const holder = document.createElement('div');"
-        f"  holder.style.width = '790px';"
-        f"  holder.style.background = '#ffffff';"
-        f"  holder.innerHTML = htmlStr;"
-        f"  document.body.appendChild(holder);"
+        f"  const wrapper = document.createElement('div');"
+        f"  wrapper.style.position = 'fixed';"
+        f"  wrapper.style.left = '-9999px';"
+        f"  wrapper.style.top = '0';"
+        f"  wrapper.style.width = '680px';"
+        f"  wrapper.style.background = '#ffffff';"
+        f"  wrapper.innerHTML = htmlStr;"
+        f"  document.body.appendChild(wrapper);"
         f"  if (window.html2pdf) {{"
         f"    const opt = {{"
         f"      margin: [8, 8, 8, 8],"
         f"      filename: '{filename_pdf}',"
-        f"      image: {{ type: 'jpeg', quality: 0.98 }},"
-        f"      html2canvas: {{ scale: 2, useCORS: true, backgroundColor: '#ffffff' }},"
+        f"      image: {{ type: 'jpeg', quality: 0.99 }},"
+        f"      html2canvas: {{ scale: 2, useCORS: true, backgroundColor: '#ffffff', width: 680, windowWidth: 680, scrollX: 0, scrollY: 0 }},"
         f"      jsPDF: {{ unit: 'mm', format: 'a4', orientation: 'portrait' }},"
         f"      pagebreak: {{ mode: ['avoid-all', 'css', 'legacy'] }}"
         f"    }};"
-        f"    html2pdf().set(opt).from(holder).save().then(() => {{"
-        f"      document.body.removeChild(holder);"
-        f"      btn.innerHTML = '✅ PDF Downloaded!';"
-        f"      setTimeout(() => {{ btn.innerHTML = origText; }}, 2200);"
+        f"    html2pdf().set(opt).from(wrapper).save().then(() => {{"
+        f"      document.body.removeChild(wrapper);"
+        f"      btn.innerHTML = '✅ Ultra-Premium PDF Downloaded!';"
+        f"      setTimeout(() => {{ btn.innerHTML = origText; syncHeight_{btn_id}(); }}, 2200);"
         f"    }}).catch(() => {{"
-        f"      document.body.removeChild(holder);"
+        f"      document.body.removeChild(wrapper);"
         f"      btn.innerHTML = origText;"
         f"      printPdf_{btn_id}();"
         f"    }});"
         f"  }} else {{"
-        f"    document.body.removeChild(holder);"
+        f"    document.body.removeChild(wrapper);"
         f"    btn.innerHTML = origText;"
         f"    printPdf_{btn_id}();"
         f"  }}"
@@ -435,16 +485,16 @@ def render_premium_pdf_download_button(report_html_body: str, filename_pdf: str,
         f"  const w = window.open('', '_blank');"
         f"  if (w) {{"
         f"    w.document.open();"
-        f"    w.document.write('<!DOCTYPE html><html><head><title>{filename_pdf}</title><style>@page {{ size: A4; margin: 10mm; }} body {{ margin: 0; background: #ffffff; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }}</style></head><body>' + htmlStr + '<script>setTimeout(() => {{ window.print(); }}, 450);<\\/script></body></html>');"
+        f"    w.document.write('<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>{filename_pdf}</title><style>@page {{ size: A4 portrait; margin: 8mm; }} * {{ box-sizing: border-box !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }} body {{ margin: 0; padding: 0; background: #ffffff; width: 100%; }} .pdf-root-canvas {{ width: 100% !important; max-width: 100% !important; padding: 10px !important; }}</style></head><body>' + htmlStr + '<script>setTimeout(() => {{ window.print(); }}, 500);<\\/script></body></html>');"
         f"    w.document.close();"
         f"  }}"
         f"}}"
         f"</script>"
     )
-    components.html(widget_html, height=58)
+    components.html(widget_html, height=110)
 
 
-# --- HELPER: BUILD ULTRA-PREMIUM QUIZ ANALYSIS PDF HTML ---
+# --- HELPER: BUILD ULTRA-PREMIUM QUIZ ANALYSIS PDF HTML (680PX LOCKED A4 + SVG RADIAL GAUGE) ---
 def build_premium_quiz_pdf_html(
     score: int,
     total_q: int,
@@ -456,14 +506,27 @@ def build_premium_quiz_pdf_html(
     quiz_records: list[dict],
     corpus_label: str
 ) -> str:
-    date_str = time.strftime("%d %b %Y • %I:%M %p")
+    ist_fallback = get_ist_time_str()
+    wrong_q = max(0, total_q - score)
+    dash_offset = round(100 - accuracy_pct, 1)
+
     mastered_html = "".join(
-        [f"<li style='margin-bottom:6px; color:#065f46; font-weight:600;'>✅ {html.escape(m)}</li>" for m in mastered_topics]
-    ) or "<li style='color:#64748b;'>Complete more questions correctly to unlock mastered topics.</li>"
+        [
+            f"<div style='background:#ffffff; border:1px solid #86efac; border-left:4px solid #10b981; border-radius:8px; "
+            f"padding:6px 10px; margin-bottom:6px; font-size:11.5px; color:#065f46; font-weight:700;'>"
+            f"✓ {html.escape(m)}</div>"
+            for m in mastered_topics
+        ]
+    ) or "<div style='color:#64748b; font-size:11.5px; font-style:italic;'>Complete more questions correctly to unlock mastered topics.</div>"
 
     weak_html = "".join(
-        [f"<li style='margin-bottom:6px; color:#991b1b; font-weight:600;'>📌 {html.escape(w)}</li>" for w in weak_areas]
-    ) or "<li style='color:#065f46; font-weight:700;'>🎉 Zero weak areas detected! 100% Concept Mastery!</li>"
+        [
+            f"<div style='background:#ffffff; border:1px solid #fca5a5; border-left:4px solid #ef4444; border-radius:8px; "
+            f"padding:6px 10px; margin-bottom:6px; font-size:11.5px; color:#991b1b; font-weight:700;'>"
+            f"! {html.escape(w)}</div>"
+            for w in weak_areas
+        ]
+    ) or "<div style='background:#ffffff; border:1px solid #86efac; border-radius:8px; padding:8px 10px; color:#065f46; font-size:11.5px; font-weight:800;'>🎉 Zero weak areas detected! 100% Concept Mastery Achieved!</div>"
 
     cards_html = []
     for r in quiz_records:
@@ -471,87 +534,121 @@ def build_premium_quiz_pdf_html(
         border_col = "#10b981" if is_ok else "#ef4444"
         bg_col = "#f0fdf4" if is_ok else "#fef2f2"
         badge_bg = "#059669" if is_ok else "#dc2626"
-        badge_txt = "CORRECT" if is_ok else "NEEDS REVISION"
+        badge_txt = "✓ CORRECT" if is_ok else "✗ REVISE"
         cards_html.append(
-            f"<div style='page-break-inside:avoid; border:1px solid {border_col}; border-left:6px solid {border_col}; "
-            f"background:{bg_col}; border-radius:12px; padding:14px 16px; margin-bottom:12px;'>"
-            f"  <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;'>"
-            f"    <span style='font-size:11px; font-weight:800; color:#4f46e5; text-transform:uppercase; letter-spacing:0.05em;'>"
-            f"      Question #{r['num']:02d} • {html.escape(r['topic'])} ({html.escape(r['page'])})"
-            f"    </span>"
-            f"    <span style='background:{badge_bg}; color:#ffffff; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px;'>"
-            f"      {badge_txt}"
-            f"    </span>"
+            f"<div style='page-break-inside:avoid; border:1.5px solid {border_col}; border-left:6px solid {border_col}; "
+            f"background:{bg_col}; border-radius:12px; padding:13px 15px; margin-bottom:11px; width:100%; box-sizing:border-box;'>"
+            f"  <table style='width:100%; border-collapse:collapse; margin-bottom:6px;'>"
+            f"    <tr>"
+            f"      <td style='text-align:left; font-size:10.5px; font-weight:800; color:#4f46e5; text-transform:uppercase; letter-spacing:0.04em; padding:0;'>"
+            f"        QUESTION #{r['num']:02d} • {html.escape(r['topic'])} ({html.escape(r['page'])})"
+            f"      </td>"
+            f"      <td style='text-align:right; width:110px; padding:0;'>"
+            f"        <span style='display:inline-block; background:{badge_bg}; color:#ffffff; font-size:9.5px; font-weight:800; padding:3px 10px; border-radius:999px; letter-spacing:0.04em;'>"
+            f"          {badge_txt}"
+            f"        </span>"
+            f"      </td>"
+            f"    </tr>"
+            f"  </table>"
+            f"  <div style='font-size:13px; font-weight:800; color:#0f172a; margin-bottom:9px; line-height:1.45; word-wrap:break-word;'>"
+            f"    {html.escape(r['question'])}"
             f"  </div>"
-            f"  <div style='font-size:14px; font-weight:700; color:#0f172a; margin-bottom:8px;'>{html.escape(r['question'])}</div>"
-            f"  <div style='font-size:12.5px; color:#1e293b; margin-bottom:4px;'>"
-            f"    <strong>Your Answer:</strong> <span style='color:{badge_bg}; font-weight:700;'>{html.escape(r['picked'])}</span>"
-            f"  </div>"
-            f"  <div style='font-size:12.5px; color:#0f172a; margin-bottom:8px;'>"
-            f"    <strong>Verified Correct Option:</strong> <span style='color:#059669; font-weight:700;'>{html.escape(r['correct'])}</span>"
-            f"  </div>"
-            f"  <div style='background:#ffffff; border:1px solid rgba(15,23,42,0.08); border-radius:8px; padding:9px 12px; font-size:12px; color:#334155; line-height:1.5;'>"
-            f"    <strong>🧠 AI Revision Note:</strong> {html.escape(r['explanation'])}"
+            f"  <table style='width:100%; border-collapse:separate; border-spacing:6px 0; margin-bottom:8px;'>"
+            f"    <tr>"
+            f"      <td style='width:50%; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:7px 10px; vertical-align:top;'>"
+            f"        <div style='font-size:9.5px; font-weight:800; color:#64748b; text-transform:uppercase;'>Your Selected Option</div>"
+            f"        <div style='font-size:11.5px; font-weight:700; color:{badge_bg}; margin-top:2px; word-wrap:break-word;'>{html.escape(r['picked'])}</div>"
+            f"      </td>"
+            f"      <td style='width:50%; background:#ffffff; border:1px solid #86efac; border-radius:8px; padding:7px 10px; vertical-align:top;'>"
+            f"        <div style='font-size:9.5px; font-weight:800; color:#059669; text-transform:uppercase;'>Verified Correct Key</div>"
+            f"        <div style='font-size:11.5px; font-weight:700; color:#065f46; margin-top:2px; word-wrap:break-word;'>{html.escape(r['correct'])}</div>"
+            f"      </td>"
+            f"    </tr>"
+            f"  </table>"
+            f"  <div style='background:#ffffff; border:1px solid rgba(15,23,42,0.1); border-left:3.5px solid #4f46e5; border-radius:8px; padding:8px 11px; font-size:11.5px; color:#334155; line-height:1.5; word-wrap:break-word;'>"
+            f"    <strong style='color:#1e1b4b;'>🧠 AI Neural Revision Note:</strong> {html.escape(r['explanation'])}"
             f"  </div>"
             f"</div>"
         )
 
     return (
-        "<div style='font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; color:#0f172a; background:#ffffff; padding:24px; box-sizing:border-box;'>"
-        "  <div style='background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #0284c7 100%); color:#ffffff; border-radius:16px; padding:24px 28px; margin-bottom:20px;'>"
-        "    <div style='display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;'>"
-        "      <div>"
-        "        <div style='font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:#38bdf8; font-weight:800;'>DEEPRAG AI WORKSPACE • OFFICIAL DIAGNOSTIC REPORT</div>"
-        "        <div style='font-size:24px; font-weight:800; margin-top:4px;'>Executive Quiz Performance & Mastery Analysis</div>"
-        f"       <div style='font-size:12px; color:#cbd5e1; margin-top:4px;'>📄 Indexed Corpus: {html.escape(corpus_label)} &nbsp;|&nbsp; 🕒 Generated: {date_str}</div>"
-        "      </div>"
-        "      <div style='background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:12px; padding:10px 16px; text-align:right;'>"
-        f"       <div style='font-size:22px; font-weight:800; color:#38bdf8;'>{accuracy_pct}%</div>"
-        "        <div style='font-size:10px; text-transform:uppercase; color:#e2e8f0;'>Overall Accuracy</div>"
-        "      </div>"
-        "    </div>"
+        "<div class='pdf-root-canvas' style='width:680px; max-width:680px; margin:0 auto; font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; color:#0f172a; background:#ffffff; padding:16px; box-sizing:border-box;'>"
+        "  <div style='background:linear-gradient(135deg, #060913 0%, #1e1b4b 55%, #0284c7 100%); color:#ffffff; border-radius:16px; padding:20px 22px; margin-bottom:16px; border:1px solid #38bdf8; box-sizing:border-box;'>"
+        "    <table style='width:100%; border-collapse:collapse;'>"
+        "      <tr>"
+        "        <td style='vertical-align:middle; padding-right:12px;'>"
+        "          <div style='display:inline-block; background:rgba(56,189,248,0.18); border:1px solid rgba(56,189,248,0.5); color:#7dd3fc; font-size:9.5px; font-weight:800; padding:3px 10px; border-radius:999px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;'>"
+        "            ⚡ DEEPRAG NEURAL ASSESSMENT ENGINE • VERIFIED DOSSIER"
+        "          </div>"
+        "          <div style='font-size:21px; font-weight:800; letter-spacing:-0.01em; line-height:1.2; color:#ffffff;'>"
+        "            Executive Quiz Performance & Mastery Report"
+        "          </div>"
+        f"         <div style='font-size:11px; color:#cbd5e1; margin-top:7px;'>"
+        f"           📂 <strong>Corpus:</strong> {html.escape(corpus_label)} &nbsp;|&nbsp; 🕒 <strong>IST Timestamp:</strong> __LOCAL_TIME_PLACEHOLDER__"
+        f"         </div>"
+        "        </td>"
+        "        <td style='width:105px; text-align:right; vertical-align:middle;'>"
+        "          <svg width='86' height='86' viewBox='0 0 36 36' style='display:block; margin-left:auto;'>"
+        "            <path d='M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831' fill='none' stroke='rgba(255,255,255,0.18)' stroke-width='3.4'/>"
+        f"           <path d='M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831' fill='none' stroke='#38bdf8' stroke-width='3.4' stroke-dasharray='{accuracy_pct}, 100' stroke-linecap='round'/>"
+        f"           <text x='18' y='19.5' fill='#ffffff' font-size='8.5' font-weight='800' text-anchor='middle'>{accuracy_pct}%</text>"
+        "            <text x='18' y='25.5' fill='#bae6fd' font-size='3.4' font-weight='700' text-anchor='middle'>ACCURACY</text>"
+        "          </svg>"
+        "        </td>"
+        "      </tr>"
+        "    </table>"
         "  </div>"
-        "  <div style='display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:18px;'>"
-        "    <div style='background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; text-align:center;'>"
-        "      <div style='font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;'>🎯 Final Score</div>"
-        f"     <div style='font-size:22px; font-weight:800; color:#0f172a; margin-top:4px;'>{score} / {total_q}</div>"
-        "    </div>"
-        "    <div style='background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; text-align:center;'>"
-        "      <div style='font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;'>📈 Precision Gauge</div>"
-        f"     <div style='font-size:22px; font-weight:800; color:#0284c7; margin-top:4px;'>{accuracy_pct}%</div>"
-        "    </div>"
-        "    <div style='background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; text-align:center;'>"
-        "      <div style='font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;'>🏅 Performance Tier</div>"
-        f"     <div style='font-size:15px; font-weight:800; color:#4f46e5; margin-top:7px;'>{html.escape(grade_rank)}</div>"
-        "    </div>"
-        "  </div>"
-        "  <div style='background:#eef2ff; border-left:5px solid #4f46e5; border-radius:10px; padding:12px 16px; margin-bottom:18px; font-size:13px; color:#1e1b4b;'>"
+        "  <table style='width:100%; border-collapse:separate; border-spacing:8px 0; margin-bottom:14px;'>"
+        "    <tr>"
+        "      <td style='width:33.3%; background:#f8fafc; border:1.5px solid #cbd5e1; border-top:4px solid #0284c7; border-radius:12px; padding:12px 10px; text-align:center;'>"
+        "        <div style='font-size:10px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.05em;'>🎯 Final Score</div>"
+        f"       <div style='font-size:21px; font-weight:800; color:#0f172a; margin-top:4px;'>{score} / {total_q}</div>"
+        f"       <div style='font-size:10px; color:#059669; font-weight:700; margin-top:2px;'>{score} Correct • {wrong_q} Revise</div>"
+        "      </td>"
+        "      <td style='width:33.3%; background:#f8fafc; border:1.5px solid #cbd5e1; border-top:4px solid #4f46e5; border-radius:12px; padding:12px 10px; text-align:center;'>"
+        "        <div style='font-size:10px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.05em;'>📈 Precision Index</div>"
+        f"       <div style='font-size:21px; font-weight:800; color:#4f46e5; margin-top:4px;'>{accuracy_pct}%</div>"
+        "        <div style='width:85%; height:5px; background:#e2e8f0; border-radius:999px; margin:5px auto 0 auto; overflow:hidden;'>"
+        f"         <div style='width:{accuracy_pct}%; height:100%; background:linear-gradient(90deg,#10b981,#4f46e5);'></div>"
+        "        </div>"
+        "      </td>"
+        "      <td style='width:33.3%; background:#f8fafc; border:1.5px solid #cbd5e1; border-top:4px solid #9333ea; border-radius:12px; padding:12px 10px; text-align:center;'>"
+        "        <div style='font-size:10px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.05em;'>🏅 Mastery Tier</div>"
+        f"       <div style='font-size:13.5px; font-weight:800; color:#7e22ce; margin-top:6px; line-height:1.25;'>{html.escape(grade_rank)}</div>"
+        "      </td>"
+        "    </tr>"
+        "  </table>"
+        "  <div style='background:linear-gradient(90deg, #eef2ff 0%, #f0f9ff 100%); border:1px solid #c7d2fe; border-left:5px solid #4f46e5; border-radius:10px; padding:11px 14px; margin-bottom:14px; font-size:12px; color:#1e1b4b; line-height:1.5;'>"
         f"   <strong>💡 AI Tutor Executive Prescription:</strong> {html.escape(rec_note)}"
         "  </div>"
-        "  <div style='display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:22px;'>"
-        "    <div style='background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:14px;'>"
-        "      <div style='font-size:13px; font-weight:800; color:#065f46; margin-bottom:8px; text-transform:uppercase;'>✅ Strengths (Topics Mastered)</div>"
-        f"     <ul style='margin:0; padding-left:18px; font-size:12.5px;'>{mastered_html}</ul>"
-        "    </div>"
-        "    <div style='background:#fef2f2; border:1px solid #fca5a5; border-radius:12px; padding:14px;'>"
-        "      <div style='font-size:13px; font-weight:800; color:#991b1b; margin-bottom:8px; text-transform:uppercase;'>📌 Action Plan (Pages to Revise)</div>"
-        f"     <ul style='margin:0; padding-left:18px; font-size:12.5px;'>{weak_html}</ul>"
-        "    </div>"
-        "  </div>"
-        "  <div style='font-size:15px; font-weight:800; color:#0f172a; margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:6px;'>"
-        "    📝 Question-by-Question Verification & Revision Key"
+        "  <table style='width:100%; border-collapse:separate; border-spacing:8px 0; margin-bottom:16px;'>"
+        "    <tr>"
+        "      <td style='width:50%; vertical-align:top; background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:12px;'>"
+        "        <div style='font-size:11.5px; font-weight:800; color:#065f46; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;'>✅ Strengths (Topics Mastered)</div>"
+        f"       {mastered_html}"
+        "      </td>"
+        "      <td style='width:50%; vertical-align:top; background:#fef2f2; border:1px solid #fca5a5; border-radius:12px; padding:12px;'>"
+        "        <div style='font-size:11.5px; font-weight:800; color:#991b1b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;'>📌 Action Plan (Pages to Revise)</div>"
+        f"       {weak_html}"
+        "      </td>"
+        "    </tr>"
+        "  </table>"
+        "  <div style='font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:10px; border-bottom:2px solid #cbd5e1; padding-bottom:5px; text-transform:uppercase; letter-spacing:0.04em;'>"
+        "    📝 Question-by-Question Verification & Answer Key"
         "  </div>"
         + "".join(cards_html) +
-        "  <div style='margin-top:20px; padding-top:10px; border-top:1px solid #cbd5e1; text-align:center; font-size:11px; color:#64748b; font-weight:600;'>"
-        "    Engineered with ❤️ by Deep Patel • DeepRAG AI Workspace Neural Assessment Engine"
+        "  <div style='margin-top:16px; padding-top:10px; border-top:1.5px solid #e2e8f0; text-align:center; font-size:10.5px; color:#475569; font-weight:700;'>"
+        f"   Engineered with ❤️ by Deep Patel • DeepRAG AI Workspace Neural Assessment Engine • {ist_fallback} IST"
         "  </div>"
         "</div>"
     )
 
 
-# --- HELPER: BUILD ULTRA-PREMIUM CHAT SESSION PDF HTML ---
+# --- HELPER: BUILD ULTRA-PREMIUM CHAT SESSION PDF HTML (680PX LOCKED A4) ---
 def build_premium_chat_pdf_html(chat_history: list[dict], corpus_label: str, total_pages: int, total_chunks: int) -> str:
-    date_str = time.strftime("%d %b %Y • %I:%M %p")
+    ist_fallback = get_ist_time_str()
+    total_q = len(chat_history)
+    avg_conf = int(round(sum(t.get("avg_match", 94) for t in chat_history) / max(1, total_q)))
     turns_html = []
 
     for idx, turn in enumerate(chat_history):
@@ -559,50 +656,59 @@ def build_premium_chat_pdf_html(chat_history: list[dict], corpus_label: str, tot
         ans_escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", ans_escaped)
         cites_rows = []
         for c_i, c in enumerate(turn.get("citations", [])):
+            m_pct = int(c.get("match_pct", 92))
             cites_rows.append(
-                f"<div style='background:#f8fafc; border-left:3px solid #6366f1; padding:6px 10px; border-radius:6px; margin-top:5px; font-size:11px; color:#334155;'>"
-                f"  <strong>📌 Source {c_i+1}: {html.escape(str(c.get('source', 'PDF')))} (Page {html.escape(str(c.get('page', '?')))}) "
-                f"  — {c.get('match_pct', 92)}% Semantic Match</strong><br>"
-                f"  {html.escape(str(c.get('snippet', ''))[:240])}"
+                f"<div style='background:#f8fafc; border:1px solid #e2e8f0; border-left:3.5px solid #4f46e5; padding:7px 10px; border-radius:8px; margin-top:6px; font-size:10.5px; color:#334155; word-wrap:break-word;'>"
+                f"  <table style='width:100%; border-collapse:collapse; margin-bottom:3px;'>"
+                f"    <tr>"
+                f"      <td style='font-weight:800; color:#0f172a; padding:0;'>📌 Source {c_i+1}: {html.escape(str(c.get('source', 'PDF')))} (Page {html.escape(str(c.get('page', '?')))})</td>"
+                f"      <td style='text-align:right; font-weight:800; color:#059669; width:110px; padding:0;'>🎯 {m_pct}% Match</td>"
+                f"    </tr>"
+                f"  </table>"
+                f"  <div style='color:#475569; line-height:1.4;'>{html.escape(str(c.get('snippet', ''))[:240])}</div>"
                 f"</div>"
             )
 
         turns_html.append(
-            f"<div style='page-break-inside:avoid; border:1px solid #cbd5e1; border-radius:14px; padding:16px 18px; margin-bottom:16px; background:#ffffff;'>"
-            f"  <div style='background:#0f172a; color:#ffffff; border-radius:10px; padding:10px 14px; margin-bottom:12px;'>"
-            f"    <div style='font-size:10px; color:#38bdf8; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;'>QUERY #{idx+1:02d} • USER INTERROGATION</div>"
-            f"    <div style='font-size:14px; font-weight:700; margin-top:3px;'>{html.escape(turn.get('question', ''))}</div>"
+            f"<div style='page-break-inside:avoid; border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 16px; margin-bottom:14px; background:#ffffff; width:100%; box-sizing:border-box;'>"
+            f"  <div style='background:linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%); color:#ffffff; border-radius:10px; padding:10px 14px; margin-bottom:10px;'>"
+            f"    <div style='font-size:9.5px; color:#38bdf8; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;'>QUERY #{idx+1:02d} • VERIFIED USER INTERROGATION</div>"
+            f"    <div style='font-size:13.5px; font-weight:700; margin-top:3px; word-wrap:break-word;'>{html.escape(turn.get('question', ''))}</div>"
             f"  </div>"
-            f"  <div style='font-size:13px; line-height:1.65; color:#1e293b; margin-bottom:12px;'>{ans_escaped}</div>"
-            f"  <div style='display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;'>"
-            f"    <span style='background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>⚡ Engine: {html.escape(str(turn.get('model', 'Gemini')))}</span>"
-            f"    <span style='background:#dcfce7; color:#15803d; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>🎯 Confidence: {turn.get('avg_match', 94)}%</span>"
-            f"    <span style='background:#ede9fe; color:#6d28d9; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>⏱️ Latency: {turn.get('latency', 1.2)}s</span>"
-            f"    <span style='background:#f1f5f9; color:#334155; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;'>📝 {turn.get('words', 0)} Words</span>"
+            f"  <div style='font-size:12px; line-height:1.65; color:#1e293b; margin-bottom:10px; word-wrap:break-word;'>{ans_escaped}</div>"
+            f"  <div style='margin-bottom:8px;'>"
+            f"    <span style='display:inline-block; background:#e0f2fe; color:#0369a1; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px; margin-right:5px;'>⚡ Engine: {html.escape(str(turn.get('model', 'Gemini')))}</span>"
+            f"    <span style='display:inline-block; background:#dcfce7; color:#15803d; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px; margin-right:5px;'>🎯 Confidence: {turn.get('avg_match', 94)}%</span>"
+            f"    <span style='display:inline-block; background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px; margin-right:5px;'>⏱️ Latency: {turn.get('latency', 1.2)}s</span>"
+            f"    <span style='display:inline-block; background:#f1f5f9; color:#334155; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px;'>📝 {turn.get('words', 0)} Words</span>"
             f"  </div>"
             f"  <div style='border-top:1px dashed #cbd5e1; padding-top:8px;'>"
-            f"    <div style='font-size:11px; font-weight:800; color:#4f46e5; text-transform:uppercase;'>📚 Verified PDF Page Citations</div>"
+            f"    <div style='font-size:10.5px; font-weight:800; color:#4f46e5; text-transform:uppercase; letter-spacing:0.04em;'>📚 Verified PDF Page Citations & Evidence</div>"
             + "".join(cites_rows) +
             f"  </div>"
             f"</div>"
         )
 
     return (
-        "<div style='font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; color:#0f172a; background:#ffffff; padding:24px; box-sizing:border-box;'>"
-        "  <div style='background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #4f46e5 100%); color:#ffffff; border-radius:16px; padding:24px 28px; margin-bottom:20px;'>"
-        "    <div style='font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:#38bdf8; font-weight:800;'>DEEPRAG AI WORKSPACE • RESEARCH & STUDY DOSSIER</div>"
-        "    <div style='font-size:24px; font-weight:800; margin-top:4px;'>Verified Neural RAG Session & Citation Report</div>"
-        f"   <div style='font-size:12px; color:#cbd5e1; margin-top:6px;'>📂 Active Corpus: {html.escape(corpus_label)} &nbsp;|&nbsp; 📄 Pages: {total_pages} &nbsp;|&nbsp; 🧩 Vector Chunks: {total_chunks} &nbsp;|&nbsp; 🕒 {date_str}</div>"
+        "<div class='pdf-root-canvas' style='width:680px; max-width:680px; margin:0 auto; font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; color:#0f172a; background:#ffffff; padding:16px; box-sizing:border-box;'>"
+        "  <div style='background:linear-gradient(135deg, #060913 0%, #1e1b4b 55%, #4f46e5 100%); color:#ffffff; border-radius:16px; padding:20px 22px; margin-bottom:16px; border:1px solid #818cf8; box-sizing:border-box;'>"
+        "    <div style='display:inline-block; background:rgba(56,189,248,0.18); border:1px solid rgba(56,189,248,0.5); color:#7dd3fc; font-size:9.5px; font-weight:800; padding:3px 10px; border-radius:999px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;'>"
+        "      🧠 DEEPRAG AI WORKSPACE • EXECUTIVE RESEARCH DOSSIER"
+        "    </div>"
+        "    <div style='font-size:21px; font-weight:800; margin-top:2px;'>Verified Neural RAG Session & Citation Report</div>"
+        f"   <div style='font-size:11px; color:#cbd5e1; margin-top:7px;'>"
+        f"     📂 <strong>Corpus:</strong> {html.escape(corpus_label)} &nbsp;|&nbsp; 📄 <strong>Pages:</strong> {total_pages} &nbsp;|&nbsp; 🧩 <strong>Chunks:</strong> {total_chunks} &nbsp;|&nbsp; 💬 <strong>Queries:</strong> {total_q} ({avg_conf}% Avg Match) &nbsp;|&nbsp; 🕒 __LOCAL_TIME_PLACEHOLDER__"
+        f"   </div>"
         "  </div>"
         + "".join(turns_html) +
-        "  <div style='margin-top:20px; padding-top:10px; border-top:1px solid #cbd5e1; text-align:center; font-size:11px; color:#64748b; font-weight:600;'>"
-        "    Engineered with ❤️ by Deep Patel • DeepRAG AI Workspace Neural Knowledge Report"
+        "  <div style='margin-top:16px; padding-top:10px; border-top:1.5px solid #cbd5e1; text-align:center; font-size:10.5px; color:#475569; font-weight:700;'>"
+        f"   Engineered with ❤️ by Deep Patel • DeepRAG AI Workspace Neural Knowledge Report • {ist_fallback} IST"
         "  </div>"
         "</div>"
     )
 
 
-# --- HELPER: ULTRA-SMOOTH NEURAL AUDIO DECK + COPY BUTTON ---
+# --- HELPER: ZERO-CUTOFF RESPONSIVE NEURAL AUDIO DECK + AUTO-HEIGHT IFRAME ---
 def render_tts_audio_button(answer_text: str, btn_id: str):
     clean_text = re.sub(r"[\*\#\`\~\_\>]", "", answer_text)
     clean_text = re.sub(r"\[Page\s*\d+\]", "", clean_text)
@@ -610,20 +716,21 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
 
     tts_html = (
         f"<style>"
+        f"html, body {{ margin:0; padding:0; overflow:hidden; font-family:'Inter', sans-serif; }}"
         f".audio-deck {{"
-        f"  display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;"
-        f"  background:#0a1020; border:1px solid rgba(56, 189, 248, 0.35); border-radius:999px;"
-        f"  padding:5px 12px; font-family:'Inter', sans-serif;"
+        f"  display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; box-sizing:border-box;"
+        f"  background:#0a1020; border:1px solid rgba(56, 189, 248, 0.42); border-radius:14px;"
+        f"  padding:6px 10px; max-width:100%;"
         f"}}"
         f".deck-btn {{"
         f"  background:linear-gradient(135deg, #0284c7, #4f46e5); color:#ffffff; border:none;"
-        f"  border-radius:999px; padding:6px 14px; font-size:0.76rem; font-weight:600; cursor:pointer;"
-        f"  display:inline-flex; align-items:center; gap:6px;"
+        f"  border-radius:10px; padding:6px 12px; font-size:0.75rem; font-weight:700; cursor:pointer;"
+        f"  display:inline-flex; align-items:center; gap:5px; white-space:nowrap;"
         f"}}"
         f".deck-sub {{"
-        f"  background:rgba(30, 41, 59, 0.85); color:#cbd5e1; border:1px solid rgba(148,163,184,0.28);"
-        f"  border-radius:999px; padding:5px 11px; font-size:0.73rem; font-weight:600; cursor:pointer;"
-        f"  display:inline-flex; align-items:center; gap:4px;"
+        f"  background:rgba(30, 41, 59, 0.92); color:#e2e8f0; border:1px solid rgba(148,163,184,0.32);"
+        f"  border-radius:10px; padding:5px 10px; font-size:0.72rem; font-weight:600; cursor:pointer;"
+        f"  display:inline-flex; align-items:center; gap:4px; white-space:nowrap;"
         f"}}"
         f".eq-wrap {{ display:none; align-items:flex-end; gap:3px; height:14px; margin:0 4px; }}"
         f".eq-bar {{ width:3px; background:#38bdf8; border-radius:2px; animation:eqBounce 0.7s infinite ease-in-out; }}"
@@ -632,7 +739,7 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f".eq-bar:nth-child(4) {{ animation-delay:0.45s; background:#38bdf8; }}"
         f"@keyframes eqBounce {{ 0%, 100% {{ height:4px; }} 50% {{ height:14px; }} }}"
         f"</style>"
-        f"<div class='audio-deck'>"
+        f"<div id='deck_{btn_id}' class='audio-deck'>"
         f"  <button id='play_{btn_id}' class='deck-btn' onclick='toggleSpeak_{btn_id}()'>🔊 Listen to Answer</button>"
         f"  <div id='eq_{btn_id}' class='eq-wrap'>"
         f"    <span class='eq-bar'></span><span class='eq-bar'></span><span class='eq-bar'></span><span class='eq-bar'></span>"
@@ -646,6 +753,15 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"let rate_{btn_id} = 1.0;"
         f"let isPlaying_{btn_id} = false;"
         f"let isPaused_{btn_id} = false;"
+        f"function adjustDeckHeight_{btn_id}() {{"
+        f"  if (window.frameElement) {{"
+        f"    const h = document.getElementById('deck_{btn_id}').offsetHeight;"
+        f"    window.frameElement.style.height = (h + 10) + 'px';"
+        f"  }}"
+        f"}}"
+        f"window.addEventListener('load', adjustDeckHeight_{btn_id});"
+        f"window.addEventListener('resize', adjustDeckHeight_{btn_id});"
+        f"setTimeout(adjustDeckHeight_{btn_id}, 100);"
         f"function cycleSpeed_{btn_id}() {{"
         f"  if (rate_{btn_id} === 1.0) rate_{btn_id} = 1.25;"
         f"  else if (rate_{btn_id} === 1.25) rate_{btn_id} = 1.5;"
@@ -661,15 +777,17 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"  if (isPlaying_{btn_id} && !isPaused_{btn_id}) {{"
         f"    window.speechSynthesis.pause();"
         f"    isPaused_{btn_id} = true;"
-        f"    playBtn.innerHTML = '▶️ Resume Audio';"
+        f"    playBtn.innerHTML = '▶️ Resume';"
         f"    eqBox.style.display = 'none';"
+        f"    adjustDeckHeight_{btn_id}();"
         f"    return;"
         f"  }}"
         f"  if (isPlaying_{btn_id} && isPaused_{btn_id}) {{"
         f"    window.speechSynthesis.resume();"
         f"    isPaused_{btn_id} = false;"
-        f"    playBtn.innerHTML = '⏸️ Pause Audio';"
+        f"    playBtn.innerHTML = '⏸️ Pause';"
         f"    eqBox.style.display = 'inline-flex';"
+        f"    adjustDeckHeight_{btn_id}();"
         f"    return;"
         f"  }}"
         f"  window.speechSynthesis.cancel();"
@@ -678,21 +796,24 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"  utter.rate = rate_{btn_id};"
         f"  utter.onstart = () => {{"
         f"    isPlaying_{btn_id} = true; isPaused_{btn_id} = false;"
-        f"    playBtn.innerHTML = '⏸️ Pause Audio';"
+        f"    playBtn.innerHTML = '⏸️ Pause';"
         f"    stopBtn.style.display = 'inline-flex';"
         f"    eqBox.style.display = 'inline-flex';"
+        f"    adjustDeckHeight_{btn_id}();"
         f"  }};"
         f"  utter.onend = () => {{"
         f"    isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
         f"    playBtn.innerHTML = '🔊 Listen to Answer';"
         f"    stopBtn.style.display = 'none';"
         f"    eqBox.style.display = 'none';"
+        f"    adjustDeckHeight_{btn_id}();"
         f"  }};"
         f"  utter.onerror = () => {{"
         f"    isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
         f"    playBtn.innerHTML = '🔊 Listen to Answer';"
         f"    stopBtn.style.display = 'none';"
         f"    eqBox.style.display = 'none';"
+        f"    adjustDeckHeight_{btn_id}();"
         f"  }};"
         f"  window.speechSynthesis.speak(utter);"
         f"}}"
@@ -702,6 +823,7 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"  document.getElementById('play_{btn_id}').innerHTML = '🔊 Listen to Answer';"
         f"  document.getElementById('stop_{btn_id}').style.display = 'none';"
         f"  document.getElementById('eq_{btn_id}').style.display = 'none';"
+        f"  adjustDeckHeight_{btn_id}();"
         f"}}"
         f"function copyAns_{btn_id}() {{"
         f"  navigator.clipboard.writeText(txt_{btn_id});"
@@ -711,7 +833,7 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"}}"
         f"</script>"
     )
-    components.html(tts_html, height=50)
+    components.html(tts_html, height=62)
 
 
 # --- HELPER: RENDER ASSISTANT TURN WITH CITATION BARS & X-RAY INSPECTOR ---
@@ -783,7 +905,6 @@ def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
 # --- HELPER: SMART TIERED MODEL CASCADE (PRIMARY -> 1500 RPD WORKHORSES) ---
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_ordered_gemini_models(clean_key: str) -> list[str]:
-    # Explicit cascade: Primary model first, followed immediately by 1,500 req/day high-speed models
     priority_cascade = [
         "models/gemini-3.0-flash",
         "models/gemini-2.5-flash",
@@ -846,7 +967,6 @@ def generate_smart_gemini_response(
     now_ts = time.time()
     last_error = ""
 
-    # Two passes: Pass 1 skips recently quota-limited/timed-out models; Pass 2 retries all if needed
     for pass_idx in range(2):
         for key_idx, clean_key in enumerate(valid_keys):
             ordered_models = get_ordered_gemini_models(clean_key)
@@ -868,7 +988,6 @@ def generate_smart_gemini_response(
 
                 try:
                     gen_resp = requests.post(gen_url, json=payload, timeout=(6, 22))
-                    # Fallback if a specific model doesn't support responseMimeType
                     if gen_resp.status_code == 400 and expect_json:
                         payload["generationConfig"] = {"temperature": float(temperature)}
                         gen_resp = requests.post(gen_url, json=payload, timeout=(6, 22))
@@ -886,13 +1005,11 @@ def generate_smart_gemini_response(
                     err_msg = err_body.get("message", f"HTTP {gen_resp.status_code}")
                     last_error = err_msg
 
-                    # If Quota Exceeded (429) or Model Overloaded (503) or Not Found (404), put this model on cooldown
                     if gen_resp.status_code in (429, 503, 404) or "quota" in err_msg.lower() or "rate" in err_msg.lower():
                         cooldown_secs = 900 if gen_resp.status_code == 429 else 120
                         st.session_state.exhausted_routes[route_id] = time.time() + cooldown_secs
                         continue
                 except requests.exceptions.Timeout:
-                    # Put slow/hanging model on 3-minute cooldown and immediately shift to next 1500 RPD model
                     st.session_state.exhausted_routes[route_id] = time.time() + 180
                     last_error = f"{chosen_model} timed out, auto-shifting to next 1500 RPD model..."
                     continue
@@ -1122,10 +1239,10 @@ if "agent_terminal_logs" not in st.session_state:
     ]
 
 
-# --- HELPER: ADD TERMINAL LOG ---
+# --- HELPER: ADD TERMINAL LOG IN IST ---
 def log_terminal(msg: str):
-    timestamp = time.strftime("%H:%M:%S")
-    st.session_state.agent_terminal_logs.append(f"[{timestamp}] {msg}")
+    timestamp = get_ist_time_str("%H:%M:%S")
+    st.session_state.agent_terminal_logs.append(f"[{timestamp} IST] {msg}")
     if len(st.session_state.agent_terminal_logs) > 25:
         st.session_state.agent_terminal_logs.pop(0)
 
@@ -1334,7 +1451,7 @@ with tab_workspace:
             if st.button("🎓 Top 5 Exam Questions", use_container_width=True):
                 triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
 
-    vcol1, vcol2 = st.columns([2, 1])
+    vcol1, vcol2 = st.columns([1.8, 1.2])
     with vcol1:
         st.markdown("##### 💬 Ask Your Documents (Text or Voice)")
         st.caption("Upload your PDF above, then type a question below or record a voice query using the microphone.")
