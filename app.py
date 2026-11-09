@@ -123,7 +123,6 @@ custom_css = (
 
     ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
 
-    /* Global Luxury Editorial Hero Banner for All Tabs */
     ".lux-hero-wrap { padding: 4px 0 10px 0; }"
     ".lux-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; letter-spacing: 0.24em; text-transform: uppercase; color: #f59e0b; margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 12px; }"
     ".lux-eyebrow::before { content: ''; width: 32px; height: 1px; background: linear-gradient(90deg, #f59e0b, transparent); display: inline-block; }"
@@ -134,7 +133,6 @@ custom_css = (
     ".hero-subtitle { font-family: 'Plus Jakarta Sans', sans-serif; color: #94a3b8; font-size: 1.04rem; line-height: 1.7; margin-bottom: 22px; font-weight: 400; max-width: 850px; }"
     "html[data-deeprag-theme='light'] .hero-subtitle { color: #475569; }"
 
-    /* Smooth Blur-Fade Character Animation Globally */
     ".lux-char-span { display: inline-block; opacity: 0; filter: blur(6px); transform: translateY(8px); transition: opacity 0.45s ease, filter 0.45s ease, transform 0.45s ease; }"
     ".lux-section.lux-active .lux-char-span, .lux-hero-wrap.lux-active .lux-char-span { opacity: 1; filter: blur(0px); transform: translateY(0); }"
 
@@ -145,7 +143,6 @@ custom_css = (
     ".tel-val { color: #fde68a; font-weight: 700; }"
     "html[data-deeprag-theme='light'] .tel-val { color: #0284c7; }"
 
-    /* Unified Luxury Glass Cards Across Entire Website */
     ".metric-card { background: linear-gradient(160deg, rgba(15, 23, 42, 0.55) 0%, rgba(6, 10, 22, 0.78) 100%); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(253, 230, 138, 0.32); border-radius: 22px; padding: 24px 20px; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease; }"
     "html[data-deeprag-theme='light'] .metric-card { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(15, 23, 42, 0.08); border-top: 2px solid #0284c7; box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05); }"
     ".metric-card:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.5); }"
@@ -161,18 +158,15 @@ custom_css = (
     ".upload-portal-sub { font-size: 0.9rem; color: #94a3b8; margin-bottom: 4px; }"
     "html[data-deeprag-theme='light'] .upload-portal-sub { color: #475569; }"
 
-    /* Luxury Navigation Tabs */
     "div[data-testid='stTabs'] button { background: rgba(15, 23, 42, 0.6) !important; border-radius: 999px !important; padding: 10px 20px !important; margin-right: 8px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; color: #cbd5e1 !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; font-size: 0.86rem !important; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.22) !important; color: #334155 !important; }"
     "div[data-testid='stTabs'] button[aria-selected='true'] { background: linear-gradient(135deg, rgba(253, 230, 138, 0.16), rgba(56, 189, 248, 0.22), rgba(79, 70, 229, 0.3)) !important; color: #fde68a !important; border: 1px solid rgba(253, 230, 138, 0.55) !important; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22) !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button[aria-selected='true'] { background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; border: none !important; }"
 
-    /* Luxury Buttons */
     "div.stButton > button { background: linear-gradient(160deg, rgba(15, 23, 42, 0.8), rgba(6, 10, 22, 0.95)) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-top: 1px solid rgba(253, 230, 138, 0.3) !important; color: #f8fafc !important; border-radius: 14px !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; padding: 11px 18px !important; transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important; }"
     "html[data-deeprag-theme='light'] div.stButton > button { background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.25) !important; color: #1e293b !important; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important; }"
     "div.stButton > button:hover { transform: translateY(-3px) !important; border-color: rgba(253, 230, 138, 0.65) !important; background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; box-shadow: 0 10px 26px rgba(56, 189, 248, 0.3) !important; }"
 
-    /* Luxury Chat Messages */
     "div[data-testid='stChatMessage'] { background: linear-gradient(160deg, rgba(15, 23, 42, 0.6) 0%, rgba(6, 10, 22, 0.82) 100%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-top: 1px solid rgba(253, 230, 138, 0.25) !important; border-radius: 22px !important; padding: 20px 24px !important; margin-bottom: 16px !important; backdrop-filter: blur(20px); box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35) !important; overflow-x: auto !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stChatMessage'] { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.2) !important; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05) !important; }"
 
