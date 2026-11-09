@@ -1,4 +1,3 @@
-
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
@@ -220,7 +219,7 @@ custom_css = (
     ".lux-kpi-label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #64748b; margin-top: 10px; }"
 
     ".lux-analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 32px; margin-top: 32px; align-items: stretch; }"
-    ".lux-glass-panel { background: linear-gradient(160deg, rgba(15, 23, 42, 0.55) 0%, rgba(6, 10, 22, 0.78) 100%); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(253, 230, 138, 0.28); border-radius: 24px; padding: 30px 26px; backdrop-filter: blur(20px); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }"
+    ".lux-glass-panel { background: linear-gradient(160deg, rgba(15, 23, 42, 0.55) 0%, rgba(6, 10, 22, 0.78) 100%); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(253, 230, 138, 0.28); border-radius: 24px; padding: 30px 26px; backdrop-filter: blur(20px); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); overflow: visible; }"
     "html[data-deeprag-theme='light'] .lux-glass-panel { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(15, 23, 42, 0.08); border-top: 2px solid #0284c7; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06); }"
     ".lux-panel-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem; font-weight: 800; color: #f8fafc; margin-bottom: 4px; }"
     "html[data-deeprag-theme='light'] .lux-panel-title { color: #0f172a; }"
@@ -239,13 +238,13 @@ custom_css = (
     ".v-bar-name { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; color: #cbd5e1; margin-top: 10px; text-align: center; }"
     "html[data-deeprag-theme='light'] .v-bar-name { color: #334155; }"
 
-    ".pie-flex-wrap { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 20px; margin-top: 10px; }"
-    ".pie-svg-ring { width: 175px; height: 175px; transform: rotate(-90deg); }"
-    ".pie-seg { fill: none; stroke-width: 5.5; stroke-linecap: round; stroke-dasharray: 0 100; transition: stroke-dasharray 1.6s cubic-bezier(0.16, 1, 0.3, 1); }"
+    ".pie-flex-wrap { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 22px; margin-top: 10px; padding: 6px; overflow: visible !important; }"
+    ".pie-svg-ring { width: 184px; height: 184px; transform: rotate(-90deg); overflow: visible !important; display: block; }"
+    ".pie-seg { fill: none; stroke-width: 5.2; stroke-linecap: round; stroke-dasharray: 0 100; transition: stroke-dasharray 1.6s cubic-bezier(0.16, 1, 0.3, 1); }"
     ".pie-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 180px; }"
     ".pie-leg-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: #cbd5e1; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 8px; }"
     "html[data-deeprag-theme='light'] .pie-leg-item { color: #1e293b; background: #f8fafc; }"
-    ".pie-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }"
+    ".pie-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; flex-shrink: 0; }"
 
     ".lux-editorial-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 0.9rem; }"
     ".lux-editorial-table th { font-family: 'JetBrains Mono', monospace; font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; text-align: left; padding: 16px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }"
@@ -697,7 +696,7 @@ def build_premium_quiz_pdf_html(
         f"         </div>"
         "        </td>"
         "        <td style='width:105px; text-align:right; vertical-align:middle;'>"
-        "          <svg width='86' height='86' viewBox='0 0 36 36' style='display:block; margin-left:auto;'>"
+        "          <svg width='86' height='86' viewBox='-4 -4 44 44' style='display:block; margin-left:auto; overflow:visible;'>"
         "            <path d='M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831' fill='none' stroke='rgba(255,255,255,0.18)' stroke-width='3.4'/>"
         f"           <path d='M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831' fill='none' stroke='#38bdf8' stroke-width='3.4' stroke-dasharray='{accuracy_pct}, 100' stroke-linecap='round'/>"
         f"           <text x='18' y='19.5' fill='#ffffff' font-size='8.5' font-weight='800' text-anchor='middle'>{accuracy_pct}%</text>"
@@ -2020,7 +2019,7 @@ with tab_quiz:
                     st.balloons()
 
 # ==========================================
-# TAB 3: 🏆 WHY US? (1000% INTERVIEW-VERIFIED BENCHMARKS + PEER-REVIEWED PROOFS)
+# TAB 3: 🏆 WHY US? (UNCLIPPED PIE CHARTS + PEER-REVIEWED PROOFS)
 # ==========================================
 with tab_why:
     st.markdown(
@@ -2102,9 +2101,9 @@ with tab_why:
         "        <div class='lux-panel-title'>🍩 DeepRAG Pipeline Architecture Share (Pie Chart)</div>"
         "        <div class='lux-panel-sub'>Core engineering subsystems powering every verified response</div>"
         "        <div class='pie-flex-wrap'>"
-        "          <div style='position:relative; width:175px; height:175px; display:flex; align-items:center; justify-content:center;'>"
-        "            <svg class='pie-svg-ring' viewBox='0 0 36 36'>"
-        "              <circle cx='18' cy='18' r='15.9155' fill='none' stroke='rgba(148,163,184,0.12)' stroke-width='5.5'></circle>"
+        "          <div style='position:relative; width:184px; height:184px; display:flex; align-items:center; justify-content:center; overflow:visible;'>"
+        "            <svg class='pie-svg-ring' viewBox='-4 -4 44 44' style='overflow:visible;'>"
+        "              <circle cx='18' cy='18' r='15.9155' fill='none' stroke='rgba(148,163,184,0.12)' stroke-width='5.2'></circle>"
         "              <circle class='pie-seg' cx='18' cy='18' r='15.9155' stroke='#38bdf8' stroke-dashoffset='0' data-dasharray='40 60'></circle>"
         "              <circle class='pie-seg' cx='18' cy='18' r='15.9155' stroke='#818cf8' stroke-dashoffset='-40' data-dasharray='25 75'></circle>"
         "              <circle class='pie-seg' cx='18' cy='18' r='15.9155' stroke='#10b981' stroke-dashoffset='-65' data-dasharray='20 80'></circle>"
@@ -2139,9 +2138,9 @@ with tab_why:
         "        <div class='lux-panel-title'>🛡️ Non-Parametric Grounding Split (Donut Chart)</div>"
         "        <div class='lux-panel-sub'>Enforced via Lewis et al. (NeurIPS 2020) RAG context-locking protocol</div>"
         "        <div class='pie-flex-wrap'>"
-        "          <div style='position:relative; width:175px; height:175px; display:flex; align-items:center; justify-content:center;'>"
-        "            <svg class='pie-svg-ring' viewBox='0 0 36 36'>"
-        "              <circle cx='18' cy='18' r='15.9155' fill='none' stroke='rgba(148,163,184,0.12)' stroke-width='5.5'></circle>"
+        "          <div style='position:relative; width:184px; height:184px; display:flex; align-items:center; justify-content:center; overflow:visible;'>"
+        "            <svg class='pie-svg-ring' viewBox='-4 -4 44 44' style='overflow:visible;'>"
+        "              <circle cx='18' cy='18' r='15.9155' fill='none' stroke='rgba(148,163,184,0.12)' stroke-width='5.2'></circle>"
         "              <circle class='pie-seg' cx='18' cy='18' r='15.9155' stroke='#10b981' stroke-dashoffset='0' data-dasharray='92 8'></circle>"
         "              <circle class='pie-seg' cx='18' cy='18' r='15.9155' stroke='#f59e0b' stroke-dashoffset='-92' data-dasharray='8 92'></circle>"
         "            </svg>"
