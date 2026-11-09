@@ -102,7 +102,6 @@ custom_css = (
     "  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 65%);"
     "}"
 
-    /* Responsive Voice Input Widget Fix for Mobile & Desktop */
     "div[data-testid='stAudioInput'] {"
     "  background: rgba(10, 15, 28, 0.92) !important;"
     "  border: 1px solid rgba(56, 189, 248, 0.35) !important;"
@@ -508,7 +507,6 @@ def build_premium_quiz_pdf_html(
 ) -> str:
     ist_fallback = get_ist_time_str()
     wrong_q = max(0, total_q - score)
-    dash_offset = round(100 - accuracy_pct, 1)
 
     mastered_html = "".join(
         [
