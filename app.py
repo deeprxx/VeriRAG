@@ -2257,7 +2257,7 @@ with tab_why:
         "    <div class='lux-eyebrow'>05 • Peer-Reviewed Academic & Official Proofs</div>"
         "    <div class='lux-headline'>"
         "      <span class='lux-serif-italic'>Verifiable</span> "
-        "      <span class='lux-split-text' data-text='citations you can defend in any technical interview.'></span>"
+        "      <span class='lux-split-text' data-text='research and official benchmarks powering our engine.'></span>"
         "    </div>"
         "    <div class='proof-grid'>"
         "      <div class='proof-card'>"
