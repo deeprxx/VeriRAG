@@ -118,7 +118,7 @@ custom_css = (
 
     ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
 
-    /* TOP TABS: 100% VISIBLE ON BOTH LAPTOP & PHONE (NO LEFT CLIPPING) */
+    #/* TOP TABS: 100% VISIBLE ON BOTH LAPTOP & PHONE (NO LEFT CLIPPING) */
     "div[data-testid='stTabs'] [role='tablist'] {"
     "  display: flex !important; flex-wrap: wrap !important; justify-content: center !important;"
     "  gap: 8px !important; padding: 4px 4px 10px 4px !important; overflow: visible !important; border-bottom: none !important;"
@@ -143,7 +143,7 @@ custom_css = (
     "  background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; border: none !important;"
     "}"
 
-    /* CENTERED LUXURY WORKSPACE HEADER & TELEMETRY PILL */
+    #/* CENTERED LUXURY WORKSPACE HEADER & TELEMETRY PILL */
     ".sv-workspace-hero { max-width: 780px; margin: 12px auto 14px auto; text-align: center; padding: 6px 8px 2px 8px; }"
     ".sv-greeting-title {"
     "  font-family: 'Instrument Serif', serif; font-size: clamp(2.35rem, 5.2vw, 3.65rem);"
@@ -176,7 +176,7 @@ custom_css = (
     "html[data-deeprag-theme='light'] .sv-tel-chip strong { color: #0284c7; }"
     ".sv-tel-dot { color: #fde68a; margin: 0 4px; font-weight: 700; }"
 
-    /* UNIFIED GLASS CHAT COMPOSER BOX (EXACT MOCKUP MATCH ON LAPTOP & MOBILE) */
+    #/* UNIFIED GLASS CHAT COMPOSER BOX (EXACT MOCKUP MATCH ON LAPTOP & MOBILE) */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) {"
     "  max-width: 720px !important; margin: 0 auto 14px auto !important;"
     "  background: linear-gradient(165deg, rgba(22, 29, 47, 0.88) 0%, rgba(10, 14, 26, 0.96) 100%) !important;"
@@ -203,7 +203,7 @@ custom_css = (
     "  background: transparent !important; border: none !important; box-shadow: none !important;"
     "}"
 
-    /* FORCE BOTTOM COMPOSER ROW TO STAY HORIZONTAL ON BOTH LAPTOP & PHONE */
+    #/* FORCE BOTTOM COMPOSER ROW TO STAY HORIZONTAL ON BOTH LAPTOP & PHONE */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] {"
     "  display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;"
     "  align-items: center !important; justify-content: space-between !important; gap: 8px !important; margin-top: 4px !important;"
@@ -216,7 +216,7 @@ custom_css = (
     "  flex: 1 1 auto !important;"
     "}"
 
-    /* CIRCULAR '+' AND '🎙️' AND BLUE '↑' BUTTONS INSIDE COMPOSER */
+    #/* CIRCULAR '+' AND '🎙️' AND BLUE '↑' BUTTONS INSIDE COMPOSER */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div.stButton > button {"
     "  width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important;"
     "  border-radius: 50% !important; padding: 0 !important; display: inline-flex !important;"
@@ -231,7 +231,7 @@ custom_css = (
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div.stButton > button:hover {"
     "  transform: scale(1.06) !important; border-color: #fde68a !important; color: #fde68a !important;"
     "}"
-    /* GLOWING BLUE SEND ARROW BUTTON (4TH COLUMN IN COMPOSER ROW) */
+    #/* GLOWING BLUE SEND ARROW BUTTON (4TH COLUMN IN COMPOSER ROW) */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div:nth-child(4) div.stButton > button {"
     "  background: radial-gradient(circle at 30% 30%, #60a5fa 0%, #3b82f6 55%, #2563eb 100%) !important;"
     "  border: 1px solid rgba(147, 197, 253, 0.85) !important; color: #ffffff !important;"
@@ -242,7 +242,7 @@ custom_css = (
     "  transform: scale(1.08) !important; box-shadow: 0 0 30px rgba(96, 165, 250, 0.95) !important;"
     "}"
 
-    /* COMPACT HORIZONTAL QUICK-ACTION PILLS BELOW COMPOSER (NEVER FULL-WIDTH BARS ON MOBILE) */
+    #/* COMPACT HORIZONTAL QUICK-ACTION PILLS BELOW COMPOSER (NEVER FULL-WIDTH BARS ON MOBILE) */
     "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) {"
     "  max-width: 720px !important; margin: 4px auto 18px auto !important;"
     "  display: flex !important; flex-direction: row !important; flex-wrap: wrap !important;"
@@ -267,7 +267,7 @@ custom_css = (
     "  background: rgba(30, 41, 59, 0.9) !important; transform: translateY(-2px) !important;"
     "}"
 
-    /* ZERO-OVERLAP INLINE GLASS DRAWER FOR '+' AND '🎙️' */
+    #/* ZERO-OVERLAP INLINE GLASS DRAWER FOR '+' AND '🎙️' */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-drawer-anchor) {"
     "  max-width: 720px !important; margin: 0 auto 14px auto !important;"
     "  background: rgba(12, 18, 34, 0.92) !important; border: 1px solid rgba(253, 230, 138, 0.35) !important;"
