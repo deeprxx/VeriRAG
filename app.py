@@ -118,46 +118,57 @@ custom_css = (
 
     ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
 
-    #/* TOP TABS: 100% VISIBLE ON BOTH LAPTOP & PHONE (NO LEFT CLIPPING) */
     "div[data-testid='stTabs'] [role='tablist'] {"
-    "  display: flex !important; flex-wrap: wrap !important; justify-content: center !important;"
-    "  gap: 8px !important; padding: 4px 4px 10px 4px !important; overflow: visible !important; border-bottom: none !important;"
+    "  display: flex !important; flex-wrap: nowrap !important; justify-content: center !important;"
+    "  overflow-x: auto !important; gap: 8px !important; padding: 4px 6px 10px 6px !important;"
+    "  scrollbar-width: none !important;"
     "}"
+    "div[data-testid='stTabs'] [role='tablist']::-webkit-scrollbar { display: none !important; }"
     "div[data-testid='stTabs'] button {"
-    "  background: rgba(15, 23, 42, 0.55) !important; border-radius: 999px !important;"
-    "  padding: 8px 16px !important; margin: 0 !important;"
+    "  background: rgba(15, 23, 42, 0.6) !important; border-radius: 999px !important;"
+    "  padding: 9px 18px !important; margin: 0 !important; flex-shrink: 0 !important;"
     "  border: 1px solid rgba(255, 255, 255, 0.08) !important; color: #cbd5e1 !important;"
     "  font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important;"
-    "  font-size: clamp(0.74rem, 1.1vw, 0.84rem) !important; white-space: nowrap !important;"
+    "  font-size: 0.83rem !important; white-space: nowrap !important;"
     "  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;"
     "}"
     "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button {"
     "  background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.22) !important; color: #334155 !important;"
     "}"
     "div[data-testid='stTabs'] button[aria-selected='true'] {"
-    "  background: linear-gradient(135deg, rgba(253, 230, 138, 0.18), rgba(56, 189, 248, 0.22), rgba(79, 70, 229, 0.32)) !important;"
-    "  color: #fde68a !important; border: 1px solid rgba(253, 230, 138, 0.6) !important;"
+    "  background: linear-gradient(135deg, rgba(253, 230, 138, 0.16), rgba(56, 189, 248, 0.22), rgba(79, 70, 229, 0.3)) !important;"
+    "  color: #fde68a !important; border: 1px solid rgba(253, 230, 138, 0.55) !important;"
     "  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22) !important;"
     "}"
     "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button[aria-selected='true'] {"
     "  background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; border: none !important;"
     "}"
 
-    #/* CENTERED LUXURY WORKSPACE HEADER & TELEMETRY PILL */
-    ".sv-workspace-hero { max-width: 780px; margin: 12px auto 14px auto; text-align: center; padding: 6px 8px 2px 8px; }"
+    ".sv-workspace-hero { max-width: 820px; margin: 10px auto 14px auto; text-align: center; padding: 6px 8px 2px 8px; }"
+    ".sv-sparkle-pill {"
+    "  display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
+    "  background: rgba(253, 230, 138, 0.08); border: 1px solid rgba(253, 230, 138, 0.28);"
+    "  color: #fde68a; font-family: 'JetBrains Mono', monospace; font-size: clamp(0.62rem, 0.85vw, 0.7rem);"
+    "  font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;"
+    "  padding: 6px 16px; border-radius: 999px; margin-bottom: 14px;"
+    "}"
+    "html[data-deeprag-theme='light'] .sv-sparkle-pill {"
+    "  background: rgba(2, 132, 199, 0.08); border-color: rgba(2, 132, 199, 0.3); color: #0284c7;"
+    "}"
     ".sv-greeting-title {"
-    "  font-family: 'Instrument Serif', serif; font-size: clamp(2.35rem, 5.2vw, 3.65rem);"
-    "  font-weight: 400; line-height: 1.08; letter-spacing: -0.01em; color: #f8fafc; margin-bottom: 10px;"
+    "  font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2.0rem, 4.5vw, 3.1rem);"
+    "  font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; color: #f8fafc; margin-bottom: 10px;"
     "}"
     "html[data-deeprag-theme='light'] .sv-greeting-title { color: #0f172a; }"
-    ".sv-gold-italic {"
+    ".sv-greeting-title .lux-serif-italic {"
     "  font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;"
-    "  background: linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #38bdf8 100%);"
-    "  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-right: 4px;"
+    "  font-size: clamp(2.35rem, 5.1vw, 3.55rem);"
+    "  background: linear-gradient(135deg, #fde68a 0%, #38bdf8 55%, #c084fc 100%);"
+    "  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-right: 6px;"
     "}"
     ".sv-tagline {"
-    "  font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(0.86rem, 1.3vw, 1.02rem);"
-    "  color: #94a3b8; max-width: 610px; margin: 0 auto 16px auto; line-height: 1.55; font-weight: 500;"
+    "  font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(0.88rem, 1.35vw, 1.02rem);"
+    "  color: #94a3b8; max-width: 630px; margin: 0 auto 16px auto; line-height: 1.6; font-weight: 400;"
     "}"
     "html[data-deeprag-theme='light'] .sv-tagline { color: #475569; }"
 
@@ -174,54 +185,60 @@ custom_css = (
     "html[data-deeprag-theme='light'] .sv-tel-chip { color: #1e293b; }"
     ".sv-tel-chip strong { color: #fde68a; font-weight: 700; }"
     "html[data-deeprag-theme='light'] .sv-tel-chip strong { color: #0284c7; }"
-    ".sv-tel-dot { color: #fde68a; margin: 0 4px; font-weight: 700; }"
+    ".sv-tel-dot { color: rgba(148, 163, 184, 0.45); margin: 0 4px; font-weight: 700; }"
 
-    #/* UNIFIED GLASS CHAT COMPOSER BOX (EXACT MOCKUP MATCH ON LAPTOP & MOBILE) */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) {"
     "  max-width: 720px !important; margin: 0 auto 14px auto !important;"
-    "  background: linear-gradient(165deg, rgba(22, 29, 47, 0.88) 0%, rgba(10, 14, 26, 0.96) 100%) !important;"
-    "  border: 1px solid rgba(255, 255, 255, 0.14) !important;"
-    "  border-top: 1px solid rgba(253, 230, 138, 0.32) !important;"
+    "  background: linear-gradient(165deg, rgba(20, 27, 45, 0.9) 0%, rgba(9, 13, 24, 0.96) 100%) !important;"
+    "  border: 1px solid rgba(255, 255, 255, 0.15) !important;"
+    "  border-top: 1px solid rgba(253, 230, 138, 0.35) !important;"
     "  border-radius: 26px !important; padding: 14px 18px 12px 18px !important;"
-    "  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 40px rgba(56, 189, 248, 0.08) !important;"
+    "  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.08) !important;"
     "  backdrop-filter: blur(24px) !important;"
     "}"
     "html[data-deeprag-theme='light'] div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) {"
     "  background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.28) !important;"
     "  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08) !important;"
     "}"
-    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stTextArea'] textarea {"
-    "  background: transparent !important; border: none !important; box-shadow: none !important;"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) [data-baseweb='textarea'],"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) [data-baseweb='base-input'],"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stTextArea'] > div {"
+    "  background: transparent !important; background-color: transparent !important;"
+    "  border: none !important; box-shadow: none !important; padding: 0 !important;"
+    "}"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) textarea {"
+    "  background: transparent !important; background-color: transparent !important;"
+    "  border: none !important; box-shadow: none !important;"
     "  color: #f8fafc !important; font-family: 'Plus Jakarta Sans', sans-serif !important;"
     "  font-size: 0.98rem !important; line-height: 1.5 !important; padding: 2px 4px !important;"
-    "  resize: none !important; min-height: 58px !important;"
+    "  resize: none !important; min-height: 54px !important;"
     "}"
-    "html[data-deeprag-theme='light'] div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stTextArea'] textarea {"
+    "html[data-deeprag-theme='light'] div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) textarea {"
     "  color: #0f172a !important;"
     "}"
-    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stTextArea'] > div {"
-    "  background: transparent !important; border: none !important; box-shadow: none !important;"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) textarea::placeholder {"
+    "  color: rgba(148, 163, 184, 0.72) !important;"
+    "}"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='InputInstructions'] {"
+    "  display: none !important;"
     "}"
 
-    #/* FORCE BOTTOM COMPOSER ROW TO STAY HORIZONTAL ON BOTH LAPTOP & PHONE */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] {"
     "  display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;"
-    "  align-items: center !important; justify-content: space-between !important; gap: 8px !important; margin-top: 4px !important;"
+    "  align-items: center !important; justify-content: space-between !important; gap: 10px !important; margin-top: 4px !important;"
     "}"
-    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div[data-testid='column'],"
-    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div[data-testid='stColumn'] {"
-    "  width: auto !important; flex: 0 0 auto !important; min-width: 0 !important;"
+    "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div {"
+    "  width: auto !important; min-width: 0 !important; flex: 0 0 auto !important;"
     "}"
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div:nth-child(2) {"
     "  flex: 1 1 auto !important;"
     "}"
 
-    #/* CIRCULAR '+' AND '🎙️' AND BLUE '↑' BUTTONS INSIDE COMPOSER */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div.stButton > button {"
     "  width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important;"
     "  border-radius: 50% !important; padding: 0 !important; display: inline-flex !important;"
     "  align-items: center !important; justify-content: center !important;"
-    "  background: rgba(30, 41, 59, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important;"
+    "  background: rgba(30, 41, 59, 0.78) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;"
     "  color: #e2e8f0 !important; font-size: 1.15rem !important; font-weight: 600 !important;"
     "  box-shadow: none !important; transition: all 0.22s ease !important;"
     "}"
@@ -229,50 +246,49 @@ custom_css = (
     "  background: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #1e293b !important;"
     "}"
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div.stButton > button:hover {"
-    "  transform: scale(1.06) !important; border-color: #fde68a !important; color: #fde68a !important;"
+    "  transform: scale(1.07) !important; border-color: #fde68a !important; color: #fde68a !important;"
     "}"
-    #/* GLOWING BLUE SEND ARROW BUTTON (4TH COLUMN IN COMPOSER ROW) */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div:nth-child(4) div.stButton > button {"
     "  background: radial-gradient(circle at 30% 30%, #60a5fa 0%, #3b82f6 55%, #2563eb 100%) !important;"
-    "  border: 1px solid rgba(147, 197, 253, 0.85) !important; color: #ffffff !important;"
-    "  box-shadow: 0 0 22px rgba(59, 130, 246, 0.75), 0 4px 14px rgba(37, 99, 235, 0.5) !important;"
+    "  border: 1px solid rgba(147, 197, 253, 0.9) !important; color: #ffffff !important;"
+    "  box-shadow: 0 0 24px rgba(59, 130, 246, 0.85), 0 4px 14px rgba(37, 99, 235, 0.55) !important;"
     "  font-size: 1.18rem !important; font-weight: 800 !important;"
     "}"
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-composer-anchor) div[data-testid='stHorizontalBlock'] > div:nth-child(4) div.stButton > button:hover {"
-    "  transform: scale(1.08) !important; box-shadow: 0 0 30px rgba(96, 165, 250, 0.95) !important;"
+    "  transform: scale(1.09) !important; box-shadow: 0 0 32px rgba(96, 165, 250, 1) !important;"
     "}"
 
-    #/* COMPACT HORIZONTAL QUICK-ACTION PILLS BELOW COMPOSER (NEVER FULL-WIDTH BARS ON MOBILE) */
     "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) {"
-    "  max-width: 720px !important; margin: 4px auto 18px auto !important;"
+    "  max-width: 720px !important; margin: 2px auto 18px auto !important;"
     "  display: flex !important; flex-direction: row !important; flex-wrap: wrap !important;"
     "  justify-content: center !important; align-items: center !important; gap: 10px !important;"
     "}"
-    "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) > div[data-testid='column'],"
-    "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) > div[data-testid='stColumn'] {"
+    "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) > div {"
     "  width: auto !important; flex: 0 0 auto !important; min-width: 0 !important;"
     "}"
     "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) div.stButton > button {"
     "  width: auto !important; border-radius: 999px !important; padding: 7px 18px !important;"
-    "  background: rgba(15, 23, 42, 0.65) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important;"
+    "  background: rgba(15, 23, 42, 0.68) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important;"
     "  color: #e2e8f0 !important; font-family: 'Plus Jakarta Sans', sans-serif !important;"
     "  font-size: 0.81rem !important; font-weight: 600 !important; white-space: nowrap !important;"
     "  backdrop-filter: blur(14px) !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;"
+    "  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;"
     "}"
     "html[data-deeprag-theme='light'] div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) div.stButton > button {"
     "  background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.25) !important; color: #1e293b !important;"
     "}"
-    "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) div.stButton > button:hover {"
-    "  border-color: rgba(253, 230, 138, 0.7) !important; color: #fde68a !important;"
-    "  background: rgba(30, 41, 59, 0.9) !important; transform: translateY(-2px) !important;"
+    "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) div.stButton > button:hover,"
+    "div[data-testid='stHorizontalBlock']:has(.sv-pill-anchor) div.stButton > button:active {"
+    "  border-color: rgba(253, 230, 138, 0.75) !important; color: #fde68a !important;"
+    "  background: linear-gradient(135deg, rgba(2, 132, 199, 0.28), rgba(79, 70, 229, 0.32)) !important;"
+    "  box-shadow: 0 0 20px rgba(56, 189, 248, 0.32) !important; transform: translateY(-2px) !important;"
     "}"
 
-    #/* ZERO-OVERLAP INLINE GLASS DRAWER FOR '+' AND '🎙️' */
     "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-drawer-anchor) {"
     "  max-width: 720px !important; margin: 0 auto 14px auto !important;"
-    "  background: rgba(12, 18, 34, 0.92) !important; border: 1px solid rgba(253, 230, 138, 0.35) !important;"
-    "  border-radius: 20px !important; padding: 16px 20px !important; backdrop-filter: blur(20px) !important;"
-    "  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45) !important;"
+    "  background: rgba(12, 18, 34, 0.94) !important; border: 1px solid rgba(253, 230, 138, 0.38) !important;"
+    "  border-radius: 22px !important; padding: 16px 20px !important; backdrop-filter: blur(20px) !important;"
+    "  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5) !important;"
     "}"
     "html[data-deeprag-theme='light'] div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-drawer-anchor) {"
     "  background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.3) !important;"
@@ -449,10 +465,11 @@ custom_css = (
     "html[data-deeprag-theme='light'] .premium-footer span { color: #0284c7; }"
     "footer { visibility: hidden; }"
 
-    "@media (max-width: 640px) {"
-    "  .block-container { padding-left: 0.8rem !important; padding-right: 0.8rem !important; padding-top: 2.8rem !important; }"
-    "  div[data-testid='stTabs'] button { padding: 6px 12px !important; font-size: 0.73rem !important; }"
-    "  .sv-telemetry-bar { padding: 6px 12px !important; border-radius: 18px !important; }"
+    "@media (max-width: 768px) {"
+    "  .block-container { padding-left: 0.8rem !important; padding-right: 0.8rem !important; padding-top: 2.9rem !important; }"
+    "  div[data-testid='stTabs'] [role='tablist'] { justify-content: flex-start !important; padding-left: 4px !important; }"
+    "  div[data-testid='stTabs'] button { padding: 7px 14px !important; font-size: 0.76rem !important; }"
+    "  .sv-telemetry-bar { padding: 7px 12px !important; border-radius: 18px !important; }"
     "  .metric-card { padding: 16px 12px; }"
     "}"
     "</style>"
@@ -461,7 +478,7 @@ custom_css = (
 st.markdown(custom_css, unsafe_allow_html=True)
 
 
-# --- HELPER: EXACT 3D NORMAL-CULLED SYMMETRICAL 360° AI CHIP + LETTER-BY-LETTER SYNC ENGINE ---
+# --- HELPER: 360° 3D AI CHIP + LETTER-BY-LETTER SYNC + MOBILE COMPOSER LOCK ENGINE ---
 def inject_anime_night_canvas():
     canvas_js = (
         "<script>"
@@ -469,6 +486,52 @@ def inject_anime_night_canvas():
         "  try {"
         "    const parentWin = window.parent;"
         "    const parentDoc = parentWin.document;"
+
+        "    function enforceMobileComposerAndPills() {"
+        "      const compAnchor = parentDoc.querySelector('.sv-composer-anchor');"
+        "      if (compAnchor) {"
+        "        const wrapper = compAnchor.closest('[data-testid=\"stVerticalBlockBorderWrapper\"]');"
+        "        if (wrapper) {"
+        "          const hBlock = wrapper.querySelector('[data-testid=\"stHorizontalBlock\"]');"
+        "          if (hBlock) {"
+        "            hBlock.style.setProperty('display', 'flex', 'important');"
+        "            hBlock.style.setProperty('flex-direction', 'row', 'important');"
+        "            hBlock.style.setProperty('flex-wrap', 'nowrap', 'important');"
+        "            hBlock.style.setProperty('align-items', 'center', 'important');"
+        "            hBlock.style.setProperty('justify-content', 'space-between', 'important');"
+        "            hBlock.style.setProperty('gap', '8px', 'important');"
+        "            const cols = hBlock.children;"
+        "            for (let i = 0; i < cols.length; i++) {"
+        "              cols[i].style.setProperty('min-width', '0px', 'important');"
+        "              if (i === 1) {"
+        "                cols[i].style.setProperty('flex', '1 1 auto', 'important');"
+        "                cols[i].style.setProperty('width', 'auto', 'important');"
+        "              } else {"
+        "                cols[i].style.setProperty('flex', '0 0 42px', 'important');"
+        "                cols[i].style.setProperty('width', '42px', 'important');"
+        "              }"
+        "            }"
+        "          }"
+        "        }"
+        "      }"
+        "      const pillAnchor = parentDoc.querySelector('.sv-pill-anchor');"
+        "      if (pillAnchor) {"
+        "        const pRow = pillAnchor.closest('[data-testid=\"stHorizontalBlock\"]');"
+        "        if (pRow) {"
+        "          pRow.style.setProperty('display', 'flex', 'important');"
+        "          pRow.style.setProperty('flex-direction', 'row', 'important');"
+        "          pRow.style.setProperty('flex-wrap', 'wrap', 'important');"
+        "          pRow.style.setProperty('justify-content', 'center', 'important');"
+        "          pRow.style.setProperty('gap', '8px', 'important');"
+        "          const pCols = pRow.children;"
+        "          for (let j = 0; j < pCols.length; j++) {"
+        "            pCols[j].style.setProperty('width', 'auto', 'important');"
+        "            pCols[j].style.setProperty('min-width', '0px', 'important');"
+        "            pCols[j].style.setProperty('flex', '0 0 auto', 'important');"
+        "          }"
+        "        }"
+        "      }"
+        "    }"
 
         "    function prepareLuxuryLetters() {"
         "      const targets = parentDoc.querySelectorAll('.lux-split-text:not([data-prepared=\"1\"])');"
@@ -517,6 +580,7 @@ def inject_anime_night_canvas():
         "    }"
 
         "    function checkLuxuryScroll() {"
+        "      enforceMobileComposerAndPills();"
         "      prepareLuxuryLetters();"
         "      if (!parentWin.__deepragIntroUnlocked) return;"
         "      const winH = parentWin.innerHeight || 850;"
@@ -2046,6 +2110,10 @@ if "pending_composer_query" not in st.session_state:
     st.session_state.pending_composer_query = None
 if "corpus_names_list" not in st.session_state:
     st.session_state.corpus_names_list = []
+if "response_mode" not in st.session_state:
+    st.session_state.response_mode = "⚡ Deep Analysis (Default)"
+if "answer_length" not in st.session_state:
+    st.session_state.answer_length = "⚖️ Balanced"
 if "agent_terminal_logs" not in st.session_state:
     st.session_state.agent_terminal_logs = [
         "[SYS_BOOT] DeepRAG Neural Workspace Initialized.",
@@ -2107,44 +2175,36 @@ with st.sidebar:
         '</div>',
         unsafe_allow_html=True
     )
-
-
-# --- TOP NAVIGATION TABS ---
+    # --- TOP NAVIGATION TABS (ORIGINAL EMOJIS & STYLE RESTORED) ---
 tab_workspace, tab_quiz, tab_why, tab_how, tab_creator = st.tabs([
-    "AI Workspace",
-    "AI Quiz & 3D Flashcards",
-    "Why Us?",
-    "How It Works",
-    "About Creator"
+    "🚀 AI Workspace",
+    "🎓 AI Quiz & 3D Flashcards",
+    "🏆 Why Us?",
+    "⚡ How It Works",
+    "👨‍💻 About Creator"
 ])
 
 # ==========================================
 # TAB 1: UNIFIED SILICON VALLEY AI WORKSPACE (EXACT MOCKUP MATCH)
 # ==========================================
 with tab_workspace:
-    st.markdown(
-        "<style>"
-        "div[data-testid='stVerticalBlockBorderWrapper']:has(.sv-drawer-hidden) { display: none !important; }"
-        "</style>",
-        unsafe_allow_html=True
-    )
-
     engine_state_txt = "FAISS Active" if st.session_state.vector_store else "Ready to Index"
     st.markdown(
         f"<div class='lux-hero-wrap sv-workspace-hero'>"
+        f"  <div class='sv-sparkle-pill'>✨ DEEPRAG NEURAL STUDIO • 7,500 RPD MULTI-KEY POOL</div>"
         f"  <div class='sv-greeting-title'>"
-        f"    <span class='sv-gold-italic'>DeepRAG</span> "
+        f"    <span class='lux-serif-italic'>DeepRAG</span> "
         f"    <span class='lux-split-text' data-text='Intelligence Workspace.'></span>"
         f"  </div>"
         f"  <div class='sv-tagline lux-split-text' data-text='Where 384D Vector Precision Meets Zero-Hallucination Document Intelligence.'></div>"
         f"  <div class='sv-telemetry-bar'>"
-        f"    <span class='sv-tel-chip'>Pages: <strong>{st.session_state.pdf_pages}</strong></span>"
+        f"    <span class='sv-tel-chip'>📄 Pages: <strong>{st.session_state.pdf_pages}</strong></span>"
         f"    <span class='sv-tel-dot'>•</span>"
-        f"    <span class='sv-tel-chip'>Chunks: <strong>{st.session_state.neural_chunks}</strong></span>"
+        f"    <span class='sv-tel-chip'>🧩 Chunks: <strong>{st.session_state.neural_chunks}</strong></span>"
         f"    <span class='sv-tel-dot'>•</span>"
-        f"    <span class='sv-tel-chip'><strong>{engine_state_txt}</strong></span>"
+        f"    <span class='sv-tel-chip'>⚡ Engine: <strong>{engine_state_txt}</strong></span>"
         f"    <span class='sv-tel-dot'>•</span>"
-        f"    <span class='sv-tel-chip'><strong>{ACTIVE_KEY_POOL_COUNT} Keys (7,500 RPD)</strong></span>"
+        f"    <span class='sv-tel-chip'>🔑 Pool: <strong>{ACTIVE_KEY_POOL_COUNT} Keys (7,500 RPD)</strong></span>"
         f"  </div>"
         f"</div>",
         unsafe_allow_html=True
@@ -2170,13 +2230,13 @@ with tab_workspace:
             )
         with c_status:
             active_pdfs_cnt = len(st.session_state.corpus_names_list)
-            status_hint = (
-                f"📎 {active_pdfs_cnt} PDF(s) Indexed"
-                if active_pdfs_cnt > 0
-                else "Tap ＋ to attach PDFs or calibrate style"
-            )
+            if active_pdfs_cnt > 0:
+                names_short = ", ".join(st.session_state.corpus_names_list)
+                status_hint = f"📎 Active: {names_short}"
+            else:
+                status_hint = ""
             st.markdown(
-                f"<div style='font-family:JetBrains Mono,monospace; font-size:0.68rem; color:#64748b; padding-left:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>{status_hint}</div>",
+                f"<div style='font-family:JetBrains Mono,monospace; font-size:0.68rem; color:#fde68a; padding-left:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>{html.escape(status_hint)}</div>",
                 unsafe_allow_html=True
             )
         with c_mic:
@@ -2194,46 +2254,66 @@ with tab_workspace:
                 on_click=_submit_composer_query
             )
 
-    # --- ZERO-OVERLAP INLINE DRAWER 1: '+' PDF UPLOAD & OUTPUT CALIBRATION (ALWAYS MOUNTED) ---
-    plus_drawer_cls = "sv-drawer-anchor" if st.session_state.active_drawer == "plus" else "sv-drawer-hidden"
-    with st.container(border=True):
-        st.markdown(f"<div class='{plus_drawer_cls}'></div>", unsafe_allow_html=True)
-        d_col1, d_col2 = st.columns([1.3, 1])
-        with d_col1:
-            uploaded_files = st.file_uploader(
-                "📄 Attach PDF Document(s) (Up to 200MB)",
-                type=["pdf"],
-                accept_multiple_files=True,
-                help="Upload single or multiple PDFs. Multi-PDF comparison works automatically."
-            )
-        with d_col2:
-            response_mode = st.selectbox(
-                "🎛️ Select Output Style",
-                [
+    # --- ZERO-OVERLAP INLINE DRAWER 1: OPENS ONLY WHEN '+' IS TAPPED ---
+    uploaded_files = None
+    if st.session_state.active_drawer == "plus":
+        with st.container(border=True):
+            st.markdown("<div class='sv-drawer-anchor'></div>", unsafe_allow_html=True)
+            d_col1, d_col2 = st.columns([1.3, 1])
+            with d_col1:
+                uploaded_files = st.file_uploader(
+                    "📄 Attach PDF Document(s) (Up to 200MB)",
+                    type=["pdf"],
+                    accept_multiple_files=True,
+                    help="Upload single or multiple PDFs. Multi-PDF comparison works automatically."
+                )
+                if st.session_state.corpus_names_list:
+                    st.caption(f"✅ Currently Indexed: {', '.join(st.session_state.corpus_names_list)}")
+                    if st.button("🗑️ Clear Indexed PDF Corpus", key="btn_clear_corpus"):
+                        st.session_state.vector_store = None
+                        st.session_state.all_chunks = []
+                        st.session_state.pdf_pages = 0
+                        st.session_state.neural_chunks = 0
+                        st.session_state.last_vec_ms = 0.0
+                        st.session_state.total_tokens_est = 0
+                        st.session_state.processed_files_key = ""
+                        st.session_state.corpus_names_list = []
+                        st.session_state.active_drawer = "none"
+                        st.rerun()
+            with d_col2:
+                style_opts = [
                     "⚡ Deep Analysis (Default)",
                     "🎯 Exam & Revision Notes",
                     "💡 Simple Explain (ELI5)",
                     "📌 Executive Bullet Points"
                 ]
-            )
-            answer_length = st.radio(
-                "📏 Select Answer Length",
-                [
+                len_opts = [
                     "⚡ Short & Crisp",
                     "⚖️ Balanced",
                     "📚 Detailed & In-Depth"
-                ],
-                index=1,
-                horizontal=True
-            )
+                ]
+                st.session_state.response_mode = st.selectbox(
+                    "🎛️ Select Output Style",
+                    style_opts,
+                    index=style_opts.index(st.session_state.response_mode) if st.session_state.response_mode in style_opts else 0
+                )
+                st.session_state.answer_length = st.radio(
+                    "📏 Select Answer Length",
+                    len_opts,
+                    index=len_opts.index(st.session_state.answer_length) if st.session_state.answer_length in len_opts else 1,
+                    horizontal=True
+                )
 
-    # --- ZERO-OVERLAP INLINE DRAWER 2: '🎙️' VOICE AI RECORDER (ALWAYS MOUNTED) ---
-    voice_drawer_cls = "sv-drawer-anchor" if st.session_state.active_drawer == "voice" else "sv-drawer-hidden"
-    with st.container(border=True):
-        st.markdown(f"<div class='{voice_drawer_cls}'></div>", unsafe_allow_html=True)
-        audio_value = None
-        if hasattr(st, "audio_input"):
-            audio_value = st.audio_input("🎙️ Record Voice Question (English / Hindi / Hinglish)")
+    # --- ZERO-OVERLAP INLINE DRAWER 2: OPENS ONLY WHEN '🎙️' IS TAPPED ---
+    audio_value = None
+    if st.session_state.active_drawer == "voice":
+        with st.container(border=True):
+            st.markdown("<div class='sv-drawer-anchor'></div>", unsafe_allow_html=True)
+            if hasattr(st, "audio_input"):
+                audio_value = st.audio_input("🎙️ Record Voice Question (English / Hindi / Hinglish)")
+
+    response_mode = st.session_state.response_mode
+    answer_length = st.session_state.answer_length
 
     # --- COMPACT HORIZONTAL QUICK-ACTION PILLS (EXACT MOCKUP MATCH) ---
     qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
@@ -2261,9 +2341,8 @@ with tab_workspace:
         if st.button("Exam Qs", key="pill_exam"):
             triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
 
-    # --- FAST LAZY-LOADED PDF INDEXING ---
+    # --- FAST LAZY-LOADED PDF INDEXING (PERSISTS IN SESSION STATE AFTER DRAWER CLOSES) ---
     if uploaded_files:
-        st.session_state.corpus_names_list = [f.name for f in uploaded_files]
         file_signatures = [f"{f.name}_{f.size}" for f in uploaded_files]
         current_key = f"{file_signatures}_{chunk_size}_{chunk_overlap}"
         if current_key != st.session_state.processed_files_key:
@@ -2311,6 +2390,7 @@ with tab_workspace:
                 st.session_state.last_vec_ms = round((time.time() - t0) * 1000, 1)
                 st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
                 st.session_state.processed_files_key = current_key
+                st.session_state.corpus_names_list = [f.name for f in uploaded_files]
                 st.session_state.active_drawer = "none"
                 prog_bar.progress(100, text="✅ PDF Indexing Complete!")
                 time.sleep(0.15)
@@ -2320,15 +2400,6 @@ with tab_workspace:
             else:
                 prog_bar.empty()
                 st.warning("⚠️ No extractable text found in this PDF (it may be a scanned image-only PDF). Please upload a text-searchable PDF.")
-    else:
-        st.session_state.corpus_names_list = []
-        st.session_state.vector_store = None
-        st.session_state.all_chunks = []
-        st.session_state.pdf_pages = 0
-        st.session_state.neural_chunks = 0
-        st.session_state.last_vec_ms = 0.0
-        st.session_state.total_tokens_est = 0
-        st.session_state.processed_files_key = ""
 
     if st.session_state.queued_followup:
         triggered_query = st.session_state.queued_followup
@@ -2368,7 +2439,8 @@ with tab_workspace:
     if active_query:
         if not st.session_state.vector_store:
             st.session_state.active_drawer = "plus"
-            st.warning("⚠️ Please tap the **'＋'** button inside the chat box above to attach a PDF document first.")
+            st.warning("⚠️ Please tap **'＋'** inside the chat box above to attach a PDF document first.")
+            st.rerun()
         else:
             with st.chat_message("user", avatar="🧑‍💻"):
                 st.markdown(f"**{active_query}**")
@@ -2551,7 +2623,7 @@ with tab_quiz:
     )
 
     if not st.session_state.vector_store:
-        st.info("📂 Please upload your PDF document in the 'AI Workspace' tab (by tapping the '＋' button inside the chat box) first to unlock full-document flashcards and quizzes.")
+        st.info("📂 Please upload your PDF document in the '🚀 AI Workspace' tab (by tapping the '＋' button inside the chat box) first to unlock full-document flashcards and quizzes.")
     else:
         scol1, scol2 = st.columns(2)
         with scol1:
