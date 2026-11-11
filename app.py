@@ -9,15 +9,6 @@ import re
 import html
 import io
 from datetime import datetime, timezone, timedelta
-from pypdf import PdfReader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
-
-try:
-    from langchain_core.documents import Document
-except ImportError:
-    from langchain.docstore.document import Document
 
 # --- INDIAN STANDARD TIME (IST) HELPER FOR ACCURATE TIMESTAMPS ---
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -27,7 +18,7 @@ def get_ist_time_str(fmt: str = "%d %b %Y • %I:%M %p") -> str:
     return datetime.now(IST).strftime(fmt)
 
 
-# --- PAGE CONFIGURATION ---
+# --- PAGE CONFIGURATION (INSTANT 0.0S BOOT — HEAVY AI LIBS LAZY-LOADED ON DEMAND) ---
 st.set_page_config(
     page_title="DeepRAG AI Workspace | Enterprise Neural RAG",
     page_icon="🧠",
@@ -83,7 +74,7 @@ def get_api_key_pool() -> list[str]:
 API_KEYS_POOL = get_api_key_pool()
 ACTIVE_KEY_POOL_COUNT = max(5, len(API_KEYS_POOL))
 
-# --- SITE-WIDE LUXURY EDITORIAL CSS + ZERO-MILLISECOND FLASH GUARD + MOBILE OPTIMIZATION ---
+# --- SITE-WIDE LUXURY EDITORIAL CSS + SILICON VALLEY MINIMAL WORKSPACE STYLING ---
 custom_css = (
     "<style>"
     "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');"
@@ -92,7 +83,7 @@ custom_css = (
     "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #fde68a, #38bdf8); border-radius: 999px; }"
     "header[data-testid='stHeader'] { background: transparent !important; }"
     "div[data-testid='stAppViewContainer'] > .main { background: transparent !important; position: relative; z-index: 2; }"
-    ".block-container { position: relative; z-index: 2; padding-top: 2rem !important; transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1); }"
+    ".block-container { position: relative; z-index: 2; padding-top: 1.4rem !important; max-width: 1160px !important; transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1); }"
 
     "html:not([data-deeprag-unlocked='1']) .stApp { background: #020306 !important; overflow: hidden !important; }"
     "html:not([data-deeprag-unlocked='1']) .block-container,"
@@ -125,25 +116,40 @@ custom_css = (
     "  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 65%);"
     "}"
 
-    "div[data-testid='stAudioInput'] {"
-    "  background: linear-gradient(160deg, rgba(15, 23, 42, 0.65) 0%, rgba(6, 10, 22, 0.85) 100%) !important;"
-    "  border: 1px solid rgba(255, 255, 255, 0.08) !important;"
-    "  border-top: 1px solid rgba(253, 230, 138, 0.35) !important;"
-    "  border-radius: 18px !important;"
-    "  padding: 10px 14px !important;"
-    "  width: 100% !important;"
-    "  box-sizing: border-box !important;"
-    "  overflow: visible !important;"
-    "  margin-bottom: 10px !important;"
-    "  backdrop-filter: blur(18px);"
-    "}"
-    "html[data-deeprag-theme='light'] div[data-testid='stAudioInput'] {"
-    "  background: #ffffff !important;"
-    "  border: 1px solid rgba(79, 70, 229, 0.3) !important;"
-    "  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;"
-    "}"
+    ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
 
-    ".status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 10px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; text-align: center; margin-bottom: 18px; }"
+    ".sv-workspace-hero { max-width: 820px; margin: 10px auto 12px auto; text-align: center; padding: 8px 10px 2px 10px; }"
+    ".sv-sparkle-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(253, 230, 138, 0.08); border: 1px solid rgba(253, 230, 138, 0.28); color: #fde68a; font-family: 'JetBrains Mono', monospace; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 5px 14px; border-radius: 999px; margin-bottom: 12px; }"
+    "html[data-deeprag-theme='light'] .sv-sparkle-pill { background: rgba(2, 132, 199, 0.08); border-color: rgba(2, 132, 199, 0.3); color: #0284c7; }"
+    ".sv-greeting-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.85rem, 4.2vw, 2.8rem); font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; color: #f8fafc; margin-bottom: 8px; }"
+    "html[data-deeprag-theme='light'] .sv-greeting-title { color: #0f172a; }"
+    ".sv-greeting-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(0.88rem, 1.35vw, 1.0rem); color: #94a3b8; max-width: 600px; margin: 0 auto 14px auto; line-height: 1.6; }"
+    "html[data-deeprag-theme='light'] .sv-greeting-sub { color: #475569; }"
+
+    ".sv-telemetry-bar { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; background: rgba(15, 23, 42, 0.68); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(253, 230, 138, 0.3); padding: 6px 14px; border-radius: 999px; backdrop-filter: blur(16px); margin-bottom: 10px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28); }"
+    "html[data-deeprag-theme='light'] .sv-telemetry-bar { background: rgba(255, 255, 255, 0.92); border-color: rgba(15, 23, 42, 0.1); box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05); }"
+    ".sv-tel-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.69rem; color: #cbd5e1; display: inline-flex; align-items: center; gap: 5px; padding: 2px 6px; }"
+    "html[data-deeprag-theme='light'] .sv-tel-chip { color: #334155; }"
+    ".sv-tel-chip strong { color: #fde68a; font-weight: 700; }"
+    "html[data-deeprag-theme='light'] .sv-tel-chip strong { color: #0284c7; }"
+    ".sv-tel-sep { color: rgba(148, 163, 184, 0.32); font-size: 0.72rem; }"
+
+    "div[data-testid='stPopover'] > button {"
+    "  background: linear-gradient(160deg, rgba(15, 23, 42, 0.78), rgba(6, 10, 22, 0.92)) !important;"
+    "  border: 1px solid rgba(255, 255, 255, 0.1) !important;"
+    "  border-top: 1px solid rgba(253, 230, 138, 0.34) !important; color: #f8fafc !important;"
+    "  border-radius: 999px !important; font-family: 'Plus Jakarta Sans', sans-serif !important;"
+    "  font-size: 0.81rem !important; font-weight: 700 !important; padding: 9px 14px !important;"
+    "  backdrop-filter: blur(16px) !important; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;"
+    "}"
+    "html[data-deeprag-theme='light'] div[data-testid='stPopover'] > button {"
+    "  background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.24) !important; color: #1e293b !important;"
+    "}"
+    "div[data-testid='stPopover'] > button:hover {"
+    "  transform: translateY(-2px) !important; border-color: rgba(253, 230, 138, 0.68) !important;"
+    "  background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important;"
+    "  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.28) !important;"
+    "}"
 
     ".lux-hero-wrap { padding: 4px 0 10px 0; }"
     ".lux-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; letter-spacing: 0.24em; text-transform: uppercase; color: #f59e0b; margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }"
@@ -173,22 +179,15 @@ custom_css = (
     ".metric-value { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.75rem, 3vw, 2.3rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #fde68a 55%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }"
     "html[data-deeprag-theme='light'] .metric-value { background: linear-gradient(135deg, #0f172a 0%, #0284c7 60%, #4f46e5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }"
 
-    ".upload-portal-card { background: linear-gradient(160deg, rgba(15, 23, 42, 0.55) 0%, rgba(6, 10, 22, 0.78) 100%); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(253, 230, 138, 0.35); border-radius: 22px; padding: 20px 22px; margin-bottom: 20px; backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.38); }"
-    "html[data-deeprag-theme='light'] .upload-portal-card { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(15, 23, 42, 0.08); border-top: 2px solid #4f46e5; box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05); }"
-    ".upload-portal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.22rem; font-weight: 800; color: #f8fafc; margin-bottom: 6px; letter-spacing: -0.01em; }"
-    "html[data-deeprag-theme='light'] .upload-portal-title { color: #0f172a; }"
-    ".upload-portal-sub { font-size: 0.9rem; color: #94a3b8; margin-bottom: 4px; }"
-    "html[data-deeprag-theme='light'] .upload-portal-sub { color: #475569; }"
-
-    "div[data-testid='stTabs'] [ role='tablist' ] { overflow-x: auto !important; flex-wrap: nowrap !important; padding-bottom: 4px !important; }"
-    "div[data-testid='stTabs'] button { background: rgba(15, 23, 42, 0.6) !important; border-radius: 999px !important; padding: 10px 18px !important; margin-right: 8px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; color: #cbd5e1 !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; font-size: 0.84rem !important; white-space: nowrap !important; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important; }"
+    "div[data-testid='stTabs'] [ role='tablist' ] { overflow-x: auto !important; flex-wrap: nowrap !important; padding-bottom: 4px !important; justify-content: center !important; }"
+    "div[data-testid='stTabs'] button { background: rgba(15, 23, 42, 0.6) !important; border-radius: 999px !important; padding: 9px 18px !important; margin-right: 6px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; color: #cbd5e1 !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; font-size: 0.83rem !important; white-space: nowrap !important; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.22) !important; color: #334155 !important; }"
     "div[data-testid='stTabs'] button[aria-selected='true'] { background: linear-gradient(135deg, rgba(253, 230, 138, 0.16), rgba(56, 189, 248, 0.22), rgba(79, 70, 229, 0.3)) !important; color: #fde68a !important; border: 1px solid rgba(253, 230, 138, 0.55) !important; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22) !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stTabs'] button[aria-selected='true'] { background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; border: none !important; }"
 
-    "div.stButton > button { background: linear-gradient(160deg, rgba(15, 23, 42, 0.8), rgba(6, 10, 22, 0.95)) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-top: 1px solid rgba(253, 230, 138, 0.3) !important; color: #f8fafc !important; border-radius: 14px !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; padding: 11px 16px !important; transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important; }"
+    "div.stButton > button { background: linear-gradient(160deg, rgba(15, 23, 42, 0.78), rgba(6, 10, 22, 0.92)) !important; border: 1px solid rgba(255, 255, 255, 0.09) !important; border-top: 1px solid rgba(253, 230, 138, 0.28) !important; color: #f8fafc !important; border-radius: 999px !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; font-size: 0.8rem !important; padding: 9px 14px !important; transition: all 0.26s cubic-bezier(0.16, 1, 0.3, 1) !important; }"
     "html[data-deeprag-theme='light'] div.stButton > button { background: #ffffff !important; border: 1px solid rgba(79, 70, 229, 0.25) !important; color: #1e293b !important; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important; }"
-    "div.stButton > button:hover { transform: translateY(-3px) !important; border-color: rgba(253, 230, 138, 0.65) !important; background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; box-shadow: 0 10px 26px rgba(56, 189, 248, 0.3) !important; }"
+    "div.stButton > button:hover { transform: translateY(-2px) !important; border-color: rgba(253, 230, 138, 0.65) !important; background: linear-gradient(135deg, #0284c7, #4f46e5) !important; color: #ffffff !important; box-shadow: 0 10px 24px rgba(56, 189, 248, 0.28) !important; }"
 
     "div[data-testid='stChatMessage'] { background: linear-gradient(160deg, rgba(15, 23, 42, 0.6) 0%, rgba(6, 10, 22, 0.82) 100%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-top: 1px solid rgba(253, 230, 138, 0.25) !important; border-radius: 22px !important; padding: 18px 20px !important; margin-bottom: 16px !important; backdrop-filter: blur(20px); box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35) !important; overflow-x: auto !important; }"
     "html[data-deeprag-theme='light'] div[data-testid='stChatMessage'] { background: #ffffff !important; border: 1px solid rgba(99, 102, 241, 0.2) !important; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05) !important; }"
@@ -233,8 +232,8 @@ custom_css = (
     ".lux-wrapper { font-family: 'Plus Jakarta Sans', sans-serif; padding: 10px 0 40px 0; }"
     ".lux-section { opacity: 0; transform: translateY(48px); transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1), transform 0.95s cubic-bezier(0.16, 1, 0.3, 1); margin-bottom: 56px; position: relative; }"
     ".lux-section.lux-active { opacity: 1; transform: translateY(0); }"
-    ".lux-lead-copy { font-size: 1.02rem; line-height: 1.8; color: #94a3b8; max-width: 840px; font-weight: 400; }"
-    "html[data-deeprag-theme='light'] .lux-lead-copy { color: #475569; }"
+    ".lux-lead-copy { font-size: 1.04rem; line-height: 1.8; color: #cbd5e1; max-width: 840px; font-weight: 400; }"
+    "html[data-deeprag-theme='light'] .lux-lead-copy { color: #334155; }"
 
     ".lux-kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 22px; margin-top: 30px; padding: 24px 0; border-top: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }"
     "html[data-deeprag-theme='light'] .lux-kpi-strip { border-color: rgba(15, 23, 42, 0.1); }"
@@ -330,9 +329,8 @@ custom_css = (
     "footer { visibility: hidden; }"
 
     "@media (max-width: 640px) {"
-    "  .block-container { padding-left: 0.9rem !important; padding-right: 0.9rem !important; padding-top: 1.2rem !important; }"
+    "  .block-container { padding-left: 0.85rem !important; padding-right: 0.85rem !important; padding-top: 1.0rem !important; }"
     "  .metric-card { padding: 16px 12px; }"
-    "  .upload-portal-card { padding: 16px 16px; }"
     "}"
     "</style>"
     "<div class='anime-vignette'></div>"
@@ -678,7 +676,6 @@ def inject_anime_night_canvas():
         "      resizeAragoCanvas();"
         "      parentWin.addEventListener('resize', resizeAragoCanvas, { passive: true });"
 
-        "      /* --- 360° INTERACTIVE ORBIT CONTROLLER (AUTO-SPIN + DRAG INERTIA) --- */"
         "      let userYaw = 0.78;"
         "      let userPitch = 0.96;"
         "      let velYaw = 0.0052;"
@@ -740,7 +737,6 @@ def inject_anime_night_canvas():
         "        if (!unlocked && heroTriggered && ev.key === 'Enter') unlockWorkspace();"
         "      });"
 
-        "      /* --- EXACT ORTHO-3D PROJECTION & ANALYTICAL NORMAL-CULLED CUBOID RENDERER --- */"
         "      function project3D(x, y, z, cx, cy, scale, pitch, yaw) {"
         "        const cosY = Math.cos(yaw), sinY = Math.sin(yaw);"
         "        const rx = x * cosY - y * sinY;"
@@ -781,7 +777,6 @@ def inject_anime_night_canvas():
         "          }"
         "        }"
 
-        "        /* Only draw the 2 side walls whose outward normal faces the camera */"
         "        if (sinY > 0) {"
         "          fillQuad(1, 2, 6, 5, pal.sideA, pal.stroke, pal.lw);"
         "        } else {"
@@ -792,11 +787,9 @@ def inject_anime_night_canvas():
         "        } else {"
         "          fillQuad(0, 1, 5, 4, pal.sideB, pal.stroke, pal.lw);"
         "        }"
-        "        /* Top face is always visible from above */"
         "        fillQuad(4, 5, 6, 7, pal.top, pal.stroke, (pal.lw || 1.0) * 1.1);"
         "      }"
 
-        "      /* 100% Symmetrical 4-Way HBM3e + Corner Co-Processor Layout */"
         "      const chipModules = ["
         "        { x: -102, y: -34, w: 38, d: 46, h: 20, z: 8, kind: 'hbm' },"
         "        { x: -102, y:  34, w: 38, d: 46, h: 20, z: 8, kind: 'hbm' },"
@@ -817,7 +810,7 @@ def inject_anime_night_canvas():
         "        if (!loopActive) return;"
         "        const elapsed = now - tStart;"
 
-        "        const loadProg = Math.min(1, elapsed / 2050);"
+        "        const loadProg = Math.min(1, elapsed / 1850);"
         "        const loadEase = 1 - Math.pow(1 - loadProg, 3);"
         "        const pctInt = Math.min(100, Math.floor(loadEase * 100));"
         "        if (loadNum) loadNum.textContent = pctInt + '%';"
@@ -825,15 +818,15 @@ def inject_anime_night_canvas():
         "          ringCircle.style.strokeDashoffset = (628.3 * (1 - loadEase)).toFixed(1);"
         "        }"
 
-        "        if (elapsed >= 2100 && !heroTriggered) {"
+        "        if (elapsed >= 1900 && !heroTriggered) {"
         "          heroTriggered = true;"
         "          stage.classList.add('arago-hero-ready');"
         "        }"
 
         "        aCtx.clearRect(0, 0, cw, ch);"
 
-        "        if (elapsed < 2750) {"
-        "          const ringFade = elapsed < 2100 ? 1 : Math.max(0, 1 - (elapsed - 2100) / 650);"
+        "        if (elapsed < 2500) {"
+        "          const ringFade = elapsed < 1900 ? 1 : Math.max(0, 1 - (elapsed - 1900) / 600);"
         "          const rcx = cw * 0.5, rcy = ch * 0.5;"
         "          const orbitR = Math.min(cw, ch) < 500 ? 118 : 162;"
         "          aCtx.save();"
@@ -855,8 +848,8 @@ def inject_anime_night_canvas():
         "          aCtx.restore();"
         "        }"
 
-        "        if (elapsed > 1750) {"
-        "          const chipRaw = Math.min(1, (elapsed - 1750) / 1850);"
+        "        if (elapsed > 1550) {"
+        "          const chipRaw = Math.min(1, (elapsed - 1550) / 1700);"
         "          const chipEase = 1 - Math.pow(1 - chipRaw, 3);"
         "          const isMobile = cw < 768;"
         "          const targetCx = isMobile ? cw * 0.50 : cw * 0.69;"
@@ -875,9 +868,8 @@ def inject_anime_night_canvas():
         "          const yaw = userYaw;"
 
         "          aCtx.save();"
-        "          aCtx.globalAlpha = Math.min(1, (elapsed - 1750) / 700);"
+        "          aCtx.globalAlpha = Math.min(1, (elapsed - 1550) / 650);"
 
-        "          /* 1. Volumetric Backlight Aura */"
         "          const haloR = 255 * baseScale;"
         "          const halo = aCtx.createRadialGradient(cx, cy, haloR * 0.08, cx, cy, haloR * 1.48);"
         "          halo.addColorStop(0, 'rgba(56, 189, 248, 0.30)');"
@@ -888,7 +880,6 @@ def inject_anime_night_canvas():
         "          aCtx.arc(cx, cy, haloR * 1.48, 0, Math.PI * 2);"
         "          aCtx.fill();"
 
-        "          /* 2. Outer Substrate Wafer & Inner Silicon Interposer */"
         "          drawSolidCuboid(0, 0, 316, 316, 12, -12, cx, cy, baseScale, pitch, yaw, {"
         "            top: '#070d19', sideA: '#040811', sideB: '#050a15',"
         "            stroke: 'rgba(56, 189, 248, 0.45)', lw: 1.2"
@@ -898,7 +889,6 @@ def inject_anime_night_canvas():
         "            stroke: 'rgba(253, 230, 138, 0.52)', lw: 1.15"
         "          });"
 
-        "          /* 3. Photonic Gold & Cyan Circuit Grid on Interposer Top (z = 8.2) */"
         "          const gridCount = 13;"
         "          for (let g = 0; g < gridCount; g++) {"
         "            const pos = -124 + (g / (gridCount - 1)) * 248;"
@@ -919,7 +909,6 @@ def inject_anime_night_canvas():
         "            aCtx.beginPath(); aCtx.arc(pkt.x, pkt.y, 1.7, 0, Math.PI * 2); aCtx.fill();"
         "          }"
 
-        "          /* 4. Exact Back-to-Front Depth Sort of All 13 Symmetrical 3D Chip Modules */"
         "          const cosY = Math.cos(yaw), sinY = Math.sin(yaw);"
         "          const sortedMods = chipModules.map((m, idx) => ({"
         "            ...m, idx,"
@@ -940,7 +929,6 @@ def inject_anime_night_canvas():
         "                stroke: 'rgba(253, 230, 138, 0.62)', lw: 0.95"
         "              });"
         "            } else {"
-        "              /* Central 384D FAISS Neural Processor Die + Golden Tensor Core */"
         "              drawSolidCuboid(0, 0, m.w, m.d, m.h, m.z, cx, cy, baseScale, pitch, yaw, {"
         "                top: '#0e4f68', sideA: '#092238', sideB: '#0c2d48',"
         "                stroke: '#38bdf8', lw: 1.35"
@@ -953,7 +941,6 @@ def inject_anime_night_canvas():
         "            }"
         "          }"
 
-        "          /* 5. Dual Symmetrical 3D Holographic Orbital Rings */"
         "          aCtx.strokeStyle = 'rgba(253, 230, 138, 0.72)';"
         "          aCtx.lineWidth = 1.4;"
         "          aCtx.beginPath();"
@@ -1204,9 +1191,7 @@ def render_premium_pdf_download_button(report_html_body: str, filename_pdf: str,
         f"</script>"
     )
     components.html(widget_html, height=60)
-
-
-# --- HELPER: BUILD ULTRA-PREMIUM QUIZ ANALYSIS PDF HTML (680PX LOCKED A4 + SVG RADIAL GAUGE) ---
+    # --- HELPER: BUILD ULTRA-PREMIUM QUIZ ANALYSIS PDF HTML (680PX LOCKED A4 + SVG RADIAL GAUGE) ---
 def build_premium_quiz_pdf_html(
     score: int,
     total_q: int,
@@ -1871,18 +1856,19 @@ def render_luxury_header(eyebrow: str, italic_word: str, main_title: str, subtit
     )
 
 
-# --- HELPER: LOAD EMBEDDING MODEL CACHED WITH BATCH SPEEDUP ---
+# --- LAZY-LOADED EMBEDDING MODEL & PDF PARSER (INSTANT WEBSITE BOOT) ---
 @st.cache_resource(show_spinner=False)
 def get_embedding_model():
+    from langchain_community.embeddings import HuggingFaceEmbeddings
     return HuggingFaceEmbeddings(
         model_name="all-MiniLM-L6-v2",
         encode_kwargs={"batch_size": 64, "normalize_embeddings": True}
     )
 
 
-# --- HELPER: CACHED FAST PDF PAGE EXTRACTION ---
 @st.cache_data(show_spinner=False)
 def extract_pdf_pages_cached(file_bytes: bytes, file_name: str) -> list[dict]:
+    from pypdf import PdfReader
     reader = PdfReader(io.BytesIO(file_bytes))
     extracted = []
     for page_idx, page in enumerate(reader.pages):
@@ -1985,62 +1971,80 @@ tab_workspace, tab_quiz, tab_why, tab_how, tab_creator = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: AI WORKSPACE (LUXURY EDITORIAL UI WITH LETTER-BY-LETTER REVEAL)
+# TAB 1: SILICON VALLEY MINIMAL AI WORKSPACE (CLAUDE / GEMINI / DEEPSEEK STYLE)
 # ==========================================
 with tab_workspace:
+    engine_state_txt = "FAISS Active" if st.session_state.vector_store else "Ready to Index"
     st.markdown(
-        render_luxury_header(
-            "I • Enterprise Neural RAG Workspace",
-            "DeepRAG",
-            "AI Intelligence Studio.",
-            "Next-generation document interrogation powered by 384D FAISS vector indexing, multimodal Voice AI, and a self-healing 7,500 RPD Multi-Key Gemini cascade."
-        ),
+        f"<div class='lux-hero-wrap sv-workspace-hero'>"
+        f"  <div class='sv-sparkle-pill'>✨ DEEPRAG NEURAL STUDIO • 7,500 RPD MULTI-KEY POOL</div>"
+        f"  <div class='sv-greeting-title'>"
+        f"    <span class='lux-serif-italic'>DeepRAG</span> "
+        f"    <span class='lux-split-text' data-text='Intelligence Workspace.'></span>"
+        f"  </div>"
+        f"  <div class='sv-greeting-sub lux-split-text' data-text='Attach your PDF documents below, calibrate synthesis style, or ask anything via text and Voice AI.'></div>"
+        f"  <div class='sv-telemetry-bar'>"
+        f"    <span class='sv-tel-chip'>📄 Pages: <strong>{st.session_state.pdf_pages}</strong></span>"
+        f"    <span class='sv-tel-sep'>•</span>"
+        f"    <span class='sv-tel-chip'>🧩 Chunks: <strong>{st.session_state.neural_chunks}</strong></span>"
+        f"    <span class='sv-tel-sep'>•</span>"
+        f"    <span class='sv-tel-chip'>⚡ Engine: <strong>{engine_state_txt}</strong></span>"
+        f"    <span class='sv-tel-sep'>•</span>"
+        f"    <span class='sv-tel-chip'>🔑 Pool: <strong>{ACTIVE_KEY_POOL_COUNT} Keys (7,500 RPD)</strong></span>"
+        f"  </div>"
+        f"</div>",
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        "<div class='lux-hero-wrap upload-portal-card'>"
-        "  <div class='lux-eyebrow' style='margin-bottom:6px;'>📂 Ingestion & Synthesis Portal</div>"
-        "  <div class='upload-portal-title lux-split-text' data-text='Document Corpus & Output Calibration'></div>"
-        "  <div class='upload-portal-sub lux-split-text' data-text='Upload one or more PDF documents below (supports large textbooks up to 200MB) and calibrate your synthesis depth.'></div>"
-        "</div>",
-        unsafe_allow_html=True
-    )
+    # --- UNIFIED ACTION DOCK (GEMINI / CLAUDE '+' POPOVER MENUS) ---
+    dock_c1, dock_c2, dock_c3 = st.columns(3)
+    with dock_c1:
+        with st.popover("➕ Attach PDF Document(s)", use_container_width=True):
+            uploaded_files = st.file_uploader(
+                "📄 Upload PDF Document(s) (Up to 200MB)",
+                type=["pdf"],
+                accept_multiple_files=True,
+                help="Upload single or multiple PDFs. Multi-PDF comparison works automatically."
+            )
+    with dock_c2:
+        with st.popover("🎛️ Output Style & Length", use_container_width=True):
+            response_mode = st.selectbox(
+                "🎛️ Select Output Style",
+                [
+                    "⚡ Deep Analysis (Default)",
+                    "🎯 Exam & Revision Notes",
+                    "💡 Simple Explain (ELI5)",
+                    "📌 Executive Bullet Points"
+                ]
+            )
+            answer_length = st.radio(
+                "📏 Select Answer Length",
+                [
+                    "⚡ Short & Crisp",
+                    "⚖️ Balanced",
+                    "📚 Detailed & In-Depth"
+                ],
+                index=1,
+                horizontal=True
+            )
+    with dock_c3:
+        with st.popover("🎙️ Ask via Voice AI", use_container_width=True):
+            audio_value = None
+            if hasattr(st, "audio_input"):
+                audio_value = st.audio_input("🎙️ Record Voice Question")
 
-    ucol1, ucol2 = st.columns([1.4, 1])
-    with ucol1:
-        uploaded_files = st.file_uploader(
-            "📄 Upload Your PDF Document(s)",
-            type=["pdf"],
-            accept_multiple_files=True,
-            help="Upload single or multiple PDFs. Multi-PDF comparison works automatically when 2+ files are uploaded."
-        )
-    with ucol2:
-        response_mode = st.selectbox(
-            "🎛️ Select Output Style",
-            [
-                "⚡ Deep Analysis (Default)",
-                "🎯 Exam & Revision Notes",
-                "💡 Simple Explain (ELI5)",
-                "📌 Executive Bullet Points"
-            ]
-        )
-        answer_length = st.radio(
-            "📏 Select Answer Length",
-            [
-                "⚡ Short & Crisp",
-                "⚖️ Balanced",
-                "📚 Detailed & In-Depth"
-            ],
-            index=1,
-            horizontal=True
-        )
-
-    # --- FAST CACHED PDF INDEXING WITH PROGRESS BAR ---
+    # --- FAST LAZY-LOADED PDF INDEXING ---
     if uploaded_files:
         file_signatures = [f"{f.name}_{f.size}" for f in uploaded_files]
         current_key = f"{file_signatures}_{chunk_size}_{chunk_overlap}"
         if current_key != st.session_state.processed_files_key:
+            from langchain_text_splitters import RecursiveCharacterTextSplitter
+            from langchain_community.vectorstores import FAISS
+            try:
+                from langchain_core.documents import Document
+            except ImportError:
+                from langchain.docstore.document import Document
+
             prog_bar = st.progress(0, text="🚀 Reading PDF pages & extracting clean text...")
             t0 = time.time()
             log_terminal(f"Ingesting {len(uploaded_files)} PDF file(s)...")
@@ -2079,9 +2083,10 @@ with tab_workspace:
                 st.session_state.total_tokens_est = sum(len(d.page_content.split()) for d in split_docs)
                 st.session_state.processed_files_key = current_key
                 prog_bar.progress(100, text="✅ PDF Indexing Complete!")
-                time.sleep(0.2)
+                time.sleep(0.15)
                 prog_bar.empty()
                 log_terminal(f"Indexed {total_pages} pages into {len(split_docs)} chunks in {st.session_state.last_vec_ms}ms.")
+                st.rerun()
             else:
                 prog_bar.empty()
                 st.warning("⚠️ No extractable text found in this PDF (it may be a scanned image-only PDF). Please upload a text-searchable PDF.")
@@ -2094,77 +2099,36 @@ with tab_workspace:
         st.session_state.total_tokens_est = 0
         st.session_state.processed_files_key = ""
 
-    st.write("")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-title">📄 Indexed PDF Pages</div>'
-            f'<div class="metric-value">{st.session_state.pdf_pages}</div>'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-    with col2:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-title">🧩 Neural Vector Chunks</div>'
-            f'<div class="metric-value">{st.session_state.neural_chunks}</div>'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-    with col3:
-        engine_status = "FAISS Active" if st.session_state.vector_store else "Standby"
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-title">⚡ Vector Search Engine</div>'
-            f'<div class="metric-value">{engine_status}</div>'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-
-    st.write("")
-
     triggered_query = None
     if st.session_state.queued_followup:
         triggered_query = st.session_state.queued_followup
         st.session_state.queued_followup = None
 
-    if st.session_state.vector_store:
-        st.markdown("##### ✨ Instant Neural Actions & Visualizers")
-        qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
-        with qcol1:
-            if st.button("📝 Executive Summary", use_container_width=True):
-                triggered_query = "Provide a comprehensive executive summary of the uploaded document(s), highlighting the core thesis, key sections, and main conclusions."
-        with qcol2:
-            if st.button("🔑 Key Formulas & Facts", use_container_width=True):
-                triggered_query = "Extract all critical definitions, core concepts, frameworks, formulas, and key technical facts from the document(s)."
-        with qcol3:
-            if st.button("🗺️ Concept Flowchart", use_container_width=True):
-                triggered_query = (
-                    "Create a clear, visual step-by-step Concept Flowchart & Mind-Map of the core architecture or process in the document(s). "
-                    "Include a clean Unicode box-drawing diagram inside a code block followed by stage-by-stage explanations with page citations."
-                )
-        with qcol4:
-            if st.button("⚖️ Compare Documents", use_container_width=True):
-                triggered_query = (
-                    "Perform a comprehensive Cross-Document / Cross-Section Comparison of all uploaded PDF documents (or major sections if a single PDF is uploaded). "
-                    "Compare their core objectives, methodologies, key data/metrics, strengths, limitations, and conclusions inside a structured Markdown Comparison Table followed by key analytical insights."
-                )
-        with qcol5:
-            if st.button("🎓 Top 5 Exam Questions", use_container_width=True):
-                triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
+    # --- CLAUDE-STYLE QUICK ACTION PILLS (ALL 5 INSTANT VISUALIZERS PRESERVED) ---
+    qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
+    with qcol1:
+        if st.button("📝 Summary", use_container_width=True, help="Generate a full Executive Summary"):
+            triggered_query = "Provide a comprehensive executive summary of the uploaded document(s), highlighting the core thesis, key sections, and main conclusions."
+    with qcol2:
+        if st.button("🔑 Key Facts", use_container_width=True, help="Extract Key Formulas, Definitions & Facts"):
+            triggered_query = "Extract all critical definitions, core concepts, frameworks, formulas, and key technical facts from the document(s)."
+    with qcol3:
+        if st.button("🗺️ Flowchart", use_container_width=True, help="Build a Concept Flowchart & Mind-Map"):
+            triggered_query = (
+                "Create a clear, visual step-by-step Concept Flowchart & Mind-Map of the core architecture or process in the document(s). "
+                "Include a clean Unicode box-drawing diagram inside a code block followed by stage-by-stage explanations with page citations."
+            )
+    with qcol4:
+        if st.button("⚖️ Compare", use_container_width=True, help="Compare Documents or Sections in a Table"):
+            triggered_query = (
+                "Perform a comprehensive Cross-Document / Cross-Section Comparison of all uploaded PDF documents (or major sections if a single PDF is uploaded). "
+                "Compare their core objectives, methodologies, key data/metrics, strengths, limitations, and conclusions inside a structured Markdown Comparison Table followed by key analytical insights."
+            )
+    with qcol5:
+        if st.button("🎓 Exam Qs", use_container_width=True, help="Generate Top 5 Exam & Interview Questions"):
+            triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
 
-    vcol1, vcol2 = st.columns([1.8, 1.2])
-    with vcol1:
-        st.markdown("##### 💬 Ask Your Documents (Text or Voice)")
-        st.caption("Upload your PDF above, then type a question below or record a voice query using the microphone.")
-    with vcol2:
-        audio_value = None
-        if hasattr(st, "audio_input"):
-            audio_value = st.audio_input("🎙️ Ask via Voice AI")
-
-    text_query = st.chat_input("Ask any question about your uploaded PDF documents...")
+    text_query = st.chat_input("Ask anything about your PDF documents (or use ➕ Attach PDF / 🎙️ Voice AI above)...")
 
     active_query = None
     if triggered_query:
@@ -2193,7 +2157,7 @@ with tab_workspace:
     # --- INSTANT QUESTION DISPLAY & LIVE LOADING BELOW IT ---
     if active_query:
         if not st.session_state.vector_store:
-            st.warning("⚠️ Please upload a PDF document above first to begin querying.")
+            st.warning("⚠️ Please click **'➕ Attach PDF Document(s)'** above to upload a PDF first.")
         else:
             with st.chat_message("user", avatar="🧑‍💻"):
                 st.markdown(f"**{active_query}**")
@@ -2376,7 +2340,7 @@ with tab_quiz:
     )
 
     if not st.session_state.vector_store:
-        st.info("📂 Please upload your PDF document in the '🚀 AI Workspace' tab first to unlock full-document flashcards and quizzes.")
+        st.info("📂 Please upload your PDF document in the '🚀 AI Workspace' tab (via '➕ Attach PDF Document(s)') first to unlock full-document flashcards and quizzes.")
     else:
         scol1, scol2 = st.columns(2)
         with scol1:
@@ -2605,7 +2569,7 @@ with tab_quiz:
                     st.balloons()
 
 # ==========================================
-# TAB 3: 🏆 WHY US? (UNCLIPPED PIE CHARTS + 7,500 RPD 5-KEY BENCHMARKS)
+# TAB 3: 🏆 WHY US? (SIMPLIFIED GREEN-CIRCLED SECTION + UNCLIPPED PIE CHARTS)
 # ==========================================
 with tab_why:
     st.markdown(
@@ -2622,28 +2586,28 @@ with tab_why:
         "<div class='lux-wrapper'>"
 
         "  <div class='lux-section'>"
-        "    <div class='lux-eyebrow'>01 • Verifiable Engineering Specifications</div>"
+        "    <div class='lux-eyebrow'>01 • Why Normal Chatbots Fail on Large PDFs</div>"
         "    <div class='lux-headline'>"
-        "      <span class='lux-serif-italic'>Deterministic</span> "
-        "      <span class='lux-split-text' data-text='vector architecture versus probabilistic guessing.'></span>"
+        "      <span class='lux-serif-italic'>Exact Answers</span> "
+        "      <span class='lux-split-text' data-text='from your PDF instead of AI guessing.'></span>"
         "    </div>"
-        "    <div class='lux-lead-copy lux-split-text' data-text='General-purpose chatbots process long PDFs by stuffing raw text into a single attention window—causing severe accuracy drops in the middle chapters (Stanford TACL Study, arXiv:2307.03172). DeepRAG eliminates this bottleneck by indexing every 1,000-character window into a 384-dimensional FAISS FlatL2 vector space.'></div>"
+        "    <div class='lux-lead-copy lux-split-text' data-text='Normal AI chatbots try to read a huge PDF all at once, which makes them forget or miss important details hidden in the middle pages (proven by Stanford University research). DeepRAG fixes this completely: it breaks your PDF into small, searchable pieces so it instantly finds the exact page and gives you 100% accurate, verified answers every single time.'></div>"
         "    <div class='lux-kpi-strip'>"
         "      <div>"
         "        <div class='lux-kpi-num'>384D</div>"
-        "        <div class='lux-kpi-label'>MiniLM-L6-v2 Dense Space (EMNLP 2019)</div>"
+        "        <div class='lux-kpi-label'>Smart Meaning Search (MiniLM-L6)</div>"
         "      </div>"
         "      <div>"
         "        <div class='lux-kpi-num'>&lt;15ms</div>"
-        "        <div class='lux-kpi-label'>FAISS IndexFlatL2 RAM Search</div>"
+        "        <div class='lux-kpi-label'>Instant Page Lookup Speed</div>"
         "      </div>"
         "      <div>"
         "        <div class='lux-kpi-num'>7,500</div>"
-        "        <div class='lux-kpi-label'>Daily RPD Pool (5 Keys × 1,500 RPD)</div>"
+        "        <div class='lux-kpi-label'>Daily Questions Pool (5 Keys)</div>"
         "      </div>"
         "      <div>"
         "        <div class='lux-kpi-num'>100%</div>"
-        "        <div class='lux-kpi-label'>Non-Parametric Context Lock</div>"
+        "        <div class='lux-kpi-label'>Strict PDF-Only Answers (Zero Guessing)</div>"
         "      </div>"
         "    </div>"
         "  </div>"
