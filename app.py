@@ -333,6 +333,20 @@ custom_css = (
     "  div[data-testid='stTabs'] [ role='tablist' ] { justify-content: flex-start !important; padding-left: 4px !important; }"
     "  .metric-card { padding: 16px 12px; }"
     "}"
+    "div[data-testid='stChatInput'] textarea { padding-right: 44px !important; }"
+    "div[data-testid='stChatInputSubmitButton'] {"
+    "  background: #2563eb !important; color: #ffffff !important; border-radius: 50% !important;"
+    "  width: 36px !important; height: 36px !important; margin-right: 4px !important;"
+    "}"
+    "div[data-testid='stChatInputSubmitButton'] svg { fill: #ffffff !important; }"
+    "div[data-testid='stAudioInput'] {"
+    "  width: 38px !important; height: 38px !important; margin: -50px 50px 14px auto !important;"
+    "  padding: 0 !important; background: transparent !important; border: none !important;"
+    "  box-shadow: none !important; position: relative !important; z-index: 30 !important; overflow: hidden !important;"
+    "}"
+    "div[data-testid='stAudioInput'] > label, div[data-testid='stAudioInput'] canvas, div[data-testid='stAudioInput'] span { display: none !important; }"
+    "div[data-testid='stAudioInput'] > div { background: transparent !important; border: none !important; padding: 0 !important; min-height: 0 !important; height: 38px !important; display: flex !important; align-items: center !important; justify-content: center !important; }"
+    "div[data-testid='stAudioInput'] button { width: 36px !important; height: 36px !important; border-radius: 50% !important; background: transparent !important; border: none !important; color: #cbd5e1 !important; padding: 0 !important; }"
     "</style>"
     "<div class='anime-vignette'></div>"
 )
@@ -1997,15 +2011,15 @@ with tab_workspace:
         unsafe_allow_html=True
     )
 
-    # --- UNIFIED ACTION DOCK (GEMINI / CLAUDE '+' POPOVER MENUS) ---
-    dock_c1, dock_c2, dock_c3 = st.columns(3)
+    # --- UNIFIED ACTION DOCK (ONLY PDF & STYLE POPOVERS) ---
+    dock_c1, dock_c2 = st.columns(2)
     with dock_c1:
         with st.popover("➕ Attach PDF Document(s)", use_container_width=True):
             uploaded_files = st.file_uploader(
                 "📄 Upload PDF Document(s) (Up to 200MB)",
                 type=["pdf"],
                 accept_multiple_files=True,
-                help="Upload single or multiple PDFs. Multi-PDF comparison works automatically."
+                help="Upload single or multiple PDFs."
             )
     with dock_c2:
         with st.popover("🎛️ Output Style & Length", use_container_width=True):
@@ -2028,11 +2042,7 @@ with tab_workspace:
                 index=1,
                 horizontal=True
             )
-    with dock_c3:
-        with st.popover("🎙️ Ask via Voice AI", use_container_width=True):
-            audio_value = None
-            if hasattr(st, "audio_input"):
-                audio_value = st.audio_input("🎙️ Record Voice Question")
+        
 
     # --- FAST LAZY-LOADED PDF INDEXING ---
     if uploaded_files:
@@ -2105,10 +2115,17 @@ with tab_workspace:
         triggered_query = st.session_state.queued_followup
         st.session_state.queued_followup = None
 
-    text_query = st.chat_input("Ask anything about your PDF documents (or use ➕ Attach PDF / 🎙️ Voice AI above)...")
+    text_query = st.chat_input("Ask DeepRAG...")
+    audio_value = None
+    if hasattr(st, "audio_input"):
+        audio_value = st.audio_input(
+            "Voice",
+            label_visibility="collapsed",
+            key=f"inline_mic_{st.session_state.last_audio_hash}"
+        )
 
-    # --- CLAUDE-STYLE QUICK ACTION PILLS (ALL 5 INSTANT VISUALIZERS PRESERVED) ---
-    qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
+    # --- CLAUDE-STYLE QUICK ACTION PILLS (4 BUTTONS — COMPARE REMOVED) ---
+    qcol1, qcol2, qcol3, qcol4 = st.columns(4)
     with qcol1:
         if st.button("📝 Summary", use_container_width=True, help="Generate a full Executive Summary"):
             triggered_query = "Provide a comprehensive executive summary of the uploaded document(s), highlighting the core thesis, key sections, and main conclusions."
@@ -2122,15 +2139,9 @@ with tab_workspace:
                 "Include a clean Unicode box-drawing diagram inside a code block followed by stage-by-stage explanations with page citations."
             )
     with qcol4:
-        if st.button("⚖️ Compare", use_container_width=True, help="Compare Documents or Sections in a Table"):
-            triggered_query = (
-                "Perform a comprehensive Cross-Document / Cross-Section Comparison of all uploaded PDF documents (or major sections if a single PDF is uploaded). "
-                "Compare their core objectives, methodologies, key data/metrics, strengths, limitations, and conclusions inside a structured Markdown Comparison Table followed by key analytical insights."
-            )
-    with qcol5:
         if st.button("🎓 Exam Qs", use_container_width=True, help="Generate Top 5 Exam & Interview Questions"):
             triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
-
+       
     active_query = None
     if triggered_query:
         active_query = triggered_query
