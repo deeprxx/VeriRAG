@@ -328,8 +328,9 @@ custom_css = (
     "html[data-deeprag-theme='light'] .premium-footer span { color: #0284c7; }"
     "footer { visibility: hidden; }"
 
-    "@media (max-width: 640px) {"
-    "  .block-container { padding-left: 0.85rem !important; padding-right: 0.85rem !important; padding-top: 1.0rem !important; }"
+    "@media (max-width: 768px) {"
+    "  .block-container { padding-left: 0.85rem !important; padding-right: 0.85rem !important; padding-top: 2.8rem !important; }"
+    "  div[data-testid='stTabs'] [ role='tablist' ] { justify-content: flex-start !important; padding-left: 4px !important; }"
     "  .metric-card { padding: 16px 12px; }"
     "}"
     "</style>"
