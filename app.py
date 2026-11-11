@@ -2104,6 +2104,8 @@ with tab_workspace:
     if st.session_state.queued_followup:
         triggered_query = st.session_state.queued_followup
         st.session_state.queued_followup = None
+        text_query = st.chat_input("Ask anything about your PDF documents (or use ➕ Attach PDF / 🎙️ Voice AI above)...")
+
 
     # --- CLAUDE-STYLE QUICK ACTION PILLS (ALL 5 INSTANT VISUALIZERS PRESERVED) ---
     qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
@@ -2129,8 +2131,7 @@ with tab_workspace:
         if st.button("🎓 Exam Qs", use_container_width=True, help="Generate Top 5 Exam & Interview Questions"):
             triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
 
-    text_query = st.chat_input("Ask anything about your PDF documents (or use ➕ Attach PDF / 🎙️ Voice AI above)...")
-
+    
     active_query = None
     if triggered_query:
         active_query = triggered_query
