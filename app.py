@@ -2161,6 +2161,221 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
+# --- HELPER: OBSIDIAN-STYLE INTERACTIVE NEURAL KNOWLEDGE GRAPH ENGINE ---
+def render_neural_knowledge_graph(all_chunks: list):
+    nodes = [{"id": "root", "label": "📄 PDF Core", "group": "root", "page": "All Pages", "snippet": "Central Vector Index (384D FAISS Hypersphere) — Drag any node to interact with the graph."}]
+    links = []
+    seen_concepts = set()
+    stop_list = {
+        "Chapter", "Section", "Table", "Figure", "Introduction", "Abstract", "Document",
+        "Using", "Based", "However", "Therefore", "Although", "Between", "Through", "System",
+        "Page", "Scanned", "Questions", "Answer", "Example", "Number", "Where", "Which"
+    }
+
+    sample_step = max(1, len(all_chunks) // 10)
+    sampled_chunks = all_chunks[::sample_step][:10]
+
+    for idx, ch in enumerate(sampled_chunks):
+        pg = ch.metadata.get("page", idx + 1)
+        src = ch.metadata.get("source", "PDF")
+        pg_id = f"pg_{pg}"
+        if not any(n["id"] == pg_id for n in nodes):
+            nodes.append({
+                "id": pg_id,
+                "label": f"P.{pg}",
+                "group": "page",
+                "page": f"Page {pg} ({src})",
+                "snippet": ch.page_content[:180].replace("\n", " ") + "..."
+            })
+            links.append({"source": "root", "target": pg_id})
+
+        words = re.findall(r"\b[A-Z][a-zA-Z0-9\-]{4,15}\b", ch.page_content)
+        added_for_chunk = 0
+        for w in words:
+            if w not in stop_list and w.lower() not in seen_concepts:
+                seen_concepts.add(w.lower())
+                c_id = f"c_{len(nodes)}"
+                nodes.append({
+                    "id": c_id,
+                    "label": w,
+                    "group": "concept",
+                    "page": f"Page {pg} • {src}",
+                    "snippet": ch.page_content[:200].replace("\n", " ") + "..."
+                })
+                links.append({"source": pg_id, "target": c_id})
+                added_for_chunk += 1
+                if added_for_chunk >= 2 or len(nodes) >= 22:
+                    break
+        if len(nodes) >= 22:
+            break
+
+    graph_json = json.dumps({"nodes": nodes, "links": links})
+
+    graph_html = (
+        f"<style>"
+        f"body {{ margin:0; padding:0; background:transparent; font-family:'Plus Jakarta Sans',sans-serif; overflow:hidden; }}"
+        f".kg-shell {{"
+        f"  position:relative; width:100%; height:410px; border-radius:20px;"
+        f"  background:radial-gradient(circle at 50% 45%, #0d1528 0%, #050811 75%, #020409 100%);"
+        f"  border:1px solid rgba(245, 158, 11, 0.38); box-shadow:inset 0 0 40px rgba(56, 189, 248, 0.08);"
+        f"  overflow:hidden; user-select:none; -webkit-user-select:none; touch-action:none;"
+        f"}}"
+        f"#kg-canvas {{ width:100%; height:100%; display:block; cursor:grab; }}"
+        f"#kg-canvas:active {{ cursor:grabbing; }}"
+        f".kg-hud-top {{"
+        f"  position:absolute; top:12px; left:14px; right:14px; display:flex; justify-content:space-between;"
+        f"  align-items:center; pointer-events:none; flex-wrap:wrap; gap:8px;"
+        f"}}"
+        f".kg-badge {{"
+        f"  background:rgba(15, 23, 42, 0.82); border:1px solid rgba(253, 230, 138, 0.4); color:#fde68a;"
+        f"  font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:700; padding:5px 12px;"
+        f"  border-radius:999px; backdrop-filter:blur(8px);"
+        f"}}"
+        f".kg-btn {{"
+        f"  pointer-events:auto; cursor:pointer; background:linear-gradient(135deg, #f59e0b, #ea580c);"
+        f"  color:#ffffff; border:none; border-radius:999px; padding:5px 12px; font-size:0.7rem;"
+        f"  font-weight:700; box-shadow:0 0 14px rgba(245, 158, 11, 0.45);"
+        f"}}"
+        f".kg-inspector {{"
+        f"  position:absolute; bottom:12px; left:14px; right:14px;"
+        f"  background:rgba(7, 11, 22, 0.9); border:1px solid rgba(56, 189, 248, 0.35);"
+        f"  border-left:3.5px solid #f59e0b; border-radius:12px; padding:9px 13px;"
+        f"  color:#e2e8f0; font-size:0.76rem; line-height:1.45; backdrop-filter:blur(12px);"
+        f"  pointer-events:none;"
+        f"}}"
+        f".kg-ins-title {{ font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:#fde68a; font-weight:700; margin-bottom:2px; }}"
+        f"</style>"
+        f"<div class='kg-shell'>"
+        f"  <canvas id='kg-canvas'></canvas>"
+        f"  <div class='kg-hud-top'>"
+        f"    <span class='kg-badge'>🕸️ NEURAL CONCEPT GRAPH • {len(nodes)} NODES ACTIVE</span>"
+        f"    <button class='kg-btn' onclick='pulseGraph()'>⚡ Pulse Synapses</button>"
+        f"  </div>"
+        f"  <div class='kg-inspector'>"
+        f"    <div id='kg-title' class='kg-ins-title'>📌 TAP OR DRAG ANY NODE TO INSPECT PDF EVIDENCE</div>"
+        f"    <div id='kg-desc'>Interactive 384D semantic map linking your PDF pages with extracted core concepts.</div>"
+        f"  </div>"
+        f"</div>"
+        f"<script>"
+        f"const data = {graph_json};"
+        f"const canvas = document.getElementById('kg-canvas');"
+        f"const ctx = canvas.getContext('2d');"
+        f"let W = 600, H = 410, dpr = Math.min(window.devicePixelRatio || 1, 2);"
+        f"function resize() {{"
+        f"  W = canvas.clientWidth || 600; H = canvas.clientHeight || 410;"
+        f"  canvas.width = W * dpr; canvas.height = H * dpr;"
+        f"  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);"
+        f"}}"
+        f"resize(); window.addEventListener('resize', resize);"
+        f"const nodes = data.nodes.map((n, i) => {{"
+        f"  const ang = (i / data.nodes.length) * Math.PI * 2;"
+        f"  const rad = n.group === 'root' ? 0 : (n.group === 'page' ? 75 : 135);"
+        f"  return {{"
+        f"    ...n,"
+        f"    x: W * 0.5 + Math.cos(ang) * rad + (Math.random() - 0.5) * 20,"
+        f"    y: H * 0.43 + Math.sin(ang) * rad + (Math.random() - 0.5) * 20,"
+        f"    vx: 0, vy: 0,"
+        f"    r: n.group === 'root' ? 19 : (n.group === 'page' ? 13 : 10)"
+        f"  }};"
+        f"}});"
+        f"const nodeMap = {{}}; nodes.forEach(n => nodeMap[n.id] = n);"
+        f"const links = data.links.map(l => ({{ source: nodeMap[l.source], target: nodeMap[l.target] }})).filter(l => l.source && l.target);"
+        f"let dragged = null, selected = nodes[0], pulseBoost = 0;"
+        f"function pulseGraph() {{"
+        f"  pulseBoost = 1.0;"
+        f"  nodes.forEach(n => {{ if (n.group !== 'root') {{ n.vx += (Math.random() - 0.5) * 9; n.vy += (Math.random() - 0.5) * 9; }} }});"
+        f"}}"
+        f"canvas.addEventListener('pointerdown', e => {{"
+        f"  const rect = canvas.getBoundingClientRect();"
+        f"  const mx = e.clientX - rect.left, my = e.clientY - rect.top;"
+        f"  for (let i = nodes.length - 1; i >= 0; i--) {{"
+        f"    const n = nodes[i];"
+        f"    if (Math.hypot(mx - n.x, my - n.y) <= n.r + 10) {{"
+        f"      dragged = n; selected = n;"
+        f"      document.getElementById('kg-title').textContent = '📌 ' + n.label + ' • ' + n.page;"
+        f"      document.getElementById('kg-desc').textContent = n.snippet;"
+        f"      break;"
+        f"    }}"
+        f"  }}"
+        f"}});"
+        f"window.addEventListener('pointermove', e => {{"
+        f"  if (!dragged) return;"
+        f"  const rect = canvas.getBoundingClientRect();"
+        f"  dragged.x = Math.max(24, Math.min(W - 24, e.clientX - rect.left));"
+        f"  dragged.y = Math.max(36, Math.min(H - 76, e.clientY - rect.top));"
+        f"  dragged.vx = 0; dragged.vy = 0;"
+        f"}});"
+        f"window.addEventListener('pointerup', () => {{ dragged = null; }});"
+        f"function step(now) {{"
+        f"  ctx.clearRect(0, 0, W, H);"
+        f"  pulseBoost = Math.max(0, pulseBoost * 0.95);"
+        f"  for (let i = 0; i < nodes.length; i++) {{"
+        f"    for (let j = i + 1; j < nodes.length; j++) {{"
+        f"      const a = nodes[i], b = nodes[j];"
+        f"      let dx = b.x - a.x, dy = b.y - a.y;"
+        f"      let d = Math.hypot(dx, dy) || 1;"
+        f"      if (d < 120) {{"
+        f"        const f = (120 - d) / d * 0.035;"
+        f"        if (a !== dragged) {{ a.vx -= dx * f; a.vy -= dy * f; }}"
+        f"        if (b !== dragged) {{ b.vx += dx * f; b.vy += dy * f; }}"
+        f"      }}"
+        f"    }}"
+        f"  }}"
+        f"  links.forEach(l => {{"
+        f"    const a = l.source, b = l.target;"
+        f"    const targetLen = a.group === 'root' ? 78 : 56;"
+        f"    let dx = b.x - a.x, dy = b.y - a.y;"
+        f"    let d = Math.hypot(dx, dy) || 1;"
+        f"    const f = (d - targetLen) / d * 0.04;"
+        f"    if (a !== dragged) {{ a.vx += dx * f; a.vy += dy * f; }}"
+        f"    if (b !== dragged) {{ b.vx -= dx * f; b.vy -= dy * f; }}"
+        f"  }});"
+        f"  nodes.forEach(n => {{"
+        f"    if (n === dragged) return;"
+        f"    if (n.group === 'root') {{"
+        f"      n.vx += (W * 0.5 - n.x) * 0.05; n.vy += (H * 0.42 - n.y) * 0.05;"
+        f"    }} else {{"
+        f"      n.vx += (W * 0.5 - n.x) * 0.003; n.vy += (H * 0.42 - n.y) * 0.003;"
+        f"    }}"
+        f"    n.vx *= 0.86; n.vy *= 0.86;"
+        f"    n.x = Math.max(26, Math.min(W - 26, n.x + n.vx));"
+        f"    n.y = Math.max(40, Math.min(H - 80, n.y + n.vy));"
+        f"  }});"
+        f"  links.forEach((l, idx) => {{"
+        f"    ctx.strokeStyle = l.source.group === 'root' ? 'rgba(245, 158, 11, 0.42)' : 'rgba(56, 189, 248, 0.35)';"
+        f"    ctx.lineWidth = 1.3 + pulseBoost * 1.5;"
+        f"    ctx.beginPath(); ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); ctx.stroke();"
+        f"    const t = ((now * 0.0008 + idx * 0.17) % 1);"
+        f"    const px = l.source.x + (l.target.x - l.source.x) * t;"
+        f"    const py = l.source.y + (l.target.y - l.source.y) * t;"
+        f"    ctx.fillStyle = '#fde68a';"
+        f"    ctx.beginPath(); ctx.arc(px, py, 2.1, 0, Math.PI * 2); ctx.fill();"
+        f"  }});"
+        f"  nodes.forEach(n => {{"
+        f"    const isSel = (n === selected);"
+        f"    ctx.save();"
+        f"    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (isSel ? 4 : 0), 0, Math.PI * 2);"
+        f"    if (n.group === 'root') ctx.fillStyle = '#f59e0b';"
+        f"    else if (n.group === 'page') ctx.fillStyle = '#0284c7';"
+        f"    else ctx.fillStyle = '#6366f1';"
+        f"    ctx.shadowColor = n.group === 'root' ? '#f59e0b' : '#38bdf8';"
+        f"    ctx.shadowBlur = isSel ? 20 : 10;"
+        f"    ctx.fill();"
+        f"    ctx.lineWidth = isSel ? 2.5 : 1.2;"
+        f"    ctx.strokeStyle = isSel ? '#ffffff' : '#fde68a';"
+        f"    ctx.stroke();"
+        f"    ctx.restore();"
+        f"    ctx.fillStyle = '#f8fafc';"
+        f"    ctx.font = (n.group === 'root' ? '700 11px ' : '600 10px ') + 'Plus Jakarta Sans, sans-serif';"
+        f"    ctx.textAlign = 'center';"
+        f"    ctx.fillText(n.label, n.x, n.y + n.r + 13);"
+        f"  }});"
+        f"  requestAnimationFrame(step);"
+        f"}}"
+        f"requestAnimationFrame(step);"
+        f"</script>"
+    )
+    components.html(graph_html, height=420)
 
 # --- TOP NAVIGATION TABS ---
 tab_workspace, tab_quiz, tab_why, tab_how, tab_creator = st.tabs([
@@ -2305,8 +2520,8 @@ with tab_workspace:
     audio_value = None
  
 
-    # --- CLAUDE-STYLE QUICK ACTION PILLS (4 BUTTONS — COMPARE REMOVED) ---
-    qcol1, qcol2, qcol3, qcol4 = st.columns(4)
+   # --- CLAUDE-STYLE QUICK ACTION PILLS + DEVIL'S ADVOCATE ---
+    qcol1, qcol2, qcol3, qcol4, qcol5 = st.columns(5)
     with qcol1:
         if st.button("📝 Summary", use_container_width=True, help="Generate a full Executive Summary"):
             triggered_query = "Provide a comprehensive executive summary of the uploaded document(s), highlighting the core thesis, key sections, and main conclusions."
@@ -2322,7 +2537,20 @@ with tab_workspace:
     with qcol4:
         if st.button("🎓 Exam Qs", use_container_width=True, help="Generate Top 5 Exam & Interview Questions"):
             triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
-       
+    with qcol5:
+        if st.button("⚔️ Devil's Advocate", use_container_width=True, help="Find Weaknesses, Blind Spots & Tough Viva Counter-Questions"):
+            triggered_query = (
+                "Act as a ruthless Silicon Valley Devil's Advocate and Peer Reviewer. Critically analyze the uploaded document(s) to expose: "
+                "1) Hidden assumptions, methodological limitations, or weak arguments, "
+                "2) Missing edge-cases or unanswered questions in the text, and "
+                "3) 3 Brutal Viva / Defense Counter-Questions an examiner could ask to challenge this document, along with the strongest defense strategy for each. "
+                "Cite exact PDF page numbers inline."
+            )
+
+    # --- OBSIDIAN-STYLE INTERACTIVE NEURAL KNOWLEDGE GRAPH (COLLAPSED BY DEFAULT FOR ZERO CLUTTER) ---
+    if st.session_state.vector_store and st.session_state.all_chunks:
+        with st.expander("🕸️ Explore Interactive 3D Neural Knowledge Graph (Obsidian Concept Map — Drag & Tap Nodes)", expanded=False):
+            render_neural_knowledge_graph(st.session_state.all_chunks)    
     # --- SILICON VALLEY FEATURE 5: AUTO-GENERATED PDF STARTER CHIPS ---
     if st.session_state.vector_store and st.session_state.all_chunks and not st.session_state.chat_history:
         first_chunk_txt = st.session_state.all_chunks[0].page_content
