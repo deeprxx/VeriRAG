@@ -333,15 +333,28 @@ custom_css = (
     "  div[data-testid='stTabs'] [ role='tablist' ] { justify-content: flex-start !important; padding-left: 4px !important; }"
     "  .metric-card { padding: 16px 12px; }"
     "}"
+    "div[data-testid='stChatInput'], div[data-testid='stChatInput'] [data-baseweb='textarea'], div[data-testid='stChatInput'] [data-baseweb='base-input'] {"
+    "  background: transparent !important; background-color: transparent !important; border: none !important; box-shadow: none !important;"
+    "}"
     "div[data-testid='stChatInput'] > div {"
     "  display: flex !important; align-items: center !important; background: rgba(15, 23, 42, 0.92) !important;"
     "  border: 1px solid rgba(245, 158, 11, 0.45) !important; border-radius: 28px !important; padding: 4px 8px !important;"
     "  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;"
     "}"
-    "div[data-testid='stChatInput'] textarea {"
-    "  padding-right: 8px !important; align-self: center !important;"
+    "html[data-deeprag-theme='light'] div[data-testid='stChatInput'] > div {"
+    "  background: #ffffff !important; border: 1.5px solid rgba(2, 132, 199, 0.4) !important;"
+    "  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08) !important;"
     "}"
-    "button[data-testid='stChatInputSubmitButton'] {"
+    "div[data-testid='stChatInput'] textarea {"
+    "  padding-right: 8px !important; align-self: center !important; background: transparent !important; color: #f8fafc !important;"
+    "}"
+    "html[data-deeprag-theme='light'] div[data-testid='stChatInput'] textarea {"
+    "  color: #0f172a !important; -webkit-text-fill-color: #0f172a !important;"
+    "}"
+    "html[data-deeprag-theme='light'] div[data-testid='stChatInput'] textarea::placeholder {"
+    "  color: #64748b !important; -webkit-text-fill-color: #64748b !important;"
+    "}"
+    "button[data-testid='stChatInputSubmitButton'], button[data-testid='stChatInputSubmitButton']:disabled {"
     "  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;"
     "  color: #ffffff !important; border-radius: 50% !important;"
     "  width: 38px !important; height: 38px !important; min-width: 38px !important; min-height: 38px !important;"
@@ -352,7 +365,13 @@ custom_css = (
     "button[data-testid='stChatInputSubmitButton']:hover {"
     "  transform: scale(1.07) !important; box-shadow: 0 0 24px rgba(245, 158, 11, 0.85) !important;"
     "}"
-    "button[data-testid='stChatInputSubmitButton'] svg { fill: #ffffff !important; width: 18px !important; height: 18px !important; }"
+    "button[data-testid='stChatInputSubmitButton'] svg { fill: #ffffff !important; stroke: #ffffff !important; width: 18px !important; height: 18px !important; }"
+    "html[data-deeprag-theme='light'] #deeprag-gemini-mic {"
+    "  background: #f1f5f9 !important; border-color: rgba(245, 158, 11, 0.5) !important;"
+    "}"
+    "html[data-deeprag-theme='light'] #deeprag-gemini-mic svg, html[data-deeprag-theme='light'] #deeprag-gemini-mic path {"
+    "  fill: #ea580c !important;"
+    "}" 
     "#deeprag-gemini-mic {"
     "  width: 38px !important; height: 38px !important; min-width: 38px !important; border-radius: 50% !important;"
     "  border: 1px solid rgba(253, 230, 138, 0.28) !important; background: rgba(255, 255, 255, 0.05) !important;"
@@ -1296,7 +1315,7 @@ def render_premium_pdf_download_button(report_html_body: str, filename_pdf: str,
         f"      image: {{ type: 'jpeg', quality: 0.98 }},"
         f"      html2canvas: {{ scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 }},"
         f"      jsPDF: {{ unit: 'mm', format: 'a4', orientation: 'portrait' }},"
-        f"      pagebreak: {{ mode: ['avoid-all', 'css', 'legacy'] }}"
+        f"      pagebreak: {{ mode: ['css', 'legacy'] }}"
         f"    }};"
         f"    setTimeout(() => {{"
         f"      html2pdf().set(opt).from(holder).save().then(() => {{"
@@ -1478,6 +1497,7 @@ def build_premium_chat_pdf_html(chat_history: list[dict], corpus_label: str, tot
     for idx, turn in enumerate(chat_history):
         ans_escaped = html.escape(turn.get("answer", "")).replace("\n", "<br>")
         ans_escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", ans_escaped)
+        ans_escaped = re.sub(r"#{1,4}\s*(.+?)(?:<br>|$)", r"<div style='font-size:13px;font-weight:800;color:#0f172a;margin-top:8px;margin-bottom:3px;'>\1</div>", ans_escaped)
         cites_rows = []
         for c_i, c in enumerate(turn.get("citations", [])):
             m_pct = int(c.get("match_pct", 92))
@@ -1494,7 +1514,7 @@ def build_premium_chat_pdf_html(chat_history: list[dict], corpus_label: str, tot
             )
 
         turns_html.append(
-            f"<div style='page-break-inside:avoid; border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 16px; margin-bottom:14px; background:#ffffff; width:100%; box-sizing:border-box;'>"
+            f"<div style='border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 16px; margin-bottom:14px; background:#ffffff; width:100%; box-sizing:border-box;'>"
             f"  <div style='background:linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%); color:#ffffff; border-radius:10px; padding:10px 14px; margin-bottom:10px;'>"
             f"    <div style='font-size:9.5px; color:#38bdf8; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;'>QUERY #{idx+1:02d} • VERIFIED USER INTERROGATION</div>"
             f"    <div style='font-size:13.5px; font-weight:700; margin-top:3px; word-wrap:break-word;'>{html.escape(turn.get('question', ''))}</div>"
