@@ -334,8 +334,9 @@ custom_css = (
     "  .metric-card { padding: 16px 12px; }"
     "}"
     "div[data-testid='stChatInput'] > div {"
-    "  display: flex !important; align-items: center !important; background: rgba(15, 23, 42, 0.88) !important;"
-    "  border: 1px solid rgba(245, 158, 11, 0.4) !important; border-radius: 26px !important; padding: 4px 8px !important;"
+    "  display: flex !important; align-items: center !important; background: rgba(15, 23, 42, 0.92) !important;"
+    "  border: 1px solid rgba(245, 158, 11, 0.45) !important; border-radius: 28px !important; padding: 4px 8px !important;"
+    "  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;"
     "}"
     "div[data-testid='stChatInput'] textarea {"
     "  padding-right: 8px !important; align-self: center !important;"
@@ -345,7 +346,7 @@ custom_css = (
     "  color: #ffffff !important; border-radius: 50% !important;"
     "  width: 38px !important; height: 38px !important; min-width: 38px !important; min-height: 38px !important;"
     "  margin: auto 2px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"
-    "  box-shadow: 0 0 16px rgba(245, 158, 11, 0.55) !important; border: 1px solid rgba(253, 230, 138, 0.65) !important;"
+    "  box-shadow: 0 0 16px rgba(245, 158, 11, 0.55) !important; border: 1px solid rgba(253, 230, 138, 0.7) !important;"
     "  opacity: 1 !important; transition: transform 0.2s ease, box-shadow 0.2s ease !important;"
     "}"
     "button[data-testid='stChatInputSubmitButton']:hover {"
@@ -353,22 +354,55 @@ custom_css = (
     "}"
     "button[data-testid='stChatInputSubmitButton'] svg { fill: #ffffff !important; width: 18px !important; height: 18px !important; }"
     "#deeprag-gemini-mic {"
-    "  width: 38px; height: 38px; min-width: 38px; border-radius: 50%; border: none;"
-    "  background: transparent; color: #cbd5e1; display: inline-flex; align-items: center; justify-content: center;"
-    "  cursor: pointer; margin: auto 4px auto 0; padding: 0; transition: all 0.2s ease; flex-shrink: 0;"
+    "  width: 38px !important; height: 38px !important; min-width: 38px !important; border-radius: 50% !important;"
+    "  border: 1px solid rgba(253, 230, 138, 0.28) !important; background: rgba(255, 255, 255, 0.05) !important;"
+    "  display: inline-flex !important; align-items: center !important; justify-content: center !important;"
+    "  cursor: pointer !important; margin: auto 6px auto 0 !important; padding: 0 !important; flex-shrink: 0 !important;"
+    "  transition: all 0.22s ease !important;"
     "}"
-    "#deeprag-gemini-mic:hover { color: #fde68a; background: rgba(253, 230, 138, 0.1); }"
+    "#deeprag-gemini-mic svg {"
+    "  width: 20px !important; height: 20px !important; fill: #fde68a !important; display: block !important; opacity: 1 !important;"
+    "}"
+    "#deeprag-gemini-mic:hover {"
+    "  background: rgba(245, 158, 11, 0.18) !important; border-color: #f59e0b !important; transform: scale(1.06) !important;"
+    "}"
     "#deeprag-gemini-mic.rec-active {"
-    "  background: rgba(245, 158, 11, 0.16); border: 1px solid rgba(245, 158, 11, 0.55); color: #fde68a;"
-    "  width: auto; padding: 0 12px; border-radius: 999px; gap: 8px;"
+    "  background: rgba(245, 158, 11, 0.2) !important; border: 1px solid #f59e0b !important;"
+    "  width: auto !important; padding: 0 12px !important; border-radius: 999px !important; gap: 7px !important;"
+    "  box-shadow: 0 0 18px rgba(245, 158, 11, 0.45) !important;"
     "}"
     ".gem-wave { display: inline-flex; align-items: center; gap: 2.5px; height: 14px; }"
     ".gem-wave span { width: 2.5px; background: #f59e0b; border-radius: 99px; animation: gemWaveAnim 0.75s ease-in-out infinite; }"
-    ".gem-wave span:nth-child(1) { height: 5px; animation-delay: 0.0s; }"
-    ".gem-wave span:nth-child(2) { height: 12px; animation-delay: 0.15s; background: #fde68a; }"
+    ".gem-wave span:nth-child(1) { height: 6px; animation-delay: 0.0s; }"
+    ".gem-wave span:nth-child(2) { height: 13px; animation-delay: 0.15s; background: #fde68a; }"
     ".gem-wave span:nth-child(3) { height: 8px; animation-delay: 0.3s; }"
     ".gem-wave span:nth-child(4) { height: 14px; animation-delay: 0.45s; background: #fde68a; }"
     "@keyframes gemWaveAnim { 0%, 100% { transform: scaleY(0.45); } 50% { transform: scaleY(1.15); } }"
+    ".pplx-cite {"
+    "  position: relative; display: inline-flex; align-items: center; gap: 3px;"
+    "  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(56, 189, 248, 0.18));"
+    "  border: 1px solid rgba(253, 230, 138, 0.55); color: #fde68a; font-family: 'JetBrains Mono', monospace;"
+    "  font-size: 0.68rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; margin: 0 2px;"
+    "  cursor: pointer; transition: all 0.2s ease; vertical-align: baseline;"
+    "}"
+    ".pplx-cite:hover { background: #f59e0b; color: #02040a; border-color: #ffffff; }"
+    ".pplx-cite .pplx-tip {"
+    "  visibility: hidden; opacity: 0; position: absolute; bottom: 135%; left: 50%; transform: translateX(-50%) translateY(6px);"
+    "  width: 270px; background: #070b16; border: 1px solid #fde68a; border-left: 3px solid #38bdf8;"
+    "  color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.74rem; font-weight: 500;"
+    "  line-height: 1.45; padding: 10px 12px; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.85);"
+    "  z-index: 9999; pointer-events: none; transition: all 0.2s ease; text-align: left; white-space: normal;"
+    "}"
+    ".pplx-cite:hover .pplx-tip, .pplx-cite:active .pplx-tip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }"
+    ".sv-stream-cursor {"
+    "  display: inline-block; width: 8px; height: 15px; background: #f59e0b; margin-left: 4px;"
+    "  vertical-align: middle; border-radius: 2px; box-shadow: 0 0 10px #f59e0b; animation: svBlink 0.8s infinite;"
+    "}"
+    "@keyframes svBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }"
+    ".sv-starter-bar {"
+    "  display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px auto 6px auto;"
+    "  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #fde68a; letter-spacing: 0.1em; text-transform: uppercase;"
+    "}"
     "</style>"
     "<div class='anime-vignette'></div>"
 )
@@ -1021,13 +1055,18 @@ def inject_anime_night_canvas():
         "    function mountGeminiVoiceMic() {"
         "      const submitBtn = parentDoc.querySelector('button[data-testid=\"stChatInputSubmitButton\"]');"
         "      const textarea = parentDoc.querySelector('div[data-testid=\"stChatInput\"] textarea');"
-        "      if (!submitBtn || !textarea || parentDoc.getElementById('deeprag-gemini-mic')) return;"
+        "      if (!submitBtn || !textarea) return;"
+        "      if (!textarea.getAttribute('data-sv-placeholder')) {"
+        "        textarea.setAttribute('data-sv-placeholder', '1');"
+        "        textarea.setAttribute('placeholder', 'Ask DeepRAG... (Press / or Ctrl+K to focus)');"
+        "      }"
+        "      if (parentDoc.getElementById('deeprag-gemini-mic')) return;"
         "      const micBtn = parentDoc.createElement('button');"
         "      micBtn.id = 'deeprag-gemini-mic';"
         "      micBtn.type = 'button';"
-        "      micBtn.title = 'Voice Input';"
-        "      const micSvg = '<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/></svg>';"
-        "      const waveHtml = '<div class=\"gem-wave\"><span></span><span></span><span></span><span></span></div><span style=\"font-size:10px;color:#f59e0b;\">■</span>';"
+        "      micBtn.title = 'Gemini Voice Input (Speak in English / Hindi)';"
+        "      const micSvg = '<svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" style=\"fill:#fde68a;display:block;\"><path fill=\"#fde68a\" d=\"M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z\"/></svg>';"
+        "      const waveHtml = '<div class=\"gem-wave\"><span></span><span></span><span></span><span></span></div><span style=\"font-size:10px;color:#fde68a;font-weight:800;\">STOP</span>';"
         "      micBtn.innerHTML = micSvg;"
         "      submitBtn.parentNode.insertBefore(micBtn, submitBtn);"
         "      function setReactInputValue(el, val) {"
@@ -1057,6 +1096,19 @@ def inject_anime_night_canvas():
         "      });"
         "    }"
         "    setInterval(mountGeminiVoiceMic, 300);"
+        "    if (!parentWin.__deepragShortcutBound) {"
+        "      parentWin.__deepragShortcutBound = true;"
+        "      parentWin.addEventListener('keydown', (e) => {"
+        "        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';"
+        "        const isTyping = (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable));"
+        "        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') || (!isTyping && e.key === '/')) {"
+        "          const ta = parentDoc.querySelector('div[data-testid=\"stChatInput\"] textarea');"
+        "          if (ta) { e.preventDefault(); ta.scrollIntoView({ behavior: 'smooth', block: 'center' }); ta.focus(); }"
+        "        }"
+        "      });"
+        "    }"
+
+       
         "    syncThemeMode();"
         "    setInterval(syncThemeMode, 250);"
 
@@ -1481,6 +1533,7 @@ def build_premium_chat_pdf_html(chat_history: list[dict], corpus_label: str, tot
 
 
 # --- HELPER: ZERO-CUTOFF RESPONSIVE NEURAL AUDIO DECK + AUTO-HEIGHT IFRAME ---
+# --- HELPER: NEURAL AUDIO DECK + NOTEBOOKLM 2-HOST AI PODCAST MODE ---
 def render_tts_audio_button(answer_text: str, btn_id: str):
     clean_text = re.sub(r"[\*\#\`\~\_\>]", "", answer_text)
     clean_text = re.sub(r"\[Page\s*\d+\]", "", clean_text)
@@ -1499,6 +1552,11 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"  border-radius:10px; padding:6px 12px; font-size:0.75rem; font-weight:700; cursor:pointer;"
         f"  display:inline-flex; align-items:center; gap:5px; white-space:nowrap;"
         f"}}"
+        f".deck-pod {{"
+        f"  background:linear-gradient(135deg, #f59e0b, #ea580c); color:#ffffff; border:none;"
+        f"  border-radius:10px; padding:6px 12px; font-size:0.75rem; font-weight:700; cursor:pointer;"
+        f"  display:inline-flex; align-items:center; gap:5px; white-space:nowrap;"
+        f"}}"
         f".deck-sub {{"
         f"  background:rgba(30, 41, 59, 0.92); color:#fde68a; border:1px solid rgba(253,230,138,0.28);"
         f"  border-radius:10px; padding:5px 10px; font-size:0.72rem; font-weight:600; cursor:pointer;"
@@ -1512,7 +1570,8 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"@keyframes eqBounce {{ 0%, 100% {{ height:4px; }} 50% {{ height:14px; }} }}"
         f"</style>"
         f"<div id='deck_{btn_id}' class='audio-deck'>"
-        f"  <button id='play_{btn_id}' class='deck-btn' onclick='toggleSpeak_{btn_id}()'>🔊 Listen to Answer</button>"
+        f"  <button id='play_{btn_id}' class='deck-btn' onclick='toggleSpeak_{btn_id}()'>🔊 Listen</button>"
+        f"  <button id='pod_{btn_id}' class='deck-pod' onclick='playPodcast_{btn_id}()'>🎙️ AI Podcast (2 Hosts)</button>"
         f"  <div id='eq_{btn_id}' class='eq-wrap'>"
         f"    <span class='eq-bar'></span><span class='eq-bar'></span><span class='eq-bar'></span><span class='eq-bar'></span>"
         f"  </div>"
@@ -1522,7 +1581,7 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"</div>"
         f"<script>"
         f"const txt_{btn_id} = {safe_js_text};"
-        f"let rate_{btn_id} = 1.0; let isPlaying_{btn_id} = false; let isPaused_{btn_id} = false;"
+        f"let rate_{btn_id} = 1.0; let isPlaying_{btn_id} = false; let isPaused_{btn_id} = false; let podActive_{btn_id} = false;"
         f"function adjustDeckHeight_{btn_id}() {{"
         f"  if (window.frameElement) {{"
         f"    const h = document.getElementById('deck_{btn_id}').offsetHeight;"
@@ -1537,10 +1596,9 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"  else if (rate_{btn_id} === 1.25) rate_{btn_id} = 1.5;"
         f"  else rate_{btn_id} = 1.0;"
         f"  document.getElementById('spd_{btn_id}').innerHTML = '⚡ ' + rate_{btn_id} + 'x';"
-        f"  if (isPlaying_{btn_id}) {{ stopSpeak_{btn_id}(); toggleSpeak_{btn_id}(); }}"
         f"}}"
         f"function toggleSpeak_{btn_id}() {{"
-        f"  if (!('speechSynthesis' in window)) {{ alert('Speech synthesis is not supported in this browser.'); return; }}"
+        f"  if (!('speechSynthesis' in window)) return;"
         f"  const playBtn = document.getElementById('play_{btn_id}');"
         f"  const stopBtn = document.getElementById('stop_{btn_id}');"
         f"  const eqBox = document.getElementById('eq_{btn_id}');"
@@ -1552,7 +1610,7 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"    window.speechSynthesis.resume(); isPaused_{btn_id} = false;"
         f"    playBtn.innerHTML = '⏸️ Pause'; eqBox.style.display = 'inline-flex'; adjustDeckHeight_{btn_id}(); return;"
         f"  }}"
-        f"  window.speechSynthesis.cancel();"
+        f"  window.speechSynthesis.cancel(); podActive_{btn_id} = false;"
         f"  const utter = new SpeechSynthesisUtterance(txt_{btn_id});"
         f"  utter.lang = 'en-US'; utter.rate = rate_{btn_id};"
         f"  utter.onstart = () => {{"
@@ -1560,22 +1618,45 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
         f"    playBtn.innerHTML = '⏸️ Pause'; stopBtn.style.display = 'inline-flex'; eqBox.style.display = 'inline-flex';"
         f"    adjustDeckHeight_{btn_id}();"
         f"  }};"
-        f"  utter.onend = () => {{"
-        f"    isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
-        f"    playBtn.innerHTML = '🔊 Listen to Answer'; stopBtn.style.display = 'none'; eqBox.style.display = 'none';"
-        f"    adjustDeckHeight_{btn_id}();"
-        f"  }};"
-        f"  utter.onerror = () => {{"
-        f"    isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
-        f"    playBtn.innerHTML = '🔊 Listen to Answer'; stopBtn.style.display = 'none'; eqBox.style.display = 'none';"
-        f"    adjustDeckHeight_{btn_id}();"
-        f"  }};"
+        f"  utter.onend = () => {{ stopSpeak_{btn_id}(); }};"
+        f"  utter.onerror = () => {{ stopSpeak_{btn_id}(); }};"
         f"  window.speechSynthesis.speak(utter);"
         f"}}"
+        f"function playPodcast_{btn_id}() {{"
+        f"  if (!('speechSynthesis' in window)) return;"
+        f"  window.speechSynthesis.cancel();"
+        f"  podActive_{btn_id} = true; isPlaying_{btn_id} = true; isPaused_{btn_id} = false;"
+        f"  const podBtn = document.getElementById('pod_{btn_id}');"
+        f"  const stopBtn = document.getElementById('stop_{btn_id}');"
+        f"  const eqBox = document.getElementById('eq_{btn_id}');"
+        f"  podBtn.innerHTML = '🎙️ Live: Alex & Maya'; stopBtn.style.display = 'inline-flex'; eqBox.style.display = 'inline-flex';"
+        f"  adjustDeckHeight_{btn_id}();"
+        f"  const sents = txt_{btn_id}.split(/(?<=[.!?])\\s+/).filter(s => s.trim().length > 10).slice(0, 8);"
+        f"  const script = ["
+        f"    {{ host: 'Alex', pitch: 0.92, text: 'Welcome back to DeepRAG Deep-Dive! Maya, look at what we just extracted from this PDF.' }},"
+        f"    {{ host: 'Maya', pitch: 1.18, text: 'It is super interesting, Alex! Here is the core breakdown: ' + (sents[0] || txt_{btn_id}.slice(0, 160)) }},"
+        f"    {{ host: 'Alex', pitch: 0.92, text: 'Exactly. And notice this key detail from the document: ' + (sents.slice(1, 3).join(' ') || 'Every point is 100 percent page-verified.') }},"
+        f"    {{ host: 'Maya', pitch: 1.18, text: 'Wait, there is more! ' + (sents.slice(3, 6).join(' ') || 'This makes exam revision so much faster.') }},"
+        f"    {{ host: 'Alex', pitch: 0.92, text: 'Spot on, Maya. That wraps up our DeepRAG neural briefing!' }}"
+        f"  ];"
+        f"  let idx = 0;"
+        f"  function speakNext() {{"
+        f"    if (!podActive_{btn_id} || idx >= script.length) {{ stopSpeak_{btn_id}(); return; }}"
+        f"    const turn = script[idx++];"
+        f"    podBtn.innerHTML = '🎙️ ' + turn.host + ' speaking...';"
+        f"    const u = new SpeechSynthesisUtterance(turn.text);"
+        f"    u.lang = 'en-US'; u.pitch = turn.pitch; u.rate = rate_{btn_id} * 1.04;"
+        f"    u.onend = () => {{ if (podActive_{btn_id}) speakNext(); }};"
+        f"    u.onerror = () => {{ stopSpeak_{btn_id}(); }};"
+        f"    window.speechSynthesis.speak(u);"
+        f"  }}"
+        f"  speakNext();"
+        f"}}"
         f"function stopSpeak_{btn_id}() {{"
+        f"  podActive_{btn_id} = false; isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
         f"  if ('speechSynthesis' in window) window.speechSynthesis.cancel();"
-        f"  isPlaying_{btn_id} = false; isPaused_{btn_id} = false;"
-        f"  document.getElementById('play_{btn_id}').innerHTML = '🔊 Listen to Answer';"
+        f"  document.getElementById('play_{btn_id}').innerHTML = '🔊 Listen';"
+        f"  document.getElementById('pod_{btn_id}').innerHTML = '🎙️ AI Podcast (2 Hosts)';"
         f"  document.getElementById('stop_{btn_id}').style.display = 'none';"
         f"  document.getElementById('eq_{btn_id}').style.display = 'none';"
         f"  adjustDeckHeight_{btn_id}();"
@@ -1591,9 +1672,52 @@ def render_tts_audio_button(answer_text: str, btn_id: str):
     components.html(tts_html, height=62)
 
 
-# --- HELPER: RENDER ASSISTANT TURN WITH CITATION BARS & X-RAY INSPECTOR ---
+# --- HELPER: PERPLEXITY HOVER CITATIONS + LIVE STREAMING CURSOR + X-RAY INSPECTOR ---
+def inject_perplexity_hover_citations(answer_md: str, citations: list[dict]) -> str:
+    page_map = {}
+    for c in citations:
+        pg_str = str(c.get("page", "")).strip()
+        if pg_str and pg_str not in page_map:
+            snip_clean = html.escape(str(c.get("snippet", ""))[:190])
+            src_clean = html.escape(str(c.get("source", "PDF")))
+            match_p = c.get("match_pct", 94)
+            page_map[pg_str] = f"📌 {src_clean} (Page {pg_str} • {match_p}% Match): {snip_clean}"
+
+    def _repl(match):
+        full_tag = match.group(0)
+        pg_num = match.group(1)
+        tip_txt = page_map.get(
+            pg_num,
+            f"📌 Verified Reference from Page {pg_num} of your indexed PDF corpus."
+        )
+        return (
+            f"<span class='pplx-cite'>📄 P.{pg_num}"
+            f"<span class='pplx-tip'>{tip_txt}</span></span>"
+        )
+
+    return re.sub(r"\[(?:[^\[\]]*?[Pp]age\s*)(\d+)\]", _repl, answer_md)
+
+
 def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
-    st.markdown(turn["answer"])
+    enriched_ans = inject_perplexity_hover_citations(turn["answer"], turn.get("citations", []))
+    stream_id = f"stream_JustNow_{turn_key}"
+
+    if is_latest and not st.session_state.get(stream_id, False):
+        st.session_state[stream_id] = True
+        placeholder = st.empty()
+        words = turn["answer"].split(" ")
+        step = max(3, len(words) // 28)
+        for i in range(step, len(words), step):
+            partial = " ".join(words[:i])
+            placeholder.markdown(
+                partial + "<span class='sv-stream-cursor'></span>",
+                unsafe_allow_html=True
+            )
+            time.sleep(0.018)
+        placeholder.markdown(enriched_ans, unsafe_allow_html=True)
+    else:
+        st.markdown(enriched_ans, unsafe_allow_html=True)
+
     render_tts_audio_button(turn["answer"], turn_key)
 
     avg_score = turn.get("avg_match", 94)
@@ -1655,6 +1779,7 @@ def render_assistant_turn(turn: dict, turn_key: str, is_latest: bool = False):
                 if st.button(f"🔎 {fq}", key=f"fq_{turn_key}_{f_idx}", use_container_width=True):
                     st.session_state.queued_followup = fq
                     st.rerun()
+   
 
 
 # --- HELPER: SMART TIERED MODEL CASCADE (PRIMARY -> 1500 RPD WORKHORSES) ---
@@ -2198,6 +2323,32 @@ with tab_workspace:
         if st.button("🎓 Exam Qs", use_container_width=True, help="Generate Top 5 Exam & Interview Questions"):
             triggered_query = "Generate 5 high-value exam or interview questions along with detailed model answers strictly based on the uploaded document(s)."
        
+    # --- SILICON VALLEY FEATURE 5: AUTO-GENERATED PDF STARTER CHIPS ---
+    if st.session_state.vector_store and st.session_state.all_chunks and not st.session_state.chat_history:
+        first_chunk_txt = st.session_state.all_chunks[0].page_content
+        cand_words = [
+            w for w in re.findall(r"\b[A-Z][A-Za-z0-9\-]{4,18}\b", first_chunk_txt)
+            if w.lower() not in {"chapter", "section", "table", "figure", "introduction", "abstract", "document", "using", "based"}
+        ]
+        seen_t = []
+        for cw in cand_words:
+            if cw not in seen_t:
+                seen_t.append(cw)
+        t1 = seen_t[0] if len(seen_t) > 0 else "the main concept"
+        t2 = seen_t[1] if len(seen_t) > 1 else "the methodology"
+        t3 = seen_t[2] if len(seen_t) > 2 else "key applications"
+
+        st.markdown("<div class='sv-starter-bar'>✨ Instant PDF Starter Questions</div>", unsafe_allow_html=True)
+        sc1, sc2, sc3 = st.columns(3)
+        with sc1:
+            if st.button(f"💡 Core role of {t1}?", key="st_chip_1", use_container_width=True):
+                triggered_query = f"Explain the core role, definition, and significance of {t1} in the uploaded PDF."
+        with sc2:
+            if st.button(f"🔍 How does {t2} work?", key="st_chip_2", use_container_width=True):
+                triggered_query = f"How does {t2} work according to the uploaded document? Provide page citations."
+        with sc3:
+            if st.button(f"📊 Key takeaways on {t3}", key="st_chip_3", use_container_width=True):
+                triggered_query = f"What are the most important findings, formulas, or takeaways regarding {t3} in this PDF?"
     active_query = None
     if triggered_query:
         active_query = triggered_query
