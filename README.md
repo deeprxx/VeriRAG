@@ -9,9 +9,8 @@
 <!-- 2. DYNAMIC MULTI-LINE SVG TYPEWRITER                                                      -->
 <!-- ========================================================================================= -->
 <a href="https://deep-verirag-ai.streamlit.app">
-  <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&weight=700&size=21&duration=2400&pause=800&color=F59E0B&center=true&vCenter=true&multiline=true&repeat=true&width=900&height=70&lines=Where+384D+Siamese+Vector+Precision+Meets+100%25+Page-Cited+Document+Intelligence.;Sub-15ms+FAISS+IndexFlatL2+Search+%E2%80%A2+Perplexity+Hover+Citations+%E2%80%A2+2-Host+AI+Podcast.;Self-Healing+5-Key+Gemini+Cascade+(7%2C500+RPD)+%E2%80%A2+3D+Active-Recall+Flashcards+%26+AI+Grading." alt="DeepRAG Typing Animation" />
+  <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&weight=700&size=22&duration=2600&pause=800&color=F59E0B&center=true&vCenter=true&repeat=true&width=900&height=55&lines=Where+384D+Siamese+Vector+Precision+Meets+100%25+Page-Cited+Document+Intelligence.;Sub-15ms+FAISS+IndexFlatL2+Search+%E2%80%A2+Perplexity+Hover+Citations+%E2%80%A2+2-Host+AI+Podcast.;Self-Healing+5-Key+Gemini+Cascade+(7%2C500+RPD)+%E2%80%A2+3D+Active-Recall+Flashcards+%26+AI+Grading." alt="DeepRAG Typing Animation" />
 </a>
-
 <br/>
 
 <!-- ========================================================================================= -->
@@ -29,8 +28,7 @@
 <!-- ========================================================================================= -->
 <!-- 4. GRAPHICAL TECH STACK SHOWCASE                                                          -->
 <!-- ========================================================================================= -->
-<img src="https://skillicons.dev/icons?i=py,pytorch,huggingface,gcp,html,css,js,git,github,vscode&theme=dark&perline=10" alt="DeepRAG Tech Stack" />
-
+<img src="https://skillicons.dev/icons?i=py,pytorch,tensorflow,gcp,html,css,js,git,github,vscode&theme=dark&perline=10" alt="DeepRAG Tech Stack" />
 <br/><br/>
 
 <!-- QUICK JUMP NAVIGATION BAR -->
@@ -286,16 +284,16 @@ $$\hat{\mathbf{u}}_i = \frac{f_\theta(c_i)}{\left\Vert{}f_\theta(c_i)\right\Vert
 ### 2. Exact FAISS `IndexFlatL2` Distance & Semantic Confidence Mapping
 Because all vectors lie on the unit hypersphere, squared Euclidean ($L_2$) distance in Meta's `FAISS IndexFlatL2` is monotonically equivalent to exact Cosine Similarity:
 
-$$d_{L_2}^2\left(\hat{\mathbf{q}}, \hat{\mathbf{u}}_i\right) = \left\Vert{}\hat{\mathbf{q}} - \hat{\mathbf{u}}_i\right\Vert{}_2^2 = 2 - 2\cos\theta_{q, i}$$
+$$d_{L_2}^2(\hat{\mathbf{q}}, \hat{\mathbf{u}}_i) = \|\hat{\mathbf{q}} - \hat{\mathbf{u}}_i\|_2^2 = 2 - 2\cos\theta_{q, i}$$
 
 Each retrieved passage's raw $L_2$ distance is mapped to a calibrated **Semantic Match Percentage** displayed on the citation progress bars:
 
-$$\text{MatchConfidence}\left(d_{L_2}\right) = \text{clip}\left( \left\lfloor \frac{100}{1 + 0.35 \cdot d_{L_2}\left(\hat{\mathbf{q}}, \hat{\mathbf{u}}_i\right)} \right\rceil, \, 68\%, \, 99\% \right)$$
+$$\text{MatchConfidence}(d_{L_2}) = \text{clip}\left( \text{round}\left( \frac{100}{1 + 0.35 \cdot d_{L_2}(\hat{\mathbf{q}}, \hat{\mathbf{u}}_i)} \right), \, 68\%, \, 99\% \right)$$
 
 ### 3. Stratified Full-Corpus Sampling (Anti-"Lost in the Middle")
 To guarantee $100\%$ document coverage from the first page to the last page when generating **Executive Summaries, 3D Flashcards, and Practice Quizzes**, DeepRAG bypasses top-cluster bias using uniform index striding across all $N$ chunks for $K$ target samples:
 
-$$\mathcal{S}_{\text{stratified}} = \left\{ c_{\text{round}(j \cdot \Delta)} \;\middle\vert{}\; j \in \{0, 1, \dots, K-1\}, \;\; \Delta = \max\left(1, \frac{N - 1}{K - 1}\right) \right\}$$
+$$\mathcal{S}_{\text{stratified}} = \left\lbrace c_{\text{round}(j \cdot \Delta)} \;\middle|\; j \in \lbrace 0, 1, \dots, K-1 \rbrace, \;\; \Delta = \max\left(1, \frac{N - 1}{K - 1}\right) \right\rbrace$$
 
 ### 4. Multi-Key Rate-Limit Scaling Law ($375\times$ Capacity)
 While experimental preview endpoints restrict free-tier developers to $R_{\text{preview}} = 20\text{ RPD}$, DeepRAG's two-pass cooldown router cascades across $M = 5$ independent API keys using production Flash workhorses ($R_{\text{flash}} = 1,500\text{ RPD}$):
