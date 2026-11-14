@@ -473,6 +473,20 @@ custom_css = (
     "@media (max-width: 768px) {"
     "  .deeprag-pill-strip { justify-content: flex-start !important; }"
     "}"
+    ".sv-pdf-hint {"
+    "  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.84rem; font-weight: 500;"
+    "  color: #94a3b8; text-align: center; margin: -12px auto 18px auto; letter-spacing: 0.01em;"
+    "}"
+    ".sv-pdf-hint.is-ready { color: #34d399; font-weight: 600; }"
+    ".sv-plus-badge {"
+    "  display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;"
+    "  border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b;"
+    "  color: #fde68a; font-weight: 700; font-size: 0.85rem; margin: 0 3px; vertical-align: middle;"
+    "}"
+    "#deeprag-plus-btn {"
+    "  border: 1.5px solid rgba(245, 158, 11, 0.65) !important; color: #fde68a !important;"
+    "  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25) !important;"
+    "}"
     "</style>"
     "<div class='anime-vignette'></div>"
 )
@@ -1139,7 +1153,7 @@ def inject_anime_night_canvas():
         "      }"
         "      if (!textarea.getAttribute('data-sv-placeholder')) {"
         "        textarea.setAttribute('data-sv-placeholder', '1');"
-        "        textarea.setAttribute('placeholder', 'Type a message');"
+        "        textarea.setAttribute('placeholder', 'Tap + to attach PDF, then ask anything...');"
         "        textarea.addEventListener('input', () => autoGrowChatBox(textarea));"
         "        setTimeout(() => autoGrowChatBox(textarea), 50);"
         "      }"
@@ -2292,6 +2306,19 @@ tab_workspace, tab_quiz, tab_why, tab_how, tab_creator = st.tabs([
 # TAB 1: SILICON VALLEY MINIMAL AI WORKSPACE (CLAUDE / GEMINI / DEEPSEEK STYLE)
 # ==========================================
 with tab_workspace:
+    if st.session_state.pdf_pages > 0:
+        pdf_hint_html = (
+            f"<div class='sv-pdf-hint is-ready'>"
+            f"✅ <b>{st.session_state.pdf_pages} Pages Indexed</b> ({st.session_state.neural_chunks} Chunks) • Ask anything below"
+            f"</div>"
+        )
+    else:
+        pdf_hint_html = (
+            "<div class='sv-pdf-hint'>"
+            "📎 Tap the <span class='sv-plus-badge'>+</span> button inside the chat box to attach your PDF first"
+            "</div>"
+        )
+
     st.markdown(
         "<div class='lux-hero-wrap sv-workspace-hero'>"
         "  <div class='sv-sparkle-pill'>✨ DEEPRAG NEURAL STUDIO • 7,500 RPD MULTI-KEY POOL</div>"
@@ -2300,10 +2327,10 @@ with tab_workspace:
         "    <span class='lux-split-text' data-text='Intelligence Workspace.'></span>"
         "  </div>"
         "  <div class='sv-how-help lux-split-text' data-text='How can I help you?'></div>"
+        f"  {pdf_hint_html}"
         "</div>",
         unsafe_allow_html=True
     )
-
     # --- HIDDEN POPOVER TRIGGERED BY THE '+' ICON INSIDE THE CHAT INPUT BOX ---
     with st.popover("➕", use_container_width=False):
         st.markdown("##### 📎 Attach PDF & Calibrate AI")
