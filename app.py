@@ -403,6 +403,47 @@ custom_css = (
     "  display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px auto 6px auto;"
     "  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #fde68a; letter-spacing: 0.1em; text-transform: uppercase;"
     "}"
+    ".sv-how-help {"
+    "  font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.35rem, 2.8vw, 2.0rem);"
+    "  font-weight: 700; color: #f8fafc; letter-spacing: -0.02em; margin: 14px auto 22px auto; text-align: center;"
+    "}"
+    "html[data-deeprag-theme='light'] .sv-how-help { color: #0f172a; }"
+    "div[data-testid='stChatInput'] { max-width: 760px !important; margin: 0 auto 10px auto !important; }"
+    "#deeprag-plus-btn {"
+    "  width: 36px !important; height: 36px !important; min-width: 36px !important; border-radius: 50% !important;"
+    "  border: 1px solid rgba(255, 255, 255, 0.14) !important; background: rgba(255, 255, 255, 0.05) !important;"
+    "  color: #f8fafc !important; font-size: 1.35rem !important; font-weight: 400 !important; line-height: 1 !important;"
+    "  display: inline-flex !important; align-items: center !important; justify-content: center !important;"
+    "  cursor: pointer !important; margin: auto 4px auto 2px !important; padding: 0 !important; flex-shrink: 0 !important;"
+    "  transition: all 0.2s ease !important;"
+    "}"
+    "#deeprag-plus-btn:hover {"
+    "  background: rgba(245, 158, 11, 0.18) !important; border-color: #f59e0b !important; color: #fde68a !important; transform: scale(1.06) !important;"
+    "}"
+    "html[data-deeprag-theme='light'] #deeprag-plus-btn {"
+    "  background: #f1f5f9 !important; color: #0f172a !important; border-color: rgba(15, 23, 42, 0.18) !important;"
+    "}"
+    ".deeprag-hidden-pop-holder {"
+    "  position: fixed !important; width: 36px !important; height: 36px !important; opacity: 0 !important;"
+    "  pointer-events: none !important; z-index: -1 !important; overflow: hidden !important;"
+    "}"
+    ".deeprag-pill-strip {"
+    "  display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;"
+    "  overflow-x: auto !important; justify-content: center !important; gap: 10px !important;"
+    "  max-width: 760px !important; margin: 6px auto 18px auto !important; padding: 4px 6px 8px 6px !important;"
+    "  scrollbar-width: none !important; -ms-overflow-style: none !important;"
+    "}"
+    ".deeprag-pill-strip::-webkit-scrollbar { display: none !important; }"
+    ".deeprag-pill-strip > div[data-testid='column'], .deeprag-pill-strip > div[data-testid='stColumn'] {"
+    "  width: auto !important; flex: 0 0 auto !important; min-width: unset !important;"
+    "}"
+    ".deeprag-pill-strip button {"
+    "  width: auto !important; white-space: nowrap !important; padding: 8px 18px !important;"
+    "  border-radius: 999px !important; font-size: 0.82rem !important;"
+    "}"
+    "@media (max-width: 768px) {"
+    "  .deeprag-pill-strip { justify-content: flex-start !important; }"
+    "}"
     "</style>"
     "<div class='anime-vignette'></div>"
 )
@@ -1058,7 +1099,41 @@ def inject_anime_night_canvas():
         "      if (!submitBtn || !textarea) return;"
         "      if (!textarea.getAttribute('data-sv-placeholder')) {"
         "        textarea.setAttribute('data-sv-placeholder', '1');"
-        "        textarea.setAttribute('placeholder', 'Ask DeepRAG... (Press / or Ctrl+K to focus)');"
+        "        textarea.setAttribute('placeholder', 'Type a message');"
+        "      }"
+        "      const allBtns = parentDoc.querySelectorAll('button');"
+        "      allBtns.forEach((b) => {"
+        "        if (b.textContent && b.textContent.includes('Summary')) {"
+        "          const row = b.closest('div[data-testid=\"stHorizontalBlock\"]');"
+        "          if (row && !row.classList.contains('deeprag-pill-strip')) {"
+        "            row.classList.add('deeprag-pill-strip');"
+        "          }"
+        "        }"
+        "      });"
+        "      const popTrigger = parentDoc.querySelector('div[data-testid=\"stPopover\"] button');"
+        "      const popWrap = parentDoc.querySelector('div[data-testid=\"stPopover\"]');"
+        "      if (popWrap && !popWrap.classList.contains('deeprag-hidden-pop-holder')) {"
+        "        popWrap.classList.add('deeprag-hidden-pop-holder');"
+        "      }"
+        "      if (!parentDoc.getElementById('deeprag-plus-btn')) {"
+        "        const plusBtn = parentDoc.createElement('button');"
+        "        plusBtn.id = 'deeprag-plus-btn';"
+        "        plusBtn.type = 'button';"
+        "        plusBtn.title = 'Attach PDF Document & Output Settings';"
+        "        plusBtn.innerHTML = '+';"
+        "        const chatFlex = textarea.closest('div[data-testid=\"stChatInput\"] > div');"
+        "        if (chatFlex) chatFlex.insertBefore(plusBtn, chatFlex.firstChild);"
+        "        plusBtn.addEventListener('click', (e) => {"
+        "          e.preventDefault(); e.stopPropagation();"
+        "          const realPopBtn = parentDoc.querySelector('div[data-testid=\"stPopover\"] button');"
+        "          const realPopHolder = parentDoc.querySelector('div[data-testid=\"stPopover\"]');"
+        "          if (realPopBtn && realPopHolder) {"
+        "            const r = plusBtn.getBoundingClientRect();"
+        "            realPopHolder.style.left = r.left + 'px';"
+        "            realPopHolder.style.top = (r.bottom + 6) + 'px';"
+        "            realPopBtn.click();"
+        "          }"
+        "        });"
         "      }"
         "      if (parentDoc.getElementById('deeprag-gemini-mic')) return;"
         "      const micBtn = parentDoc.createElement('button');"
@@ -2175,60 +2250,49 @@ tab_workspace, tab_quiz, tab_why, tab_how, tab_creator = st.tabs([
 # TAB 1: SILICON VALLEY MINIMAL AI WORKSPACE (CLAUDE / GEMINI / DEEPSEEK STYLE)
 # ==========================================
 with tab_workspace:
-    engine_state_txt = "FAISS Active" if st.session_state.vector_store else "Ready to Index"
     st.markdown(
-        f"<div class='lux-hero-wrap sv-workspace-hero'>"
-        f"  <div class='sv-sparkle-pill'>✨ DEEPRAG NEURAL STUDIO • 7,500 RPD MULTI-KEY POOL</div>"
-        f"  <div class='sv-greeting-title'>"
-        f"    <span class='lux-serif-italic'>DeepRAG</span> "
-        f"    <span class='lux-split-text' data-text='Intelligence Workspace.'></span>"
-        f"  </div>"
-        f"  <div class='sv-greeting-sub lux-split-text' data-text='Attach your PDF documents below, calibrate synthesis style, or ask anything via text and Voice AI.'></div>"
-        f"  <div class='sv-telemetry-bar'>"
-        f"    <span class='sv-tel-chip'>📄 Pages: <strong>{st.session_state.pdf_pages}</strong></span>"
-        f"    <span class='sv-tel-sep'>•</span>"
-        f"    <span class='sv-tel-chip'>🧩 Chunks: <strong>{st.session_state.neural_chunks}</strong></span>"
-        f"    <span class='sv-tel-sep'>•</span>"
-        f"    <span class='sv-tel-chip'>⚡ Engine: <strong>{engine_state_txt}</strong></span>"
-        f"    <span class='sv-tel-sep'>•</span>"
-        f"    <span class='sv-tel-chip'>🔑 Pool: <strong>{ACTIVE_KEY_POOL_COUNT} Keys (7,500 RPD)</strong></span>"
-        f"  </div>"
-        f"</div>",
+        "<div class='lux-hero-wrap sv-workspace-hero'>"
+        "  <div class='sv-sparkle-pill'>✨ DEEPRAG NEURAL STUDIO • 7,500 RPD MULTI-KEY POOL</div>"
+        "  <div class='sv-greeting-title'>"
+        "    <span class='lux-serif-italic'>DeepRAG</span> "
+        "    <span class='lux-split-text' data-text='Intelligence Workspace.'></span>"
+        "  </div>"
+        "  <div class='sv-how-help lux-split-text' data-text='How can I help you?'></div>"
+        "</div>",
         unsafe_allow_html=True
     )
 
-    # --- UNIFIED ACTION DOCK (ONLY PDF & STYLE POPOVERS) ---
-    dock_c1, dock_c2 = st.columns(2)
-    with dock_c1:
-        with st.popover("➕ Attach PDF Document(s)", use_container_width=True):
-            uploaded_files = st.file_uploader(
-                "📄 Upload PDF Document(s) (Up to 200MB)",
-                type=["pdf"],
-                accept_multiple_files=True,
-                help="Upload single or multiple PDFs."
-            )
-    with dock_c2:
-        with st.popover("🎛️ Output Style & Length", use_container_width=True):
-            response_mode = st.selectbox(
-                "🎛️ Select Output Style",
-                [
-                    "⚡ Deep Analysis (Default)",
-                    "🎯 Exam & Revision Notes",
-                    "💡 Simple Explain (ELI5)",
-                    "📌 Executive Bullet Points"
-                ]
-            )
-            answer_length = st.radio(
-                "📏 Select Answer Length",
-                [
-                    "⚡ Short & Crisp",
-                    "⚖️ Balanced",
-                    "📚 Detailed & In-Depth"
-                ],
-                index=1,
-                horizontal=True
-            )
-        
+    # --- HIDDEN POPOVER TRIGGERED BY THE '+' ICON INSIDE THE CHAT INPUT BOX ---
+    with st.popover("➕", use_container_width=False):
+        st.markdown("##### 📎 Attach PDF & Calibrate AI")
+        uploaded_files = st.file_uploader(
+            "📄 Upload PDF Document(s) (Up to 200MB)",
+            type=["pdf"],
+            accept_multiple_files=True,
+            help="Upload single or multiple PDFs."
+        )
+        if st.session_state.pdf_pages > 0:
+            st.caption(f"✅ Active: **{st.session_state.pdf_pages} Pages** ({st.session_state.neural_chunks} Chunks Indexed)")
+        st.markdown("---")
+        response_mode = st.selectbox(
+            "🎛️ Output Style",
+            [
+                "⚡ Deep Analysis (Default)",
+                "🎯 Exam & Revision Notes",
+                "💡 Simple Explain (ELI5)",
+                "📌 Executive Bullet Points"
+            ]
+        )
+        answer_length = st.radio(
+            "📏 Answer Length",
+            [
+                "⚡ Short & Crisp",
+                "⚖️ Balanced",
+                "📚 Detailed & In-Depth"
+            ],
+            index=1,
+            horizontal=True
+        )
 
     # --- FAST LAZY-LOADED PDF INDEXING ---
     if uploaded_files:
