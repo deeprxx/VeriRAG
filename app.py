@@ -1156,7 +1156,7 @@ def inject_anime_night_canvas():
         "      }"
         "      if (!textarea.getAttribute('data-sv-placeholder')) {"
         "        textarea.setAttribute('data-sv-placeholder', '1');"
-        "        textarea.setAttribute('placeholder', 'Tap + to attach PDF, then ask anything...');"
+        "        textarea.setAttribute('placeholder', 'Ask DeepRAG');"
         "        textarea.addEventListener('input', () => autoGrowChatBox(textarea));"
         "        setTimeout(() => autoGrowChatBox(textarea), 50);"
         "      }"
